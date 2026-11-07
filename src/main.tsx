@@ -1,35 +1,99 @@
-import React,{useCallback,useEffect,useRef,useState} from 'react';
+import React,{useCallback,useEffect,useMemo,useRef,useState} from 'react';
 import {createRoot} from 'react-dom/client';
-import {drawScene,observations,type Chapter,type Params} from './canvas';
+import {defaults,lessons,type SceneId} from './content';
+import {calculate} from './measure';
+import {drawScene} from './visuals';
 import './styles.css';
-const CHAPTERS:{id:Chapter,tab:string,eyebrow:string,title:string,description:string,question:string,solution:string,controls:{key:keyof Params,label:string,min:number,max:number,step:number}[]}[]=[
- {id:'base',tab:'Repaso',eyebrow:'00 · FUNDAMENTOS ESENCIALES',title:'Una recta, dos decisiones',description:'Mové los coeficientes. La misma función se expresa como fórmula, gráfica y tasa de cambio.',question:'Construí una recta con pendiente 2 que cruce el eje y en −1.',solution:'La pendiente es el cambio de y por cada unidad de x. La ordenada es f(0).',controls:[{key:'m',label:'Pendiente m',min:-3,max:3,step:.25},{key:'b',label:'Ordenada b',min:-3,max:3,step:.25}]},
- {id:'derivative',tab:'Derivadas',eyebrow:'01 · CÁLCULO DIFERENCIAL',title:'La pendiente de un instante',description:'Acercá dos puntos de una parábola. La secante se aproxima a la recta tangente cuando h tiende a cero.',question:'Conseguí que la diferencia entre la pendiente secante y la tangente sea menor que 0,11.',solution:'Para f(x)=x², la secante tiene pendiente 2x₀+h y la tangente pendiente 2x₀. La diferencia es |h|.',controls:[{key:'x0',label:'Punto x₀',min:-2,max:2,step:.25},{key:'h',label:'Separación h',min:.05,max:2,step:.05}]},
- {id:'integral',tab:'Integrales',eyebrow:'02 · CÁLCULO INTEGRAL',title:'Lo infinito en pequeñas sumas',description:'Dividí el área bajo una curva en rectángulos. Aumentá su cantidad y observá cómo converge la suma.',question:'Lográ que el error absoluto de la suma izquierda sea menor a 0,06.',solution:'El ancho de cada rectángulo es Δx=(b−a)/n. La suma ∑ f(a+iΔx)Δx aproxima la integral.',controls:[{key:'upper',label:'Límite superior b',min:1,max:3,step:.25},{key:'n',label:'Rectángulos n',min:2,max:80,step:1}]},
- {id:'matrix',tab:'Matrices',eyebrow:'03 · ÁLGEBRA LINEAL',title:'Transformá el espacio',description:'Modificá una matriz 2×2 para observar cómo cambian la grilla, los vectores y el área del cuadrado unidad.',question:'Buscá una matriz singular: hacé que el determinante sea cero.',solution:'Una matriz 2×2 es singular cuando ad−bc=0. Su transformación aplasta el plano en una dimensión menor.',controls:[{key:'a',label:'Matriz a₁₁',min:-2,max:2,step:.25},{key:'mb',label:'Matriz a₁₂',min:-2,max:2,step:.25},{key:'c',label:'Matriz a₂₁',min:-2,max:2,step:.25},{key:'d',label:'Matriz a₂₂',min:-2,max:2,step:.25}]}
-];
-const INITIAL:Params={m:1,b:0,x0:1,h:1,n:8,upper:2,a:1,mb:.25,c:0,d:1};
-function App(){
- const [chapter,setChapter]=useState<Chapter>('derivative');
- const [params,setParams]=useState<Params>(INITIAL);
- const [answer,setAnswer]=useState<'idle'|'correct'|'retry'|'hint'>('idle');
- const [completed,setCompleted]=useState<Chapter[]>([]);
+
+const number=(n:number)=>Number(n.toFixed(2)).toLocaleString('es-AR');
+const groups=[{label:'DESCUBRIR',ids:['atlas','functions','limits']},{label:'CÁLCULO',ids:['derivative','integral','double']},{label:'ESTRUCTURAS',ids:['matrix','ode','gradient']}];
+const sceneName:Record<string,string>={atlas:'Generative field',functions:'Coordinate study',limits:'Continuity / limit',derivative:'Instantaneous change',integral:'Area accumulation',double:'Volume accumulation',matrix:'Linear transformation',ode:'Dynamic systems',gradient:'Slope field'};
+
+type AtlasFocus='all'|'lissajous'|'lorenz'|'gielis';
+function Stage({scene,params,accent,playing,focus,resetKey}:{scene:SceneId;params:Record<string,number>;accent:string;playing:boolean;focus:AtlasFocus;resetKey:number}){
  const canvas=useRef<HTMLCanvasElement|null>(null);
- const lesson=CHAPTERS.find(x=>x.id===chapter)!;
- const data=observations(chapter,params);
- const render=useCallback(()=>{if(canvas.current)drawScene(canvas.current,chapter,params)},[chapter,params]);
- useEffect(()=>{render();const observer=new ResizeObserver(render);if(canvas.current)observer.observe(canvas.current);return()=>observer.disconnect()},[render]);
- const update=(key:keyof Params,value:number)=>{setParams(prev=>({...prev,[key]:value}));setAnswer('idle')};
- const change=(id:Chapter)=>{setChapter(id);setAnswer('idle')};
- const check=()=>{setAnswer(data.pass?'correct':'retry');if(data.pass)setCompleted(old=>old.includes(chapter)?old:[...old,chapter])};
- return <div className="shell">
-  <header className="top"><div className="brand"><span className="infinity">∞</span> Mathscape <small>/ ACADEMY</small></div><div className="score"><span className="score-dot"/> {completed.length} de 4 experiencias</div></header>
-  <section className="hero"><div className="eyebrow">LABORATORIO DE CONOCIMIENTO · 2026</div><h1>No memorices la fórmula. <em>Hacé que cobre vida.</em></h1><p>Un recorrido visual por cálculo y álgebra lineal. Cambiá variables, formulá una hipótesis y observá la matemática en acción.</p></section>
-  <nav className="tabs" aria-label="Capítulos de matemática">{CHAPTERS.map((item,i)=><button type="button" key={item.id} className={'tab '+(chapter===item.id?'selected':'')} onClick={()=>change(item.id)} aria-current={chapter===item.id?'step':undefined}><span>{String(i).padStart(2,'0')}</span> {item.tab}{completed.includes(item.id)&&' ✓'}</button>)}</nav>
-  <main className="workspace"><section className="visual" aria-label="Visualización matemática en un plano cartesiano"><div className="visual-head"><div><span className="micro">EXPERIMENTO INTERACTIVO</span><strong>{chapter==='matrix'?'TRANSFORMACIÓN LINEAL':chapter==='integral'?'ACUMULACIÓN':chapter==='base'?'FUNCIÓN LINEAL':'SECANTE → TANGENTE'}</strong></div><span className="live"><i/> EN VIVO</span></div><canvas ref={canvas} aria-label="Plano cartesiano con curvas o transformaciones que responden a los controles"/><div className="visual-foot"><code>{data.formula}</code><span>Canvas 2D · Matemáticas reales</span></div></section>
-  <section className="right"><div className="card controls"><span className="micro accent">{lesson.eyebrow}</span><h2>{lesson.title}</h2><p>{lesson.description}</p><div className="sliders">{lesson.controls.map(c=><label className="slider" key={c.key}><span>{c.label}<b>{Number(params[c.key].toFixed(2)).toLocaleString('es-AR')}</b></span><input type="range" min={c.min} max={c.max} step={c.step} value={params[c.key]} onChange={e=>update(c.key,Number(e.currentTarget.value))}/></label>)}</div><div className="metric-grid">{data.metrics.map(m=><div className="metric" key={m.label}><span>{m.label}</span><strong>{m.value}</strong></div>)}</div><div className="insight"><span>LO QUE ESTÁS OBSERVANDO</span><p>{data.message}</p></div></div>
-  <div className="card challenge"><span className="micro">✦ APRENDER HACIENDO</span><h3>Tu desafío</h3><p>{lesson.question}</p><div className="buttons"><button type="button" className="primary" onClick={check}>Comprobar resultado</button><button type="button" className="secondary" onClick={()=>setAnswer('hint')}>Ver pista</button></div><div className={'feedback '+(answer==='correct'?'correct':'')} aria-live="polite">{answer==='hint'?data.hint:answer==='correct'?'✓ Resuelto. '+lesson.solution:answer==='retry'?'Todavía no: ajustá los controles y observá el cambio.':'Experimentá antes de comprobar tu respuesta.'}</div></div></section></main>
-  <footer>MATEMÁTICA / DISEÑO GENERATIVO / INTERACCIÓN <span>Sin Blender · Sin Three.js · React + Canvas</span></footer>
- </div>
+ const angle=useRef(-.73),time=useRef(0),drag=useRef<{x:number;angle:number}|null>(null);
+ const animate=useCallback(()=>{if(canvas.current)drawScene(canvas.current,scene,params,{angle:angle.current,time:time.current,focus},accent)},[scene,params,accent,focus]);
+ useEffect(()=>{angle.current=-.73;time.current=0;animate()},[scene,resetKey]);
+ useEffect(()=>{
+  const node=canvas.current;if(!node)return;
+  const r=new ResizeObserver(animate);r.observe(node);animate();return()=>r.disconnect();
+ },[animate]);
+ useEffect(()=>{
+  if(!playing){animate();return}
+  let raf=0,last=0;const loop=(stamp:number)=>{
+   if(stamp-last>32){time.current+=.028;animate();last=stamp}
+   raf=requestAnimationFrame(loop);
+  };raf=requestAnimationFrame(loop);return()=>cancelAnimationFrame(raf);
+ },[playing,animate]);
+ const down=(e:React.PointerEvent<HTMLCanvasElement>)=>{
+  if(!['atlas','double','gradient'].includes(scene))return;
+  drag.current={x:e.clientX,angle:angle.current};e.currentTarget.setPointerCapture(e.pointerId);
+ };
+ const move=(e:React.PointerEvent<HTMLCanvasElement>)=>{if(!drag.current)return;angle.current=drag.current.angle+(e.clientX-drag.current.x)*.008;animate()};
+ const up=()=>{drag.current=null};
+ return <canvas ref={canvas} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} aria-label={scene==='double'?'Superficie matemática z igual a uno más amplitud por x cuadrado más y cuadrado':scene==='atlas'?'Composición generativa animada de atractor Lorenz, Lissajous y superfórmula':'Gráfico matemático de '+sceneName[scene]}/>;
 }
+function App(){
+ const [scene,setScene]=useState<SceneId>('atlas');
+ const [params,setParams]=useState<Record<string,number>>({...defaults});
+ const [done,setDone]=useState<SceneId[]>([]);
+ const [response,setResponse]=useState<'idle'|'correct'|'retry'|'hint'>('idle');
+ const [playing,setPlaying]=useState(()=>!window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+ const [focus,setFocus]=useState<AtlasFocus>('all');
+ const [resetKey,setResetKey]=useState(0);
+ const [mobileMenu,setMobileMenu]=useState(false);
+ const current=lessons.find(l=>l.id===scene)!;
+ const info=useMemo(()=>calculate(scene,params),[scene,params]);
+ const completeCount=done.length;
+ const style={'--accent':current.accent} as React.CSSProperties;
+ const select=(id:SceneId)=>{setScene(id);setResponse('idle');setMobileMenu(false);};
+ const update=(key:string,value:number)=>{setParams(prev=>({...prev,[key]:value}));setResponse('idle')};
+ const reset=()=>{setParams(prev=>{const next={...prev};for(const c of current.controls)next[c.key]=defaults[c.key];return next});setResponse('idle');setResetKey(x=>x+1)};
+ const check=()=>{const ok=info.passed;setResponse(ok?'correct':'retry');if(ok)setDone(prev=>prev.includes(scene)?prev:[...prev,scene])};
+ const next=()=>select(lessons[(lessons.findIndex(l=>l.id===scene)+1)%lessons.length].id);
+ return <div className="app" style={style}>
+  <div className="orb orb-one"/><div className="orb orb-two"/>
+  <aside className={'sidebar '+(mobileMenu?'open':'')}>
+   <div className="brand"><span className="brand-symbol">∞</span><span><b>mathscape.</b><small>ACADEMY / LAB</small></span></div>
+   <div className="side-head"><span className="overline">EXPERIMENTAL LEARNING</span><p>La matemática no se contempla. <strong>Se manipula.</strong></p></div>
+   <nav className="chapters" aria-label="Exploraciones matemáticas">{groups.map(group=><div className="group" key={group.label}><div className="group-name">{group.label}</div>{group.ids.map(id=>{
+    const item=lessons.find(l=>l.id===id as SceneId)!;
+    return <button key={id} className={'chapter '+(id===scene?'current':'')} onClick={()=>select(item.id)} aria-current={scene===id?'page':undefined}><span className="chapter-index">{item.no}</span><span className="chapter-title">{id==='atlas'?'El universo generativo':id==='functions'?'Funciones':id==='limits'?'Límites y continuidad':id==='derivative'?'Derivadas':id==='integral'?'Integrales':id==='double'?'Integrales dobles':id==='matrix'?'Matrices':id==='ode'?'Ecuaciones diferenciales':'Gradientes'}</span><span className="completed">{done.includes(item.id)?'✓':id===scene?'◉':'·'}</span></button>
+   })}</div>)}</nav>
+   <div className="side-bottom"><span className="tiny-dot"/><div><strong>Una idea por experimento.</strong><small>Matemática real · Arte vivo.</small></div></div>
+  </aside>
+  <div className="right-area">
+   <header className="header">
+    <div className="breadcrumb"><button className="menu-toggle" onClick={()=>setMobileMenu(p=>!p)} aria-label="Abrir navegación">☰</button><span>MATHSCAPE</span><span className="slash">/</span><span>INTERACTIVE STUDIO</span><span className="slash">/</span><strong>{current.no}</strong></div>
+    <div className="header-right"><span className="workspace-status"><span className="pulse"/> ENGINE ACTIVE</span><span className="progress">{String(completeCount).padStart(2,'0')} <span>/ 09 EXP.</span></span></div>
+   </header>
+   <div className="main-content">
+    <section className="intro"><div className="overline"><span className="diamond">✧</span> MATHEMATICAL EXPLORATION / {current.section}</div><h1>{scene==='atlas'?<>La forma es <em>conocimiento.</em></>:<>{current.title.split(' ').slice(0,-1).join(' ')} <em>{current.title.split(' ').slice(-1)}</em></>}</h1><p>{current.description}</p></section>
+    <div className="workspace">
+     <section className="visual-column"><div className="stage-frame">
+      <div className="stage-top"><div className="stage-label"><span className="stage-icon">✳</span><div><span>LIVE MATHEMATICS</span><strong>{sceneName[scene]}</strong></div></div><div className="stage-tools"><button onClick={()=>setPlaying(x=>!x)} title={playing?'Pausar':'Reanudar'} aria-label={playing?'Pausar animación':'Reanudar animación'}>{playing?'Ⅱ':'▶'}</button><button onClick={reset} title="Restablecer" aria-label="Restablecer parámetros">↺</button></div></div>
+      <Stage scene={scene} params={params} accent={current.accent} playing={playing} focus={focus} resetKey={resetKey}/>
+      {scene==='atlas'&&<div className="focus-switch" aria-label="Geometría generativa">{([['all','Fusión'],['lissajous','Lissajous'],['lorenz','Lorenz'],['gielis','Gielis']] as [AtlasFocus,string][]).map(([key,label])=><button key={key} onClick={()=>setFocus(key)} className={focus===key?'active':''}>{label}</button>)}</div>}
+      <div className="stage-footer"><span className="scene-tag">● {scene==='atlas'?'GENERATIVE SYSTEMS':scene==='double'?'DOUBLE INTEGRAL / SURFACE':scene==='gradient'?'PARTIAL DERIVATIVES':scene.toUpperCase()}</span><span>{['atlas','double','gradient'].includes(scene)?'MOUSE DRAG ↔ ROTATE':'CHANGE PARAMETERS ↗ OBSERVE'}</span></div>
+     </div>
+     <div className="metrics">{info.metrics.map((m,i)=><div className="stat" key={m.label}><span className="stat-name">{m.label}</span><strong>{m.value}</strong><span className="stat-rule" style={{opacity:i===0?1:.45}}/></div>)}</div>
+     <div className="context-strip"><span className="context-icon">↗</span><p>{info.observation}</p></div>
+     </section>
+     <section className="inspector" aria-label="Panel de experimentación"><div className="inspector-inner">
+      <div className="inspector-top"><div><span className="overline">PARAMETER LAB</span><h2>Experimentá.</h2></div><span className="step-num">{current.no}<span>/09</span></span></div>
+      <div className="formula-card"><span className="field-label">MODELO MATEMÁTICO</span><div className="formula-text">{info.formula}</div></div>
+      <div className="control-head"><span className="field-label">VARIABLES DE CONTROL</span><button onClick={reset}>RESTABLECER ↺</button></div>
+      <div className="sliders">{current.controls.map(ctl=><label className="slider" key={ctl.key}><div><span>{ctl.label}</span><output>{number(params[ctl.key])}{ctl.unit||''}</output></div><input type="range" min={ctl.min} max={ctl.max} step={ctl.step} value={params[ctl.key]} onChange={e=>update(ctl.key,Number(e.currentTarget.value))} /></label>)}</div>
+      <div className="explain"><span className="explain-icon">✦</span><div><span className="field-label">LO QUE ESTÁ OCURRIENDO</span><p>{info.explanation}</p></div></div>
+      <div className="task"><div className="task-title"><span>MICRODESAFÍO</span><span className="task-star">✳</span></div><h3>¿Podés conseguirlo?</h3><p>{current.challenge}</p><div className="task-actions"><button className="check" onClick={check}>Comprobar <span>↗</span></button><button className="hint" onClick={()=>setResponse('hint')}>Pista</button></div><div className={'answer '+response} aria-live="polite">{response==='correct'?'✓ Bien. Lo conseguiste.':response==='retry'?'Todavía no. Probá modificar las variables.':response==='hint'?current.hint:'Primero experimentá. Después comprobá.'}</div></div>
+      <button className="next" onClick={next}>SIGUIENTE EXPLORACIÓN <span>→</span></button>
+     </div></section>
+    </div>
+    <footer className="footer"><span>© MATHSCAPE ACADEMY · EXPERIMENTAL EDUCATION</span><span>REACT / TYPESCRIPT / CANVAS 2D · SIN BLENDER</span></footer>
+   </div>
+  </div>
+ </div>;
+}
+
 createRoot(document.getElementById('root')!).render(<React.StrictMode><App/></React.StrictMode>);

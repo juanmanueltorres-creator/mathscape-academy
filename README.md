@@ -1,73 +1,61 @@
-# Mathscape Academy · laboratorio de matemática interactiva
+# Mathscape Academy V0.2 — The Mathematical Playground
 
-**Estado:** prototipo educativo V0.1. No está desplegado ni conectado a aplicaciones existentes.
+**Estado:** desarrollo local / rama de revisión. Sin despliegue público, sin backend y sin Blender.
 
-## Objetivo
+Experiencia en React + TypeScript + Vite con gráficos científicos y matemáticas verificables. Recupera los experimentos generativos iniciales (Lissajous, Lorenz y superfórmula) y va más allá de una colección de tarjetas: **nueve escenas interactivas**, controles matemáticos, desafíos y comparación entre aproximaciones y soluciones exactas.
 
-Enseñar matemáticas mediante una secuencia breve de observar → experimentar → explicar → resolver, con especial profundidad en derivadas, integrales, matrices y, a futuro, cálculo multivariable. Mantener un repaso contextual de álgebra, funciones y trigonometría.
+## Explorar
 
-## Arquitectura
+| N.º | Experimento | Interacción |
+|---|---|---|
+| 00 | Atlas generativo | Frecuencias de Lissajous, fase, alternar sistemas visuales y rotación |
+| 01 | Funciones | Parámetros de la cuadrática y comparación con seno |
+| 02 | Límites | `sin(x)/x` y aproximación bilateral a cero |
+| 03 | Derivadas | Secante y tangente en `f(x)=x²` |
+| 04 | Integrales definidas | Rectángulos de Riemann izquierdos |
+| 05 | **Integrales dobles** | Superficie `z=1+a(x²+y²)` sobre un cuadrado, suma de puntos medios n×n |
+| 06 | Matrices | Transformación 2×2, grilla y determinante |
+| 07 | **Ecuaciones diferenciales** | `y'=ky`, Euler explícito y solución exacta |
+| 08 | **Derivadas parciales** | Gradiente de un paraboloide sobre superficie rotatoria |
 
-- React + TypeScript + Vite: capítulos, estado, navegación y accesibilidad.
-- Canvas 2D: plano cartesiano, rectas, curvas, sumas de Riemann y grillas transformadas.
-- `src/math.ts`: cálculos matemáticos puros, verificables.
-- `src/canvas.ts`: dibujo y explicaciones conectados a las mismas fórmulas.
-- `tests`: validaciones de secante, suma integral, matrices.
-- No usa Blender, Three.js, backend, API ni inteligencia artificial.
-
-## Demo autónoma (sin instalar)
-
-Abrir `demo.html` directamente en el navegador. Esta demo comparte el motor matemático y de dibujo del proyecto React, y permite probar las cuatro escenas sin dependencias.
-
-## Inicio
+## Ejecutar
 
 ```bash
 npm install
 npm run dev
-```
-
-Abrir la URL que muestre Vite. En otro terminal:
-
-```bash
-npm run test
+npm test
 npm run build
 ```
 
-> No se instaló `node_modules` al preparar este paquete: el entorno de creación no tenía acceso al registro npm. Requiere conexión para `npm install`.
+La URL dev se abrirá desde la terminal Vite. No se despliega automáticamente.
 
-## Roadmap (hipótesis de aprendizaje; medir antes de ampliar)
+## Arquitectura
 
-| Tramo | Microescenas | Evaluación |
-|---|---|---|
-| Repaso contextual | funciones, coordenadas, trigonometría | pendiente, dominio, lectura de gráficos |
-| Límites | aproximación por ambos lados, continuidad | distinguir límite de valor de función |
-| Derivadas | secante→tangente, producto/cadena, optimización | predecir signo y magnitud de la pendiente |
-| Integrales | sumas izquierdas/derechas, valor exacto, TFC, sustitución | aproximar y explicar convergencia |
-| Álgebra lineal | vectores, matriz 2×2, sistemas, determinantes, autovalores | visualizar transformación y resolver Ax=b |
-| Multivariable | superficies 3D cuando sea necesario, gradiente, jacobiano | analizar pendientes y cambios de área |
-| Aplicación | movimiento, terreno, optimización, ecuaciones diferenciales | transferir a problemas reales |
+- `src/main.tsx` — shell y estado React, navegación, controles accesibles, progresión.
+- `src/content.ts` — programa de escenas y controles, editable sin cambiar el motor.
+- `src/math.ts` — algoritmos puros y funciones exactas.
+- `src/measure.ts` — métricas, error, fórmulas y validaciones de desafíos.
+- `src/visuals.ts` — dibujo Canvas 2D, proyección de superficies 3D sobre 2D.
+- `src/styles.css` — dirección visual, responsive, contrastes.
+- `tests/advanced.test.mjs` — pruebas matemáticas de cálculo avanzado.
 
-### Principios
+### Criterios de corrección
 
-- **La figura no debe contradecir a la fórmula.** La suma integral dibujada usa la misma función y los mismos límites que el cálculo numérico.
-- Cuando se visualiza la integral se aclara que se trabaja con una función positiva en `[0,b]`; por tanto, el área representada coincide con la integral definida.
-- Los controles son táctiles y navegables por teclado.
-- Sin backend ni recopilación de datos personales.
-- No liberar nuevas escenas antes de verificar el aprendizaje y la corrección matemática.
+1. Los valores de la UI provienen de las mismas funciones puras que los gráficos.
+2. El módulo de integral doble usa suma de Riemann de puntos medios con área de celda `(2b/n)²`. El valor exacto es `4b²+(8/3)ab⁴`.
+3. La escena EDO representa Euler explícito y compara el mismo modelo con `y0·exp(k t)`.
+4. La proyección de superficies es una **vista 2.5D**, no una escena WebGL; la posición/altura corresponde a la función indicada.
+5. Las formas generativas son un lenguaje visual experimental, no una interpretación científica de datos externos.
+6. `demo.html` es una **demo anterior** de V0.1 conservada por compatibilidad; la versión actual y completa corre con Vite/React.
 
-## Fuentes curriculares
+## Camino educativo
 
-- [OpenStax Cálculo 1](https://openstax.org/books/c%C3%A1lculo-volumen-1/pages/prefacio)
-- [MIT Single Variable Calculus](https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/)
-- [MIT Linear Algebra](https://ocw.mit.edu/courses/18-06sc-linear-algebra-fall-2011/)
-- [Argentina NAP](https://www.argentina.gob.ar/nucleos-de-aprendizaje-prioritarios)
+Repaso breve → límites → derivadas e integrales → matrices → superficies, derivadas parciales e integrales dobles → ecuaciones diferenciales → aplicaciones geoespaciales.
 
-## Próximos pasos
+Fuentes de referencia: [OpenStax Cálculo](https://openstax.org/subjects/math), [MIT Single Variable Calculus](https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/), [MIT Multivariable Calculus](https://ocw.mit.edu/courses/18-02sc-multivariable-calculus-fall-2010/) y [MIT Linear Algebra](https://ocw.mit.edu/courses/18-06sc-linear-algebra-fall-2011/).
 
-1. Hacer pruebas exploratorias de aprendizaje con 2–3 personas.
-2. Agregar predicción previa a mover el control para evitar interacción mecánica.
-3. Construir el módulo de límites y derivadas de funciones distintas a `x²`.
-4. Crear la planificación de capítulos más profundos de cálculo y álgebra lineal.
-5. Publicar solo cuando el usuario lo decida.
+## Pendiente
 
-Plan curricular detallado: `docs/PLAN_CURRICULAR.md`.
+- Evaluar comprensión pedagógica con usuarios reales.
+- Agregar vistas WebGL sólo si aportan manipulación tridimensional que Canvas 2D no pueda ofrecer.
+- Nunca ejecutar un despliegue sin una instrucción explícita.
