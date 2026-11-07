@@ -1,0 +1,155 @@
+<!doctype html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080c17"><title>Mathscape Academy · Demo sin instalar</title><style>:root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:#f1f2ff;background:#080c17;font-synthesis:none}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid #fff;outline-offset:3px}.shell{min-height:100vh;padding:20px clamp(16px,4vw,54px);background:radial-gradient(ellipse at 49% 43%,#1c2448 0,#0e152a 38%,#080c17 75%)}.top{max-width:1440px;margin:auto;display:flex;justify-content:space-between;align-items:center}.brand{font-size:23px;letter-spacing:-1px;font-weight:740;display:flex;align-items:center;gap:9px}.brand small{font-weight:500;color:#8494b6;letter-spacing:1.2px;font-size:10px;margin-left:3px}.infinity{font-size:35px;color:#a89eff;line-height:.9}.score{background:#111a2d;border:1px solid #34415f;padding:10px 14px;border-radius:30px;font-size:12px;color:#c0cbe4}.score-dot,.live i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#9afbd3;box-shadow:0 0 12px #9afbd3;margin-right:6px}.hero{text-align:center;margin:25px auto 23px;max-width:950px}.eyebrow,.micro{color:#93a3c3;letter-spacing:2px;font-size:10px}.hero h1{font-size:clamp(32px,4.2vw,62px);line-height:1.07;font-weight:550;letter-spacing:-2.5px;margin:10px auto}.hero h1 em{font-style:normal;background:linear-gradient(90deg,#8fe8ff,#b7a5ff 65%,#fac58d);color:transparent;background-clip:text}.hero p{color:#a8b5d0;font-size:14px;line-height:1.6;max-width:710px;margin:8px auto}.tabs{display:flex;gap:8px;justify-content:center;max-width:900px;margin:0 auto 16px}.tab{border:1px solid #32405f;color:#b9c7e2;background:#10182cd1;padding:11px 16px;border-radius:28px;font-size:12px;white-space:nowrap;transition:background .2s,border-color .2s}.tab span{color:#7f92bc;margin-right:5px}.tab:hover,.tab.selected{background:#263555;color:#fff;border-color:#8acff7}.workspace{max-width:1440px;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(315px,.85fr);gap:16px;margin:auto}.visual{min-height:615px;position:relative;overflow:hidden;border-radius:27px;background:radial-gradient(ellipse at center,#132344cc,#050b1b 74%);border:1px solid #293a5d;box-shadow:inset 0 0 65px #0d1738}.visual:before{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#7a9cb808 1px,transparent 1px),linear-gradient(#7a9cb808 1px,transparent 1px);background-size:28px 28px;mask-image:radial-gradient(ellipse,#000,transparent 70%)}.visual canvas{width:100%;height:100%;display:block;position:absolute;inset:0}.visual-head{position:absolute;z-index:1;top:25px;left:25px;right:25px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}.visual-head strong{display:block;font-size:13px;letter-spacing:1px;font-weight:610;margin-top:6px}.live{font-size:10px;letter-spacing:1px;color:#b1bdd5}.visual-foot{position:absolute;left:23px;right:23px;bottom:22px;display:flex;gap:10px;justify-content:space-between;align-items:center;pointer-events:none}.visual-foot code{font-size:13px;color:#deecff;background:#0d182cdf;padding:11px 14px;border:1px solid #3c506e;border-radius:30px}.visual-foot span{font-size:10px;color:#8899b7}.right{display:flex;flex-direction:column;gap:14px}.card{border:1px solid #35435e;border-radius:23px;background:linear-gradient(145deg,#17233beb,#0d1729f6);padding:22px 25px;box-shadow:0 10px 30px #0003}.card.controls{flex:1}.micro.accent{color:#9dddff}.card h2{font-size:28px;line-height:1.15;letter-spacing:-.8px;font-weight:620;margin:9px 0}.card p{font-size:12px;line-height:1.6;color:#aebbd1;margin:0 0 15px}.sliders{display:grid;gap:13px}.slider>span{display:flex;justify-content:space-between;margin-bottom:7px;font-size:12px;color:#cfdaeb}.slider b{color:#9ee7ff;font-size:12px}.slider input{width:100%;accent-color:#a9b1ff}.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(98px,1fr));gap:7px;margin:18px 0}.metric{background:#0c1427;border:1px solid #2b3d5d;border-radius:12px;padding:11px}.metric span{font-size:10px;color:#92a3c3;display:block;margin-bottom:5px}.metric strong{font-size:17px;font-weight:650;color:#f3f4ff;font-variant-numeric:tabular-nums}.insight{border-left:2px solid #83d8ff;padding-left:13px;margin-top:6px}.insight span{font-size:9px;letter-spacing:1.4px;color:#a5dcff}.insight p{margin:6px 0 0}.challenge{padding:18px 25px}.challenge h3{font-size:17px;margin:6px 0}.challenge p{margin:0 0 12px}.buttons{display:flex;gap:8px;flex-wrap:wrap}.buttons button{border-radius:25px;padding:11px 14px;font-weight:660;font-size:12px;border:1px solid #495675}.primary{background:#a9a6ff;border-color:#a9a6ff!important;color:#11162a}.secondary{background:#1d2a44;color:#d5def5}.feedback{margin-top:10px;font-size:11px;line-height:1.5;color:#a5b4d3;min-height:17px}.feedback.correct{color:#9afbd3}footer{max-width:1440px;margin:22px auto 0;font-size:10px;color:#7c8db0;display:flex;justify-content:space-between;gap:16px;letter-spacing:.6px}@media(max-width:950px){.workspace{grid-template-columns:1fr}.visual{min-height:440px}.right{display:grid;grid-template-columns:1fr 1fr}.card.controls{grid-row:span 2}}@media(max-width:670px){.shell{padding:14px 12px}.brand{font-size:18px}.infinity{font-size:29px}.score{font-size:10px;padding:8px}.hero{margin:22px auto}.hero h1{font-size:34px;letter-spacing:-1.3px}.hero p{font-size:12px}.eyebrow{font-size:9px}.tabs{justify-content:flex-start;overflow:auto;padding-bottom:5px}.tab{padding:10px 13px}.workspace{gap:11px}.visual{min-height:330px;border-radius:20px}.visual-head{top:14px;left:14px;right:14px}.visual-head strong{font-size:10px}.visual-foot{left:12px;right:12px;bottom:12px}.visual-foot code{font-size:10px;padding:8px}.visual-foot span{display:none}.right{display:flex}.card{border-radius:20px;padding:19px}.card h2{font-size:25px}.metric strong{font-size:15px}footer{font-size:9px;flex-direction:column;gap:5px}}
+</style></head><body><div class="shell"><header class="top"><div class="brand"><span class="infinity">∞</span> Mathscape <small>/ ACADEMY</small></div><div class="score"><span class="score-dot"></span><span id="count">0 de 4 experiencias</span></div></header><section class="hero"><div class="eyebrow">LABORATORIO DE CONOCIMIENTO · 2026</div><h1>No memorices la fórmula. <em>Hacé que cobre vida.</em></h1><p>Un recorrido visual por cálculo y álgebra lineal. Cambiá variables, formulá una hipótesis y observá la matemática en acción.</p></section><nav id="tabs" class="tabs" aria-label="Capítulos de matemática"></nav><main class="workspace"><section class="visual" aria-label="Visualización matemática interactiva"><div class="visual-head"><div><span class="micro">EXPERIMENTO INTERACTIVO</span><strong id="labels">SECANTE → TANGENTE</strong></div><span class="live"><i></i> EN VIVO</span></div><canvas id="scene" aria-label="Gráfico matemático interactivo"></canvas><div class="visual-foot"><code id="formula">f(x)=x²</code><span>Canvas 2D · Matemáticas reales</span></div></section><section class="right"><div class="card controls"><span class="micro accent" id="eyebrow">01 · CÁLCULO DIFERENCIAL</span><h2 id="title"></h2><p id="description"></p><div class="sliders" id="sliders"></div><div class="metric-grid" id="metrics"></div><div class="insight"><span>LO QUE ESTÁS OBSERVANDO</span><p id="observation"></p></div></div><div class="card challenge"><span class="micro">✦ APRENDER HACIENDO</span><h3>Tu desafío</h3><p id="challenge"></p><div class="buttons"><button id="check" class="primary" type="button">Comprobar resultado</button><button id="hint" class="secondary" type="button">Ver pista</button></div><div id="feedback" class="feedback" aria-live="polite">Experimentá antes de comprobar tu respuesta.</div></div></section></main><footer>MATEMÁTICA / DISEÑO GENERATIVO / INTERACCIÓN <span>Sin Blender · Sin Three.js · Demo HTML autónoma</span></footer></div><script>const quadratic = (x) => x * x;
+const derivativeQuadratic = (x) => 2 * x;
+const secantQuadratic = (x, h) => {
+    if (h === 0)
+        throw new RangeError('h debe ser distinto de cero');
+    return (quadratic(x + h) - quadratic(x)) / h;
+};
+const integrand = (x) => x * x / 4 + 0.5;
+const exactIntegral = (a, b) => (b ** 3 - a ** 3) / 12 + (b - a) / 2;
+function leftRiemann(a, b, n) {
+    if (!Number.isInteger(n) || n <= 0)
+        throw new RangeError('n debe ser entero positivo');
+    const dx = (b - a) / n;
+    let sum = 0;
+    for (let i = 0; i < n; i++)
+        sum += integrand(a + i * dx) * dx;
+    return sum;
+}
+const determinant = ([a, b, c, d]) => a * d - b * c;
+const applyMatrix = ([a, b, c, d], [x, y]) => [a * x + b * y, c * x + d * y];
+
+
+function drawScene(canvas, chapter, p) {
+    const ctx = canvas.getContext('2d');
+    if (!ctx)
+        return;
+    const box = canvas.getBoundingClientRect();
+    const w = Math.max(box.width, 1), h = Math.max(box.height, 1), pr = Math.min(window.devicePixelRatio || 1, 2);
+    const cw = Math.round(w * pr), ch = Math.round(h * pr);
+    if (canvas.width !== cw || canvas.height !== ch) {
+        canvas.width = cw;
+        canvas.height = ch;
+    }
+    ctx.setTransform(pr, 0, 0, pr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    const extent = chapter === 'integral' ? 4.5 : 4.1;
+    const scale = Math.min(w / (2 * extent), h / (2 * extent)) * .93;
+    const originX = w * .5, originY = h * .52;
+    const xy = (x, y) => [originX + x * scale, originY - y * scale];
+    const segment = (a, b, opt = {}) => { ctx.beginPath(); ctx.moveTo(...xy(...a)); ctx.lineTo(...xy(...b)); ctx.lineWidth = opt.width ?? 1; ctx.strokeStyle = opt.color ?? '#28405b'; ctx.setLineDash(opt.dash ?? []); ctx.shadowColor = opt.color ?? 'transparent'; ctx.shadowBlur = opt.glow ?? 0; ctx.stroke(); ctx.setLineDash([]); ctx.shadowBlur = 0; };
+    const point = (x, y, color, r = 5) => { const [px, py] = xy(x, y); ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2); ctx.fillStyle = color; ctx.shadowBlur = 18; ctx.shadowColor = color; ctx.fill(); ctx.shadowBlur = 0; };
+    const curve = (fn, color, width = 2.6, min = -extent, max = extent) => { ctx.save(); ctx.beginPath(); let started = false; for (let x = min; x <= max; x += (max - min) / 220) {
+        const y = fn(x);
+        if (!Number.isFinite(y) || Math.abs(y) > 15) {
+            started = false;
+            continue;
+        }
+        let [px, py] = xy(x, y);
+        if (!started) {
+            ctx.moveTo(px, py);
+            started = true;
+        }
+        else
+            ctx.lineTo(px, py);
+    } ctx.strokeStyle = color; ctx.lineWidth = width; ctx.shadowColor = color; ctx.shadowBlur = 12; ctx.stroke(); ctx.restore(); };
+    const polygon = (points, fill, stroke) => { ctx.beginPath(); points.forEach((v, i) => i ? ctx.lineTo(...xy(...v)) : ctx.moveTo(...xy(...v))); ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); if (stroke) {
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    } };
+    // Grilla científica siempre visible para que la forma conserve significado cuantitativo.
+    for (let v = -4; v <= 4; v++) {
+        segment([v, -extent], [v, extent], { color: v === 0 ? '#637593' : '#26344e', width: v === 0 ? 1.35 : .7 });
+        segment([-extent, v], [extent, v], { color: v === 0 ? '#637593' : '#26344e', width: v === 0 ? 1.35 : .7 });
+    }
+    ctx.font = '11px system-ui';
+    ctx.fillStyle = '#7d91b0';
+    for (let v = -4; v <= 4; v += 2) {
+        if (v) {
+            let [px, py] = xy(v, 0);
+            ctx.fillText(String(v), px - 4, py + 14);
+            [px, py] = xy(0, v);
+            ctx.fillText(String(v), px + 8, py + 4);
+        }
+    }
+    ctx.fillStyle = '#a5b5da';
+    ctx.fillText('x', w - 18, originY - 10);
+    ctx.fillText('y', originX + 10, 18);
+    if (chapter === 'base') {
+        curve(x => p.m * x + p.b, '#70e1f8');
+        point(0, p.b, '#ffc184');
+        let q = 2;
+        segment([0, p.b], [q, p.m * q + p.b], { color: '#ffc184', dash: [5, 4], width: 1.4 });
+    }
+    if (chapter === 'derivative') {
+        curve(quadratic, '#80dfff', 2.8);
+        const m = secantQuadratic(p.x0, p.h), mt = derivativeQuadratic(p.x0);
+        segment([p.x0 - 3, quadratic(p.x0) - 3 * m], [p.x0 + 3, quadratic(p.x0) + 3 * m], { color: '#ffbe77', width: 1.6, dash: [6, 5] });
+        segment([p.x0 - 3, quadratic(p.x0) - 3 * mt], [p.x0 + 3, quadratic(p.x0) + 3 * mt], { color: '#b89aff', width: 2 });
+        segment([p.x0, quadratic(p.x0)], [p.x0 + p.h, quadratic(p.x0)], { color: '#a2afc5', dash: [3, 3] });
+        segment([p.x0 + p.h, quadratic(p.x0)], [p.x0 + p.h, quadratic(p.x0 + p.h)], { color: '#a2afc5', dash: [3, 3] });
+        point(p.x0, quadratic(p.x0), '#b89aff');
+        point(p.x0 + p.h, quadratic(p.x0 + p.h), '#ffbe77', 4);
+    }
+    if (chapter === 'integral') {
+        const end = p.upper, dx = end / p.n;
+        for (let i = 0; i < p.n; i++) {
+            const x = i * dx, y = integrand(x);
+            polygon([[x, 0], [x + dx, 0], [x + dx, y], [x, y]], 'rgba(124,219,239,0.15)', '#7ee3f0');
+        }
+        curve(integrand, '#ffc184', 2.6, -1, end + .55);
+        point(0, integrand(0), '#ffc184', 3);
+        point(end, integrand(end), '#ffc184', 3);
+    }
+    if (chapter === 'matrix') {
+        const mat = [p.a, p.mb, p.c, p.d];
+        // Imagen de la grilla y del cuadrado unidad bajo la transformación lineal.
+        for (let v = -3; v <= 3; v++) {
+            segment(applyMatrix(mat, [v, -3]), applyMatrix(mat, [v, 3]), { color: '#637cd153', width: 1 });
+            segment(applyMatrix(mat, [-3, v]), applyMatrix(mat, [3, v]), { color: '#637cd153', width: 1 });
+        }
+        polygon([[0, 0], applyMatrix(mat, [1, 0]), applyMatrix(mat, [1, 1]), applyMatrix(mat, [0, 1])], 'rgba(181,142,255,.19)', '#c4a0ff');
+        const ex = applyMatrix(mat, [1, 0]), ey = applyMatrix(mat, [0, 1]);
+        segment([0, 0], ex, { color: '#7ae1f5', width: 3, glow: 10 });
+        segment([0, 0], ey, { color: '#ffbf84', width: 3, glow: 10 });
+        point(...ex, '#7ae1f5');
+        point(...ey, '#ffbf84');
+        ctx.fillStyle = '#d5c3ff';
+        ctx.fillText('det = ' + determinant(mat).toFixed(2), 16, 30);
+    }
+}
+function observations(chapter, p) {
+    const fmt = (n) => Number(n.toFixed(3)).toLocaleString('es-AR');
+    if (chapter === 'base')
+        return { formula: `f(x) = ${fmt(p.m)}x ${p.b < 0 ? '−' : '+'} ${fmt(Math.abs(p.b))}`, metrics: [{ label: 'Pendiente', value: fmt(p.m) }, { label: 'Ordenada', value: fmt(p.b) }], message: 'La pendiente controla cuánto sube la recta al avanzar una unidad en x. La ordenada fija el cruce con el eje y.', pass: Math.abs(p.m - 2) < .05 && Math.abs(p.b + 1) < .05, hint: 'Buscá pendiente 2 y ordenada −1.' };
+    if (chapter === 'derivative') {
+        const ms = secantQuadratic(p.x0, p.h), mt = derivativeQuadratic(p.x0);
+        return { formula: 'f(x) = x²  ·  f′(x) = 2x', metrics: [{ label: 'Pendiente secante', value: fmt(ms) }, { label: 'Pendiente tangente', value: fmt(mt) }, { label: 'Diferencia', value: fmt(Math.abs(ms - mt)) }], message: 'Al reducir h, la pendiente secante se aproxima a la tangente. La derivada es el límite de esa razón de cambio.', pass: Math.abs(ms - mt) < .11, hint: 'Acercá h a 0,05. Observá cómo coinciden las dos pendientes.' };
+    }
+    if (chapter === 'integral') {
+        const approx = leftRiemann(0, p.upper, p.n), exact = exactIntegral(0, p.upper), err = Math.abs(approx - exact);
+        return { formula: `∫₀${fmt(p.upper)} (x²/4 + 1/2) dx`, metrics: [{ label: 'Suma izquierda', value: fmt(approx) }, { label: 'Integral exacta', value: fmt(exact) }, { label: 'Error absoluto', value: fmt(err) }], message: 'Cada rectángulo suma una pequeña contribución. Aumentar n reduce el ancho y aproxima la acumulación para esta función creciente.', pass: err < .06, hint: 'Aumentá el número de rectángulos hasta que el error sea menor a 0,06.' };
+    }
+    const det = determinant([p.a, p.mb, p.c, p.d]);
+    return { formula: `[ ${fmt(p.a)}   ${fmt(p.mb)} ]   [ ${fmt(p.c)}   ${fmt(p.d)} ]`, metrics: [{ label: 'Determinante', value: fmt(det) }, { label: 'Factor de área', value: fmt(Math.abs(det)) }], message: 'Una matriz transforma todos los puntos del plano. El valor absoluto del determinante indica cuánto escala el área; si vale 0, el plano se aplasta en una línea o un punto.', pass: Math.abs(det) < .01, hint: 'Probá hacer dos filas iguales: por ejemplo a = 1, b = 1, c = 1, d = 1.' };
+}
+
+
+const lessons=[
+{id:'base',tab:'Repaso',eyebrow:'00 · FUNDAMENTOS',title:'Una recta, dos decisiones',description:'Transformá una función lineal cambiando la pendiente y la ordenada.',question:'Construí una recta con pendiente 2 que cruce el eje y en −1.',solution:'La pendiente es la variación de y por cada unidad de x. La ordenada es f(0).',controls:[['m','Pendiente m',-3,3,.25],['b','Ordenada b',-3,3,.25]]},
+{id:'derivative',tab:'Derivadas',eyebrow:'01 · CÁLCULO DIFERENCIAL',title:'La pendiente de un instante',description:'Acercá dos puntos de la parábola. La recta secante se aproxima a la tangente.',question:'Lográ una diferencia de pendientes menor a 0,11.',solution:'La pendiente secante es 2x₀+h; la tangente, 2x₀. La diferencia es h.',controls:[['x0','Punto x₀',-2,2,.25],['h','Separación h',.05,2,.05]]},
+{id:'integral',tab:'Integrales',eyebrow:'02 · CÁLCULO INTEGRAL',title:'Lo infinito en pequeñas sumas',description:'Aproximá el área mediante rectángulos y observá la convergencia.',question:'Conseguí un error de aproximación menor a 0,06.',solution:'La suma de rectángulos aproxima la integral al reducir el ancho Δx.',controls:[['upper','Límite superior b',1,3,.25],['n','Rectángulos n',2,80,1]]},
+{id:'matrix',tab:'Matrices',eyebrow:'03 · ÁLGEBRA LINEAL',title:'Transformá el espacio',description:'Modificá una matriz y observá cómo transforma la grilla y los vectores.',question:'Creá una matriz singular: determinante igual a cero.',solution:'La matriz es singular cuando ad−bc=0; el área se reduce a cero.',controls:[['a','Matriz a₁₁',-2,2,.25],['mb','Matriz a₁₂',-2,2,.25],['c','Matriz a₂₁',-2,2,.25],['d','Matriz a₂₂',-2,2,.25]]}
+];
+const params={m:1,b:0,x0:1,h:1,n:8,upper:2,a:1,mb:.25,c:0,d:1};
+let chapter='derivative',complete=new Set();const $=id=>document.getElementById(id);
+function render(){const L=lessons.find(l=>l.id===chapter);const info=observations(chapter,params);$('eyebrow').textContent=L.eyebrow;$('title').textContent=L.title;$('description').textContent=L.description;$('challenge').textContent=L.question;$('formula').textContent=info.formula;$('observation').textContent=info.message;$('labels').textContent=chapter==='matrix'?'TRANSFORMACIÓN LINEAL':chapter==='integral'?'ACUMULACIÓN':chapter==='base'?'FUNCIÓN LINEAL':'SECANTE → TANGENTE';$('count').textContent=complete.size+' de 4 experiencias';
+  $('tabs').replaceChildren(...lessons.map((l,i)=>{const b=document.createElement('button');b.type='button';b.className='tab'+(chapter===l.id?' selected':'');b.textContent=String(i).padStart(2,'0')+' · '+l.tab+(complete.has(l.id)?' ✓':'');b.onclick=()=>{chapter=l.id;$('feedback').textContent='Experimentá antes de comprobar tu respuesta.';render()};return b}));
+  $('sliders').replaceChildren(...L.controls.map(([key,label,min,max,step])=>{const wrap=document.createElement('label');wrap.className='slider';const line=document.createElement('span'),span=document.createElement('span'),val=document.createElement('b');span.textContent=label;val.textContent=String(params[key]).replace('.',',');line.append(span,val);const inp=document.createElement('input');inp.type='range';Object.assign(inp,{min,max,step,value:params[key]});inp.setAttribute('aria-label',label);inp.oninput=()=>{params[key]=Number(inp.value);val.textContent=String(params[key]).replace('.',',');$('feedback').textContent='Experimentá antes de comprobar tu respuesta.';refresh()};wrap.append(line,inp);return wrap}));refresh()}
+function refresh(){let info=observations(chapter,params);$('formula').textContent=info.formula;$('observation').textContent=info.message;$('metrics').replaceChildren(...info.metrics.map(item=>{let div=document.createElement('div');div.className='metric';let name=document.createElement('span');name.textContent=item.label;let val=document.createElement('strong');val.textContent=item.value;div.append(name,val);return div}));drawScene($('scene'),chapter,params)};
+$('check').onclick=()=>{const info=observations(chapter,params),l=lessons.find(l=>l.id===chapter);$('feedback').textContent=info.pass?'✓ Resuelto. '+l.solution:'Todavía no: ajustá los parámetros y observá el cambio.';$('feedback').className='feedback'+(info.pass?' correct':'');if(info.pass){complete.add(chapter);render();$('feedback').textContent='✓ Resuelto. '+l.solution;$('feedback').className='feedback correct'}};
+$('hint').onclick=()=>{$('feedback').className='feedback';$('feedback').textContent=observations(chapter,params).hint};
+window.addEventListener('resize',refresh);render();
+</script></body></html>
