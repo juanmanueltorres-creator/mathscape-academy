@@ -31,3 +31,20 @@
 button:focus-visible,input:focus-visible{outline:2px solid var(--accent,#a99cff);outline-offset:3px}
 @media(max-width:730px){.stage-corner{display:none}.family-options{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){.orb{filter:none;opacity:.12}.task .check:hover{transform:none}}
+
+/* V0.4 · galería de ejemplos y lectura matemática clara. */
+.example-lab{margin-bottom:17px}
+.example-lab .field-label{font-size:10px;letter-spacing:1.55px;color:#b8c9e7;margin-bottom:11px}
+.example-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.example-options button{display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-width:0;text-align:left;min-height:68px;padding:12px;border:1px solid #465372;border-radius:12px;background:linear-gradient(140deg,#111e35,#0b1525);color:#d4e1f2;transition:border-color .15s,background .15s}
+.example-options button b{font-size:12px;font-weight:640;letter-spacing:-.1px}
+.example-options button small{font-size:10px;line-height:1.4;color:#859dbd}
+.example-options button.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,#0c172b);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 22%,transparent)}
+.example-options button:hover{border-color:#b9cdf0}
+.formula-text{white-space:pre-wrap;tab-size:2;font-size:clamp(12px,1vw,14px);line-height:1.8;word-break:normal}
+.formula-card{margin-bottom:14px}
+.inspector{align-self:start}
+.stage-frame canvas{touch-action:pan-y}
+.stage-frame canvas:active{cursor:grabbing}
+@media(max-width:1030px){.example-lab{grid-column:1 / -1}.formula-card{grid-column:1}.control-head{grid-row:auto}.sliders{grid-row:auto}.explain{grid-row:auto}.task{grid-row:auto}.next{grid-row:auto}}
+@media(max-width:730px){.example-options{grid-template-columns:repeat(2,minmax(0,1fr))}.formula-text{font-size:12px}.stage-frame canvas{touch-action:none}}

@@ -1,11 +1,14 @@
 import {functionFamilies,type SceneId} from './content';
-import {derivativeQuadratic,secantQuadratic,leftRiemann,exactIntegral,exactDoubleIntegral,midpointDoubleIntegral,determinant,odeExact,solveEuler,norm2,surfaceGradient,familyAnchor,familyValue,familyDerivative} from './math';
+import {determinant,norm2,familyAnchor,familyValue,familyDerivative,derivativeExampleSlope,secantExample,exactIntegralExample,leftRiemannExample,exactSolidVolume,midpointSolidVolume,limitLeftRight,limitCenter,solveEulerModel,odeModelExact,gradientExample} from './math';
 export type Metric={label:string;value:string;detail?:string};
 export type Result={metrics:Metric[];explanation:string;passed:boolean;observation:string;formula:string};
 const num=(v:number,digits=3)=>Number(v.toFixed(digits)).toLocaleString('es-AR');
 const met=(label:string,v:number,detail?:string):Metric=>({label,value:num(v),detail});
 export function calculate(scene:SceneId,p:Record<string,number>):Result{
- if(scene==='atlas')return {metrics:[met('Frecuencia A',p.freqA),met('Frecuencia B',p.freqB),met('Desfase',p.phase)],explanation:'La superposición de tres sistemas matemáticos produce una composición compleja, aunque cada sistema tiene reglas propias. El atractor de Lorenz se muestra con parámetros clásicos fijos.',passed:p.freqA===3&&p.freqB===2,observation:`Relación ${p.freqA}:${p.freqB}. Dos frecuencias enteras producen una curva cerrada de Lissajous.`,formula:`x = sen(${p.freqA}t + ${num(p.phase,2)})  ·  y = sen(${p.freqB}t)`};
+ if(scene==='atlas'){
+  const m=Math.round(p.atlasModel||0),formula=[`x=sen(${p.freqA}t + ${num(p.phase,2)}); y=sen(${p.freqB}t)`,`x′=10(y−x), y′=x(28−z)−y, z′=xy−8z/3`,`r(θ)=[|cos(${p.gielisSymmetry}θ/4)|ⁿ²+|sen(${p.gielisSymmetry}θ/4)|ⁿ³]^(−1/${num(p.gielisExponent,2)})`][m]||'';
+  return {metrics:[met('Frecuencia A',p.freqA),met('Frecuencia B',p.freqB),{label:'Sistema',value:['Lissajous','Lorenz','Gielis'][m]}],explanation:['Las dos frecuencias construyen una órbita periódica. Cambiá a/b y el desfase para explorar los patrones.','El atractor de Lorenz es un sistema caótico determinista con parámetros clásicos.','La superfórmula combina simetrías y exponentes; no es una simulación física.'][m],passed:m===0?p.freqA===3&&p.freqB===2:m===1?p.lorenzSpeed<.5:p.gielisSymmetry>=8,observation:'Tres sistemas separados para evitar sobrecarga gráfica. Cada experiencia conserva su propia ecuación.',formula};
+ }
  if(scene==='functions'){
   const family=Math.max(0,Math.min(4,Math.round(p.family||0)));
   const meta=functionFamilies[family],anchor=familyAnchor(family,p.fb);
@@ -15,29 +18,37 @@ export function calculate(scene:SceneId,p:Record<string,number>):Result{
   return {metrics:[{label:'Familia',value:meta.label},met(`f(${num(anchor,1)})`,val),met(`f′(${num(anchor,1)})`,deriv)],explanation:meta.insight,passed,observation:family>=3?`Dominio: x ${family===3?'>':'≠'} ${num(p.fb,2)}. La asíntota aparece en x=${num(p.fb,2)}.`:`La pendiente indicada corresponde a x=${num(anchor,1)}.`,formula:meta.formula(p.fa,p.fb,p.fc)};
  }
  if(scene==='limits'){
-  const v=Math.sin(p.lh)/p.lh,err=Math.abs(1-v);
-  return {metrics:[met('f(+h)',v),met('f(−h)',v),met('Distancia a 1',err)],explanation:'El valor de sen(x)/x no está definido para x=0. Sin embargo, sus valores se acercan a 1 desde los dos lados.',passed:err<.001,observation:`Para h = ${num(p.lh,2)}, la función se aproxima a ${num(v,5)}.`,formula:'limₓ→₀ (sen x)/x = 1'};
+  const m=Math.round(p.limitModel||0),[left,right]=limitLeftRight(m,p.lh),target=m===0?1:m===1?2:NaN;
+  const err=m===2?Math.abs(left-right):Math.max(Math.abs(left-target),Math.abs(right-target));
+  const center=limitCenter(m);
+  return {metrics:[met('Por izquierda',left),met('Por derecha',right),m===2?met('Diferencia lateral',err):met('Error respecto al límite',err)],explanation:m===0?'Aunque sen(x)/x no está definida en 0, los dos lados se aproximan a 1.':m===1?'La expresión (x²−1)/(x−1) tiene un hueco en x=1, pero coincide con x+1 fuera de ese punto.':'Una discontinuidad de salto tiene límites laterales distintos; el límite bilateral no existe.',passed:m===2?p.lh<.1:err<.001,observation:m===2?'Límite por izquierda = −1; por derecha = +1. No existe el límite bilateral.':`Al aproximarte a x=${center}, los dos límites laterales tienden a ${target}.`,formula:[`limₓ→₀ sen(x)/x = 1`,`limₓ→₁ (x²−1)/(x−1) = 2`,`limₓ→₀⁻ f(x)=−1 ; limₓ→₀⁺ f(x)=1`][m]};
  }
  if(scene==='derivative'){
-  const sec=secantQuadratic(p.x0,p.h),der=derivativeQuadratic(p.x0),err=Math.abs(sec-der);
-  return{metrics:[met('Secante',sec),met('Tangente',der),met('Diferencia',err)],explanation:'La derivada es la pendiente de la tangente. Para f(x)=x², la secante entre x₀ y x₀+h tiene pendiente 2x₀+h.',passed:err<.1,observation:`La pendiente instantánea en x₀=${num(p.x0,1)} es ${num(der)}.`,formula:'f(x)=x²  ·  f′(x)=2x'};
+  const m=Math.round(p.derivativeModel||0),sec=secantExample(m,p.x0,p.h),der=derivativeExampleSlope(m,p.x0),err=Math.abs(sec-der);
+  const formula=[`f(x)=x² ; f′(x)=2x`,`f(x)=sen(x) ; f′(x)=cos(x)`,`f(x)=eˣ ; f′(x)=eˣ`][m];
+  return {metrics:[met('Pendiente secante',sec),met('Pendiente tangente',der),met('Error',err)],explanation:'La pendiente secante [f(x+h)−f(x)]/h aproxima a la derivada. Compará la recta azul con la tangente violeta.',passed:err<.05,observation:`En x₀=${num(p.x0,2)} la derivada exacta vale ${num(der)}.`,formula:`${formula}\n[f(x₀+h)−f(x₀)] / h`};
  }
  if(scene==='integral'){
-  const approx=leftRiemann(0,p.upper,p.n),exact=exactIntegral(0,p.upper),err=Math.abs(approx-exact);
-  return {metrics:[met('Suma izquierda',approx),met('Integral exacta',exact),met('Error',err)],explanation:'Una integral definida acumula cambios a lo largo de un intervalo. Aquí los rectángulos utilizan extremos izquierdos y subestiman la función creciente.',passed:err<.05,observation:`n=${p.n} rectángulos sobre [0,${num(p.upper,2)}].`,formula:`∫₀^${num(p.upper,1)} (x²/4 + 1/2) dx`};
+  const m=Math.round(p.integralModel||0),approx=leftRiemannExample(m,0,p.upper,p.n),exact=exactIntegralExample(m,0,p.upper),err=Math.abs(approx-exact);
+  const model=[`x²/4 + 1/2`,`1 + sen(x)`,`1 + x/2`][m];
+  return {metrics:[met('Suma izquierda',approx),met('Integral exacta',exact),met('Error absoluto',err)],explanation:'Cada rectángulo toma la altura del extremo izquierdo. La integral definida mide acumulación (área aquí porque f(x)≥0).',passed:err<.05,observation:`${p.n} rectángulos en [0, ${num(p.upper,2)}] con f(x)=${model}.`,formula:`∫₀^${num(p.upper,1)} (${model}) dx = ${num(exact,4)}`};
  }
  if(scene==='double'){
-  const approx=midpointDoubleIntegral(p.amplitude,p.bound,p.resolution),exact=exactDoubleIntegral(p.amplitude,p.bound),err=Math.abs(approx-exact);
-  return{metrics:[met('Volumen aprox.',approx),met('Valor exacto',exact),met('Error',err),met('Prismas',p.resolution*p.resolution)],explanation:'Una integral doble acumula valores sobre una región bidimensional. Cada celda tiene área ΔxΔy; el valor de la superficie en su centro determina su contribución al volumen.',passed:err<.015,observation:`R=[−${num(p.bound,1)},${num(p.bound,1)}]². Método: punto medio en ${p.resolution}×${p.resolution} celdas.`,formula:`∬ᴿ [1 + ${num(p.amplitude,2)}(x²+y²)] dA`};
+  const m=Math.round(p.doubleModel||0),r=p.bound,h=p.height,n=Math.round(p.resolution);
+  const approx=midpointSolidVolume(m,r,h,p.amplitude,n),exact=exactSolidVolume(m,r,h,p.amplitude),err=Math.abs(approx-exact),relative=exact>0?100*err/exact:0;
+  const formulas=[`D=[−b,b]², b=${num(r,2)}\nz=1+${num(p.amplitude,2)}(x²+y²)\nV=∬ᴰ z dA = 4b²+(8/3)ab⁴`, `D: x²+y²≤R²; R=${num(r,2)}\nz=H=${num(h,2)}\nV=∬ᴰ H dA = πR²H`, `D: x²+y²≤R²; R=${num(r,2)}\nz=√(R²−x²−y²)\nV=∬ᴰ z dA = 2πR³/3`, `D: x²+y²≤R²; R=${num(r,2)}\nz=H(1−(x²+y²)/R²)\nV=∬ᴰ z dA = πR²H/2`, `D: x²+y²≤R²; R=${num(r,2)}\nz=H(1−√(x²+y²)/R)\nV=∬ᴰ z dA = πR²H/3`][m];
+  const name=['Cuadrática sobre cuadrado','Cilindro','Hemisferio superior','Paraboloide sólido','Cono circular','Esfera completa'][m];
+  return {metrics:[met('Volumen aproximado',approx),met('Volumen exacto',exact),met('Error relativo %',relative),met('Celdas',m===0?n*n:4*n*n)],explanation:m===5?'La esfera completa se calcula integrando el espesor vertical z_superior−z_inferior = 2√(R²−x²−y²) sobre el disco.':m===2?'Un hemisferio es la mitad superior de una esfera. El volumen de la esfera completa es 4πR³/3; aquí se integra únicamente la mitad de arriba.':m===0?'En el cuadrado usamos una suma bidimensional en coordenadas cartesianas; el volumen se mide bajo z(x,y).':'Para el disco usamos coordenadas polares: dA=r dr dθ. Cada anillo aporta volumen sobre su porción de superficie.',passed:relative<1,observation:`${name}. Suma de puntos medios (${m===0?'cartesiana':'polar'}) con resolución n=${n}.`,formula:formulas};
  }
  if(scene==='matrix'){
   const det=determinant([p.ma,p.mb,p.mc,p.md]);
   return{metrics:[met('Determinante',det),met('Factor de área',Math.abs(det)),met('Orientación',Math.sign(det))],explanation:'El determinante indica el factor de cambio de área orientada. Cuando vale cero la transformación deja de ser invertible.',passed:Math.abs(det)<.001,observation:det<0?'La transformación invierte la orientación.':det===0?'La transformación aplasta el plano.':'La orientación se conserva.',formula:`[ ${num(p.ma,2)}   ${num(p.mb,2)} ]    [ ${num(p.mc,2)}   ${num(p.md,2)} ]`};
  }
  if(scene==='ode'){
-  const points=solveEuler(p.k,p.y0,4,p.dt),approx=points[points.length-1].y,exact=odeExact(p.k,p.y0,4),err=Math.abs(approx-exact);
-  return{metrics:[met('Euler · t=4',approx),met('Exacto · t=4',exact),met('Error final',err),met('Pasos',points.length-1)],explanation:'Euler utiliza y(t+Δt)≈y(t)+Δt·k·y(t), una aproximación local. En esta ecuación la solución exacta permite observar la acumulación del error.',passed:err<.025,observation:p.k<0?'El sistema decae hacia cero.':p.k>0?'El sistema crece exponencialmente.':'El estado permanece constante.',formula:`dy/dt = ${num(p.k,2)}y  ·  y(0)=${num(p.y0,2)}`};
+  const m=Math.round(p.odeModel||0),points=solveEulerModel(m,p.k,p.y0,4,p.dt,p.capacity),approx=points.at(-1)!.y,exact=odeModelExact(m,p.k,p.y0,4,p.capacity),err=Math.abs(approx-exact);
+  return {metrics:[met('Euler · t=4',approx),met('Exacta · t=4',exact),met('Error',err),met('Pasos',points.length-1)],explanation:m===0?'En el modelo exponencial la tasa es proporcional al estado y.':'El modelo logístico agrega capacidad de carga K, que frena el crecimiento cuando y se acerca a K.',passed:err<.035,observation:`Modelo ${m===0?'exponencial':'logístico'}, paso Δt=${num(p.dt,2)}. Reducir el paso reduce normalmente el error.`,formula:m===0?`y′=${num(p.k,2)}y ; y(t)=y₀e^(kt)`:`y′=${num(p.k,2)}y(1−y/${num(p.capacity,2)})\ny(t)=K/[1+(K/y₀−1)e^(−kt)]`};
  }
- const grad=surfaceGradient(p.ga,p.gb,p.gx,p.gy),mag=norm2(grad);
- return{metrics:[met('∂f/∂x',grad[0]),met('∂f/∂y',grad[1]),met('|∇f|',mag)],explanation:'Las derivadas parciales describen cambios en direcciones independientes. Juntas forman el gradiente, que apunta hacia el aumento más rápido de la superficie.',passed:mag<.1,observation:`Punto (${num(p.gx,2)}, ${num(p.gy,2)}). El gradiente se anula en el mínimo de este paraboloide.`,formula:`∇f = (${num(2*p.ga,2)}x, ${num(2*p.gb,2)}y)`};
+ const m=Math.round(p.gradientModel||0),grad=gradientExample(m,p.ga,p.gb,p.gx,p.gy),mag=norm2(grad);
+ const formulas=[`z=${num(p.ga,2)}x²+${num(p.gb,2)}y²\n∇z=(2ax, 2by)`,`z=${num(p.ga,2)}x²−${num(p.gb,2)}y²\n∇z=(2ax, −2by)`,`z=${num(p.ga,2)}e^(−${num(p.gb,2)}(x²+y²))\n∇z=−2b(x,y)z`];
+ return {metrics:[met('∂z/∂x',grad[0]),met('∂z/∂y',grad[1]),met('|∇z|',mag)],explanation:m===0?'El gradiente apunta alejándose del mínimo del cuenco.':m===1?'Una silla de montar sube en x y baja en y; el gradiente combina esos cambios.':'La campana gaussiana alcanza su máximo en el centro; fuera del centro, el gradiente señala la dirección de subida hacia ese máximo.',passed:mag<.1,observation:`Punto (${num(p.gx,2)}, ${num(p.gy,2)}), campo gradiente calculado analíticamente.`,formula:formulas[m]};
 }

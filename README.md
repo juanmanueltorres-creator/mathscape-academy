@@ -68,3 +68,19 @@ Fuentes de referencia: [OpenStax Cálculo](https://openstax.org/subjects/math), 
 - **Funciones:** familias polinómica, sinusoidal, exponencial, logarítmica y racional, con fórmulas, derivadas analíticas, dominios y desafíos propios. Asíntotas y discontinuidades se separan en el dibujo.
 - **Diseño:** controles segmentados, foco accesible, jerarquía editorial, detalles en tarjetas y marco del laboratorio, sin nuevas dependencias.
 - **Verificación:** `npm test`, `tsc --project tsconfig.mathcheck.json`. El build de React requiere instalar las dependencias de `package.json`.
+
+## V0.4 · Ejemplos reales y Atlas por separado (en PR de revisión)
+
+El recorrido inicial abre **Funciones**, no una fusión de curvas. Desde **Atlas generativo** pueden seleccionarse individualmente Lissajous, Lorenz o Gielis. La animación está limitada a 20 FPS, y Lorenz se calcula sólo si se selecciona.
+
+El capítulo **Integrales dobles** permite comparar **cilindro, esfera completa, hemisferio, paraboloide, cono y superficie cuadrática**. Cada caso incluye fórmula, dominio, gráfica, aproximación y valor exacto. El resto de los capítulos también incorpora ejemplos específicos de funciones, límites, derivadas, integrales, matrices, EDO y gradientes. Los detalles de las ecuaciones y limitaciones están en [`docs/ADVANCED_LAB.md`](docs/ADVANCED_LAB.md).
+
+Comandos de validación:
+
+```bash
+npm test
+npx tsc --project tsconfig.mathcheck.json
+npm run build
+```
+
+La compilación React/Vite depende de instalar las dependencias de npm y aún no está validada en este entorno; verificar en Vercel antes del merge.

@@ -98,3 +98,105 @@ export function lorenzPoints(count=1800,dt=.007):Vec3[]{
   }
   return points;
 }
+
+/** Catálogo de ejemplos: fórmulas y cálculos idénticos para gráfica y evaluación. */
+export const derivativeExample=(model:number,x:number)=>model===1?Math.sin(x):model===2?Math.exp(x):quadratic(x);
+export const derivativeExampleSlope=(model:number,x:number)=>model===1?Math.cos(x):model===2?Math.exp(x):derivativeQuadratic(x);
+export function secantExample(model:number,x:number,h:number){
+  if(!(h>0))throw new RangeError('h debe ser positivo');
+  return (derivativeExample(model,x+h)-derivativeExample(model,x))/h;
+}
+export const integrandExample=(model:number,x:number)=>model===1?1+Math.sin(x):model===2?1+x/2:integrand(x);
+export function exactIntegralExample(model:number,a:number,b:number){
+  if(model===1)return (b-a)-Math.cos(b)+Math.cos(a);
+  if(model===2)return (b-a)+(b*b-a*a)/4;
+  return exactIntegral(a,b);
+}
+export function leftRiemannExample(model:number,a:number,b:number,n:number){
+  if(!Number.isInteger(n)||n<=0)throw new RangeError('n debe ser entero positivo');
+  const dx=(b-a)/n;let sum=0;
+  for(let i=0;i<n;i++)sum+=integrandExample(model,a+i*dx)*dx;
+  return sum;
+}
+/** Casos: 0=cuadrática sobre cuadrado; 1=cilindro; 2=hemisferio; 3=paraboloide; 4=cono; 5=esfera completa mediante espesor vertical. */
+export function solidHeight(model:number,x:number,y:number,r:number,h:number,a:number){
+  const rr=x*x+y*y;
+  if(model===0)return surface(x,y,a);
+  if(r<=0||rr>r*r+1e-12)return NaN;
+  const q=Math.min(1,rr/(r*r));
+  switch(model){
+    case 1:return h;
+    case 2:return Math.sqrt(Math.max(0,r*r-rr));
+    case 3:return h*(1-q);
+    case 4:return h*(1-Math.sqrt(q));
+    case 5:return 2*Math.sqrt(Math.max(0,r*r-rr));
+    default:throw new RangeError('modelo geométrico inválido');
+  }
+}
+export function exactSolidVolume(model:number,r:number,h:number,a:number){
+  if(r<=0||h<=0)throw new RangeError('radio y altura deben ser positivos');
+  switch(model){
+    case 0:return exactDoubleIntegral(a,r);
+    case 1:return Math.PI*r*r*h;
+    case 2:return 2*Math.PI*r*r*r/3;
+    case 3:return Math.PI*r*r*h/2;
+    case 4:return Math.PI*r*r*h/3;
+    case 5:return 4*Math.PI*r*r*r/3;
+    default:throw new RangeError('modelo geométrico inválido');
+  }
+}
+/** Riemann polar: r dr dθ sobre el disco; evita el error de tomar una región cuadrada. */
+export function midpointSolidVolume(model:number,r:number,h:number,a:number,n:number){
+  if(!Number.isInteger(n)||n<1||n>300)throw new RangeError('resolución inválida');
+  if(r<=0||h<=0)throw new RangeError('radio y altura deben ser positivos');
+  if(model===0)return midpointDoubleIntegral(a,r,n);
+  const dr=r/n,angular=4*n,dtheta=2*Math.PI/angular;
+  let sum=0;
+  for(let i=0;i<n;i++){
+    const radius=(i+.5)*dr;
+    for(let j=0;j<angular;j++){
+      const theta=(j+.5)*dtheta;
+      sum+=solidHeight(model,radius*Math.cos(theta),radius*Math.sin(theta),r,h,a)*radius*dr*dtheta;
+    }
+  }
+  return sum;
+}
+/** Ejemplos de límites; jump model tiene límites laterales distintos. */
+export function limitExample(model:number,x:number){
+  if(model===1)return Math.abs(x-1)<1e-12?NaN:x+1;
+  if(model===2)return x<0?-1:1;
+  return Math.abs(x)<1e-12?NaN:Math.sin(x)/x;
+}
+export const limitCenter=(model:number)=>model===1?1:0;
+export const limitLeftRight=(model:number,h:number):Vec2=>[
+  limitExample(model,limitCenter(model)-h),limitExample(model,limitCenter(model)+h)
+];
+/** Ecuación logística y caso exponencial. Para k=0 ambas mantienen y0. */
+export const odeModelExact=(model:number,k:number,y0:number,t:number,K:number)=>{
+  if(model===0)return odeExact(k,y0,t);
+  if(K<=0||y0<=0)throw new RangeError('K e y0 deben ser positivos');
+  return K/(1+(K/y0-1)*Math.exp(-k*t));
+};
+export const odeModelRate=(model:number,k:number,y:number,K:number)=>model===0?k*y:k*y*(1-y/K);
+export function solveEulerModel(model:number,k:number,y0:number,end:number,dt:number,K:number){
+  if(dt<=0||end<=0)throw new RangeError('paso y tiempo deben ser positivos');
+  if(model!==0&&K<=0)throw new RangeError('capacidad inválida');
+  const points:{t:number;y:number;exact:number}[]=[{t:0,y:y0,exact:y0}];
+  let t=0,y=y0;
+  while(t<end-1e-10){
+    const step=Math.min(dt,end-t);y+=step*odeModelRate(model,k,y,K);t+=step;
+    points.push({t,y,exact:odeModelExact(model,k,y0,t,K)});
+  }
+  return points;
+}
+/** Relieve 0=paraboloide, 1=silla de montar, 2=colina gaussiana. */
+export function gradientExampleValue(model:number,a:number,b:number,x:number,y:number){
+  if(model===1)return a*x*x-b*y*y;
+  if(model===2)return a*Math.exp(-b*(x*x+y*y));
+  return gradientSurface(a,b,x,y);
+}
+export function gradientExample(model:number,a:number,b:number,x:number,y:number):Vec2{
+  if(model===1)return [2*a*x,-2*b*y];
+  if(model===2){const z=gradientExampleValue(model,a,b,x,y);return [-2*b*x*z,-2*b*y*z];}
+  return surfaceGradient(a,b,x,y);
+}

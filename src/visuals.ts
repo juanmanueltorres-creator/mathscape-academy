@@ -1,9 +1,10 @@
 import type {SceneId} from './content';
-import {applyMatrix,determinant,integrand,lorenzPoints,quadratic,superRadius,surface,gradientSurface,surfaceGradient,familyValue,familyAnchor,type Vec2,type Vec3} from './math';
+import {applyMatrix,determinant,lorenzPoints,superRadius,surface,familyValue,familyAnchor,derivativeExample,derivativeExampleSlope,integrandExample,solidHeight,gradientExampleValue,gradientExample,limitExample,limitCenter,odeModelExact,odeModelRate,solveEulerModel,type Vec2,type Vec3} from './math';
 
-export type ViewState={angle:number;time:number;pointer?:Vec2;focus?:'all'|'lissajous'|'lorenz'|'gielis'};
+export type ViewState={angle:number;time:number;pointer?:Vec2;focus?:'lissajous'|'lorenz'|'gielis'};
 type Paint={c:CanvasRenderingContext2D;w:number;h:number;d:number;cx:number;cy:number;accent:string};
-const ORBIT=lorenzPoints(1950);
+let orbit:Vec3[]|null=null;
+const getOrbit=()=>orbit??(orbit=lorenzPoints(3300));
 const rgba=(hex:string,alpha:number)=>{
  const h=hex.replace('#','');const n=parseInt(h,16);
  return `rgba(${n>>16&255},${n>>8&255},${n&255},${alpha})`;
@@ -46,11 +47,81 @@ const project=(p:Paint,angle:number,scale:number,x:number,y:number,z:number,offs
  const u=x*Math.cos(angle)-y*Math.sin(angle),v=x*Math.sin(angle)+y*Math.cos(angle);
  return [p.cx+u*scale,p.cy+offset+v*scale*.45-z*scale*.50];
 };
+/** Superficies de revolución: dibujadas sobre disco real, no sobre un cuadrado. */
+function diskSolid(p:Paint,pr:Record<string,number>,angle:number){
+ const model=Math.round(pr.doubleModel||0),R=pr.bound,H=pr.height;
+ const radials=p.w<600?10:16,angular=p.w<600?32:48;
+ const scl=Math.min(p.w*.31,p.h*.31)/Math.max(R,1);
+ const proj=(x:number,y:number,z:number):Vec2=>project(p,angle,scl,x,y,z,52);
+ // Disco de integración; las partes del fondo se muestran como una sombra translúcida.
+ const ground:Vec2[]=[];for(let j=0;j<=angular;j++){const a=j*2*Math.PI/angular;ground.push(proj(R*Math.cos(a),R*Math.sin(a),0))}
+ polygon(p,ground,'#3d5d811e','#8ea1d266');
+ if(model===5){
+  // La esfera completa es la unión de las dos hojas z=±√(R²−x²−y²).
+  // La integral usa su ESPESOR, no el área de una sola hoja.
+  const upper:{pts:Vec2[];depth:number;light:number}[]=[],lower:{pts:Vec2[];depth:number;light:number}[]=[];
+  for(let i=0;i<radials;i++)for(let j=0;j<angular;j++){
+   const r0=i*R/radials,r1=(i+1)*R/radials,a=j*2*Math.PI/angular,b=(j+1)*2*Math.PI/angular;
+   const coords:[[number,number],[number,number],[number,number],[number,number]]=[
+    [r0*Math.cos(a),r0*Math.sin(a)],[r1*Math.cos(a),r1*Math.sin(a)],[r1*Math.cos(b),r1*Math.sin(b)],[r0*Math.cos(b),r0*Math.sin(b)]];
+   const top=coords.map(([x,y])=>Math.sqrt(Math.max(0,R*R-x*x-y*y)));
+   const depth=((r0+r1)/2)*Math.cos((a+b)/2-angle),light=1-r0/R;
+   upper.push({pts:coords.map(([x,y],k)=>proj(x,y,top[k])),depth,light});
+   lower.push({pts:coords.map(([x,y],k)=>proj(x,y,-top[k])),depth,light});
+  }
+  lower.sort((a,b)=>a.depth-b.depth);upper.sort((a,b)=>a.depth-b.depth);
+  for(const q of lower)polygon(p,q.pts,`rgba(74,105,182,${.35+q.light*.14})`,'#a6c2ff19');
+  for(const q of upper)polygon(p,q.pts,`rgba(102,177,232,${.65+q.light*.15})`,'#defaff20');
+  path(p,ground,'#e3c5fd77',1.1);
+  label(p,'ESFERA COMPLETA · 2 HEMISFERIOS',20,p.h-52,'#e1e9ff');
+  label(p,`D: x² + y² ≤ ${R.toFixed(2)}²`,20,p.h-72,'#8baed3');
+  label(p,'arrastra ↔ para girar',p.w-190,p.h-52,'#899bb8');return;
+ }
+ // Pared lateral para la superficie z=H y para los otros sólidos (volumen debajo de z).
+ const walls:{pts:Vec2[];depth:number}[]=[];
+ for(let j=0;j<angular;j++){
+  const a=j*2*Math.PI/angular,b=(j+1)*2*Math.PI/angular;
+  const x=R*Math.cos(a),y=R*Math.sin(a),u=R*Math.cos(b),v=R*Math.sin(b);
+  const z=solidHeight(model,x,y,R,H,pr.amplitude),w=solidHeight(model,u,v,R,H,pr.amplitude);
+  if(z<1e-6&&w<1e-6)continue;
+  walls.push({pts:[proj(x,y,0),proj(u,v,0),proj(u,v,w),proj(x,y,z)],depth:Math.sin((a+b)/2+angle)});
+ }
+ walls.sort((a,b)=>a.depth-b.depth);
+ for(const wall of walls)polygon(p,wall.pts,'#5b88c945','#99d9ff42');
+ const tiles:{pts:Vec2[];depth:number;height:number}[]=[];
+ for(let i=0;i<radials;i++){
+  const r0=i*R/radials,r1=(i+1)*R/radials;
+  for(let j=0;j<angular;j++){
+   const a=j*2*Math.PI/angular,b=(j+1)*2*Math.PI/angular;
+   const coords:[[number,number],[number,number],[number,number],[number,number]]=[
+     [r0*Math.cos(a),r0*Math.sin(a)], [r1*Math.cos(a),r1*Math.sin(a)],
+     [r1*Math.cos(b),r1*Math.sin(b)], [r0*Math.cos(b),r0*Math.sin(b)]
+   ];
+   const z=coords.map(([x,y])=>solidHeight(model,x,y,R,H,pr.amplitude));
+   const mid=(a+b)/2,rm=(r0+r1)/2;
+   tiles.push({pts:coords.map(([x,y],k)=>proj(x,y,z[k])),depth:rm*Math.cos(mid-angle),height:solidHeight(model,rm*Math.cos(mid),rm*Math.sin(mid),R,H,pr.amplitude)});
+  }
+ }
+ tiles.sort((a,b)=>a.depth-b.depth);
+ const zmax=model===2?R:H;
+ for(const tile of tiles){
+   const light=Math.min(1,Math.max(0,tile.height/Math.max(zmax,.01)));
+   const fill=`rgba(${Math.round(55+75*light)},${Math.round(137+61*light)},${Math.round(205+50*light)},.71)`;
+   polygon(p,tile.pts,fill,'#c3f2ff2d');
+ }
+ // Rim inferior y altura; los rótulos no interceptan la geometría.
+ path(p,ground,'#ffc89370',1.15);
+ label(p,model===2?'HEMISFERIO':model===1?'CILINDRO':model===3?'PARABOLOIDE':'CONO',20,p.h-52,'#e1e9ff');
+ label(p,`D: x² + y² ≤ ${R.toFixed(2)}²`,20,p.h-72,'#8baed3');
+ label(p,'arrastra ↔ para girar',p.w-190,p.h-52,'#899bb8');
+}
 function surface3D(p:Paint,scene:SceneId,pr:Record<string,number>,angle:number){
+ if(scene==='double'&&Math.round(pr.doubleModel||0)!==0){diskSolid(p,pr,angle);return}
+
  const b=scene==='double'?pr.bound:1.7,n=scene==='double'?Math.max(12,Math.min(pr.resolution*2,38)):28;
  const coeff=scene==='double'?pr.amplitude:pr.ga;
  const other=scene==='double'?pr.amplitude:pr.gb;
- const f=(x:number,y:number)=>scene==='double'?surface(x,y,coeff):gradientSurface(coeff,other,x,y)+.6;
+ const f=(x:number,y:number)=>scene==='double'?surface(x,y,coeff):gradientExampleValue(Math.round(pr.gradientModel||0),coeff,other,x,y)+.6;
  const scl=Math.min(p.w*.30,p.h*.34)/Math.max(b,.75);
  const proj=(x:number,y:number,z:number)=>project(p,angle,scl,x,y,z,35);
  const shade=(z:number)=>{
@@ -85,7 +156,7 @@ function surface3D(p:Paint,scene:SceneId,pr:Record<string,number>,angle:number){
   label(p,`${Math.round(pr.resolution**2)} celdas / puntos medios`,23,p.h-121,'#9baec9');
  }else{
   const x=pr.gx,y=pr.gy,z=f(x,y);
-  const g=surfaceGradient(coeff,other,x,y);
+  const g=gradientExample(Math.round(pr.gradientModel||0),coeff,other,x,y);
   dot(p,proj(x,y,z),6,'#ffe0a2');
   arrow(p,proj(x,y,0),proj(x+g[0]*.35,y+g[1]*.35,0),'#e5b1ff',2.5);
   line(p,proj(x,y,0),proj(x,y,z),'#fce0ac99',1.4);
@@ -94,47 +165,46 @@ function surface3D(p:Paint,scene:SceneId,pr:Record<string,number>,angle:number){
  label(p,'arrastra para rotar',p.w-175,p.h-100,'#7f90b4');
 }
 function atlas(p:Paint,pr:Record<string,number>,view:ViewState){
- const c=p.c;const t=view.time,base=Math.min(p.w,p.h)*.31;
- c.globalCompositeOperation='lighter';
- // Halo de líneas basadas en superfórmula, no una imagen precalculada.
- const compact=p.w<700,layerCount=compact?22:32;
- if(view.focus==='all'||view.focus==='gielis')for(let layer=0;layer<layerCount;layer++){
-  const pts:Vec2[]=[],phase=layer*.095+t*.13;
-  const mod=layer%3;
-  const m=5+mod,rad=base*(.68+layer/95);
-  for(let i=0;i<=160;i++){
-   const th=i/160*2*Math.PI,rr=Math.min(2.6,superRadius(th+phase,m,1.25,1.7,1.7));
-   const X=p.cx+Math.cos(th+view.angle*.25)*rad*rr*.77;
-   const Y=p.cy+Math.sin(th)*rad*rr*.41+Math.sin(th*3+phase)*22;
-   pts.push([X,Y]);
+ const c=p.c,focus=view.focus||'lissajous',t=view.time;
+ const base=Math.min(p.w,p.h)*.34,compact=p.w<700;
+ c.save();c.globalCompositeOperation='lighter';
+ if(focus==='gielis'){
+  const layers=compact?12:19,points=compact?110:160;
+  for(let layer=0;layer<layers;layer++){
+   const pts:Vec2[]=[],phase=layer*.14+t*.18,m=pr.gielisSymmetry+layer%2,rad=base*(.8+layer/75);
+   for(let i=0;i<=points;i++){
+    const th=i/points*2*Math.PI,rr=Math.min(2.4,superRadius(th+phase,m,pr.gielisExponent));
+    pts.push([p.cx+Math.cos(th+view.angle*.24)*rad*rr*.8,p.cy+Math.sin(th)*rad*rr*.46+Math.sin(3*th+phase)*16]);
+   }
+   path(p,pts,rgba(['#8ce5ef','#bba1ff','#ffc78c'][layer%3],layer%6===0?.5:.22),layer%6===0?1.3:.8,layer%6===0?6:0);
   }
-  path(p,pts,rgba(['#7edcff','#b19fff','#ffc58b'][mod],layer%7===0?.22:.085),layer%9===0?1.2:.55,layer%9===0?5:0);
+ }else if(focus==='lissajous'){
+  const pts:Vec2[]=[],samples=compact?350:650;
+  for(let i=0;i<=samples;i++){
+   const th=i/samples*2*Math.PI;
+   pts.push([p.cx+Math.sin(pr.freqA*th+pr.phase+t*.3)*base*.92,p.cy+Math.sin(pr.freqB*th+t*.12)*base*.78]);
+  }
+  path(p,pts,'#83e9ff',2.2,11);
+ }else{
+  const pts=getOrbit(),az=view.angle*.43+t*.12*pr.lorenzSpeed;
+  c.beginPath();let first=true;
+  for(let i=0;i<pts.length;i+=compact?2:1){
+   const [x,y,z]=pts[i],rx=x*Math.cos(az)-y*Math.sin(az),ry=x*Math.sin(az)+y*Math.cos(az);
+   const xx=p.cx+rx*base/27,yy=p.cy+(ry*.5-(z-24)*.7)*base/30;
+   if(first){c.moveTo(xx,yy);first=false}else c.lineTo(xx,yy);
+  }
+  c.lineWidth=1.5;c.strokeStyle='#b9a6ff';c.shadowBlur=10;c.shadowColor='#b9a6ff';c.stroke();c.shadowBlur=0;
  }
- const {freqA:a,freqB:b,phase}=pr;
- const orbitPts:Vec2[]=[];
- const samples=compact?720:1100;
- for(let i=0;i<=samples;i++){
-  const th=i/samples*2*Math.PI;
-  const x=Math.sin(a*th+phase)*base*.88;
-  const y=Math.sin(b*th)*base*.7;
-  orbitPts.push([p.cx+x,p.cy+y]);
+ // Un único trazado para las partículas, sin costoso shadowBlur por punto.
+ c.beginPath();const count=compact?55:85;
+ for(let i=0;i<count;i++){
+  const th=i*2.39996+t*.03,dist=Math.sqrt(i/count)*base*1.25;
+  const x=p.cx+Math.cos(th)*dist,y=p.cy+Math.sin(th)*dist*.75;
+  c.moveTo(x+1.1,y);c.arc(x,y,1.1,0,Math.PI*2);
  }
- if(view.focus==='all'||view.focus==='lissajous')path(p,orbitPts,'#85e7ffbd',2.2,16);
- // Atractor de Lorenz precomputado, proyección rotante.
- const az=view.angle*.42+t*.14;
- const lorPts:Vec2[]=ORBIT.filter((_,i)=>!compact||i%2===0).map(([x,y,z]:Vec3)=>{
-  const rx=x*Math.cos(az)-y*Math.sin(az);
-  const ry=x*Math.sin(az)+y*Math.cos(az);
-  return [p.cx+rx*base/27,p.cy+(ry*.5-(z-24)*.7)*base/30];
- });
- if(view.focus==='all'||view.focus==='lorenz')path(p,lorPts,'#c2a4ffaa',1,3);
- for(let i=0;i<(compact?100:165);i++){
-  const th=i*2.39996+t*.03,dist=Math.sqrt(i/(compact?100:165))*base*1.38;
-  dot(p,[p.cx+Math.cos(th)*dist,p.cy+Math.sin(th)*dist*.76],.55,rgba(['#74ecfb','#c49cff','#ffd2a4'][i%3],.32));
- }
- c.globalCompositeOperation='source-over';
- label(p,'LISSAJOUS   /   LORENZ   /   SUPERFÓRMULA',24,p.h-100,'#b3bfd8');
- label(p,`${a}:${b}  ·  δ=${phase.toFixed(2)}`,24,p.h-120,'#7fbacc');
+ c.fillStyle='rgba(195,214,255,.42)';c.fill();c.restore();
+ label(p,focus==='lissajous'?'LISSAJOUS / ÓRBITAS ARMÓNICAS':focus==='lorenz'?'LORENZ / ATRACTOR CAÓTICO':'GIELIS / SUPERFÓRMULA',24,p.h-100,'#bac9e5');
+ label(p,focus==='lissajous'?`${pr.freqA}:${pr.freqB}  ·  δ=${pr.phase.toFixed(2)}`:'Experimentá con el movimiento y la rotación',24,p.h-120,'#8fadc9');
 }
 
 export function drawScene(canvas:HTMLCanvasElement,scene:SceneId,pr:Record<string,number>,view:ViewState,accent:string){
@@ -168,30 +238,39 @@ export function drawScene(canvas:HTMLCanvasElement,scene:SceneId,pr:Record<strin
   label(p,'— familia activa',23,h-96,'#85deff');label(p,'— seno de referencia',23,h-116,'#c5a9fb');
  }
  if(scene==='limits'){
-  const f=(x:number)=>Math.sin(x)/x;curve(p,xy,f,'#83def5',-4.5,4.5,2.7,x=>Math.abs(x)<.008);
-  dot(p,xy(pr.lh,f(pr.lh)),5,'#ffc77d');dot(p,xy(-pr.lh,f(-pr.lh)),5,'#ffc77d');
-  c.beginPath();c.arc(...xy(0,1),6,0,Math.PI*2);c.strokeStyle='#ffffff';c.lineWidth=2;c.stroke();
-  line(p,xy(-3.7,1),xy(3.7,1),'#c8abf650',1);
-  label(p,'hueco en (0,1)',xy(0,1)[0]+11,xy(0,1)[1]-13,'#e9f3ff');
+  const model=Math.round(pr.limitModel||0),f=(x:number)=>limitExample(model,x),center=limitCenter(model),h=pr.lh;
+  if(model===2){
+   curve(p,xy,f,'#83def5',-4,-.001,2.8);curve(p,xy,f,'#83def5',0,4,2.8);
+   const hole=xy(0,-1);c.beginPath();c.arc(...hole,5,0,Math.PI*2);c.strokeStyle='#c9e8ff';c.lineWidth=2;c.stroke();dot(p,xy(0,1),5,'#ffb77a');
+  }else{
+   curve(p,xy,f,'#83def5',-4.5,4.5,2.7,x=>Math.abs(x-center)<.009);
+   dot(p,xy(center+h,f(center+h)),5,'#ffc77d');dot(p,xy(center-h,f(center-h)),5,'#ffc77d');
+   const y=model===1?2:1;
+   c.beginPath();c.arc(...xy(center,y),6,0,Math.PI*2);c.strokeStyle='#ffffff';c.lineWidth=2;c.stroke();
+   label(p,`hueco en (${center},${y})`,xy(center,y)[0]+11,xy(center,y)[1]-13,'#e9f3ff');
+  }
  }
  if(scene==='derivative'){
-  curve(p,xy,quadratic,'#6edbea',-4,4,3);
-  const x0=pr.x0,hp=pr.h,ms=2*x0+hp,mt=2*x0;
-  curve(p,xy,x=>x0*x0+mt*(x-x0),'#c5a0ff',-4,4,1.8);
-  curve(p,xy,x=>x0*x0+ms*(x-x0),'#ffbd77',-4,4,2);
-  dot(p,xy(x0,x0*x0),5,'#75e3ff');dot(p,xy(x0+hp,(x0+hp)**2),5,'#ffb973');
+  const model=Math.round(pr.derivativeModel||0),f=(x:number)=>derivativeExample(model,x);
+  curve(p,xy,f,'#6edbea',-4,4,3);
+  const x0=pr.x0,hp=pr.h,ms=(f(x0+hp)-f(x0))/hp,mt=derivativeExampleSlope(model,x0),y0=f(x0);
+  curve(p,xy,x=>y0+mt*(x-x0),'#c5a0ff',-4,4,1.8);
+  curve(p,xy,x=>y0+ms*(x-x0),'#ffbd77',-4,4,2);
+  dot(p,xy(x0,y0),5,'#75e3ff');dot(p,xy(x0+hp,f(x0+hp)),5,'#ffb973');
   label(p,'secante',23,h-116,'#ffc487');label(p,'tangente',23,h-96,'#cbb2ff');
  }
  if(scene==='integral'){
-  const b=pr.upper,n=Math.round(pr.n),dx=b/n;
+  const b=pr.upper,n=Math.round(pr.n),dx=b/n,model=Math.round(pr.integralModel||0);
+  const f=(x:number)=>integrandExample(model,x);
   for(let i=0;i<n;i++){
-   const x=i*dx,y=integrand(x),a=xy(x,0),top=xy(x+dx,y);
+   const x=i*dx,y=f(x),a=xy(x,0),top=xy(x+dx,y);
    c.fillStyle='#fbb76b3c';c.strokeStyle='#ffc28b8a';c.lineWidth=.8;
    c.fillRect(a[0],top[1],dx*scale,y*scale);
    c.strokeRect(a[0],top[1],dx*scale,y*scale);
   }
-  curve(p,xy,integrand,'#79ddf5',0,3.7,3);line(p,xy(b,0),xy(b,integrand(b)),'#e4afffb3',1.4);dot(p,xy(b,integrand(b)),4,'#ffd18e');
-  label(p,`${n} rectángulos  ·  método izquierdo`,23,h-101,'#fbd1a2');
+  curve(p,xy,f,'#79ddf5',0,3.7,3);
+  line(p,xy(b,0),xy(b,f(b)),'#e4afffb3',1.4);dot(p,xy(b,f(b)),4,'#ffd18e');
+  label(p,`${n} rectángulos · suma izquierda`,23,h-101,'#fbd1a2');
  }
  if(scene==='matrix'){
   const mat:[number,number,number,number]=[pr.ma,pr.mb,pr.mc,pr.md];
@@ -207,23 +286,20 @@ export function drawScene(canvas:HTMLCanvasElement,scene:SceneId,pr:Record<strin
   label(p,`det = ${determinant(mat).toFixed(2)}`,23,h-101,'#dbc8ff');
  }
  if(scene==='ode'){
-  // y'=k*y; comparación solución analítica y pasos explícitos de Euler.
-  const k=pr.k,y0=pr.y0,dt=pr.dt,T=4;
-  const final=Math.max(y0*Math.exp(k*T),y0);const up=Math.max(1,final*1.2);
+  const model=Math.round(pr.odeModel||0),k=pr.k,y0=pr.y0,dt=pr.dt,T=4,K=pr.capacity;
+  const points=solveEulerModel(model,k,y0,T,dt,K);
+  const peak=Math.max(y0,...points.map(q=>Math.max(q.y,q.exact)),model===1?K:0,1),up=peak*1.25;
   const to=(t:number,y:number):Vec2=>[w*.13+t*(w*.78/T),h*.86-y*(h*.68/up)];
-  for(let i=0;i<=8;i++){
-   const y=i*up/8;line(p,[w*.13,h*.86-y*h*.68/up],[w*.91,h*.86-y*h*.68/up],'#263a526c',.8);
+  for(let i=0;i<=8;i++){const y=i*up/8;line(p,[w*.13,h*.86-y*h*.68/up],[w*.91,h*.86-y*h*.68/up],'#263a526c',.8)}
+  for(let t=0;t<4;t+=.5)for(let j=0;j<7;j++){
+   const y=j*up/7,slope=odeModelRate(model,k,y,K),px=to(t,y),vpx=(w*.78/T)*.15,vpy=-(h*.68/up)*slope*.15;
+   const len=Math.max(1,Math.hypot(vpx,vpy));line(p,[px[0]-vpx/len*6,px[1]-vpy/len*6],[px[0]+vpx/len*6,px[1]+vpy/len*6],'#7894cb5e',1);
   }
-  for(let t=0;t<4;t+=.45)for(let j=0;j<7;j++){
-   const y=j*up/7,slope=k*y,px=to(t,y),vpx=(w*.78/T)*.15,vpy=-(h*.68/up)*slope*.15;
-   const len=Math.max(1,Math.hypot(vpx,vpy));line(p,[px[0]-vpx/len*7,px[1]-vpy/len*7],[px[0]+vpx/len*7,px[1]+vpy/len*7],'#7894cb5e',1);
-  }
-  const exact:Vec2[]=[];for(let i=0;i<=250;i++){const t=i*T/250;exact.push(to(t,y0*Math.exp(k*t)))}
-  path(p,exact,'#80e9f7',3,12);
-  const euler:Vec2[]=[];let t=0,y=y0;euler.push(to(0,y));
-  while(t<T-1e-9){const step=Math.min(dt,T-t);y+=step*k*y;t+=step;euler.push(to(t,y));}
-  path(p,euler,'#ffb971',2.4,6);for(const q of euler)dot(p,q,2.8,'#ffbe7a');
-  label(p,'— exacta',23,h-116,'#86e9f7');label(p,'— Euler',23,h-96,'#ffd18e');
+  const exact:Vec2[]=[];for(let i=0;i<=220;i++){const t=i*T/220;exact.push(to(t,odeModelExact(model,k,y0,t,K)))}
+  path(p,exact,'#80e9f7',3,10);
+  const euler:Vec2[]=points.map(q=>to(q.t,q.y));path(p,euler,'#ffb971',2.4,5);
+  for(const q of euler)dot(p,q,2.5,'#ffbe7a');
+  label(p,'— solución exacta',23,h-116,'#86e9f7');label(p,'— Euler',23,h-96,'#ffd18e');
   label(p,'t',w-30,h*.86-10,'#c4d3e9');label(p,'y',w*.13+10,22,'#c4d3e9');
  }
  c.restore();
