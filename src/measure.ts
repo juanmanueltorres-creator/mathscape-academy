@@ -12,7 +12,7 @@ export function calculate(scene:SceneId,p:Record<string,number>):Result{
   const val=familyValue(family,anchor,p.fa,p.fb,p.fc);
   const deriv=familyDerivative(family,anchor,p.fa,p.fb);
   const passed=[Math.abs(p.fa)<.01&&p.fb>.1,Math.abs(p.fa)>=1&&p.fb>=1,p.fa>.5&&p.fb>.1,p.fa>.1&&p.fb<0,Math.abs(p.fa)>=1][family];
-  return {metrics:[{label:'Familia',value:meta.label},met(`f(${num(anchor,1)})`,val),met(`f′(${num(anchor,1)})`,deriv)],explanation:meta.insight,passed,observation:family>=3?`Dominio: x ${family===3?'>':'≠'} ${num(p.fb,2)}. La asíntota aparece en x=${num(p.fb,2)}.`:`La pendiente indicada corresponde a x=${num(anchor,1)}.`,formula:meta.formula(num(p.fa,2),num(p.fb,2),num(p.fc,2))};
+  return {metrics:[{label:'Familia',value:meta.label},met(`f(${num(anchor,1)})`,val),met(`f′(${num(anchor,1)})`,deriv)],explanation:meta.insight,passed,observation:family>=3?`Dominio: x ${family===3?'>':'≠'} ${num(p.fb,2)}. La asíntota aparece en x=${num(p.fb,2)}.`:`La pendiente indicada corresponde a x=${num(anchor,1)}.`,formula:meta.formula(p.fa,p.fb,p.fc)};
  }
  if(scene==='limits'){
   const v=Math.sin(p.lh)/p.lh,err=Math.abs(1-v);

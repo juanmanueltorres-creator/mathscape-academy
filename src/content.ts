@@ -1,12 +1,15 @@
 export type SceneId='atlas'|'functions'|'limits'|'derivative'|'integral'|'double'|'matrix'|'ode'|'gradient';
 export type Control={key:string;label:string;min:number;max:number;step:number;unit?:string};
 export type Lesson={id:SceneId;no:string;section:string;title:string;description:string;formula:string;hint:string;challenge:string;controls:Control[];accent:string};
+const formatted=(v:string|number)=>Number(v).toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const signed=(v:string|number)=>Number(v)<0?`− ${formatted(-Number(v))}`:`+ ${formatted(v)}`;
+const shifted=(v:string|number)=>Number(v)<0?`+ ${formatted(-Number(v))}`:`− ${formatted(v)}`;
 export const functionFamilies=[
- {label:'Polinomio',formula:(a:string|number,b:string|number,c:string|number)=>`f(x) = ${a}x² + ${b}x + ${c}`,challenge:'Convertí la función en una recta con pendiente positiva.',hint:'Hacé a=0 y elegí b positivo.',insight:'El término x² aporta curvatura; si a=0, la función es afín.'},
- {label:'Sinusoide',formula:(a:string|number,b:string|number,c:string|number)=>`f(x) = ${a} sen(${b}x) + ${c}`,challenge:'Conseguí una onda con amplitud al menos 1 y frecuencia positiva.',hint:'Subí |a| a 1 o más y hacé b positivo.',insight:'La amplitud es |a|, mientras que |b| controla la frecuencia angular.'},
- {label:'Exponencial',formula:(a:string|number,b:string|number,c:string|number)=>`f(x) = ${a} e^(${b}x) + ${c}`,challenge:'Construí crecimiento exponencial con a y b positivos.',hint:'Elegí a>0 y b>0. Un b negativo produce decaimiento.',insight:'La tasa instantánea depende de la propia magnitud exponencial.'},
- {label:'Logaritmo',formula:(a:string|number,b:string|number,c:string|number)=>`f(x) = ${a} ln(x − ${b}) + ${c}`,challenge:'Ubicá la asíntota a la izquierda del origen y hacé a positivo.',hint:'El dominio es x>b. Elegí b negativo y a positivo.',insight:'La función solo existe para x>b y tiene una asíntota vertical en x=b.'},
- {label:'Racional',formula:(a:string|number,b:string|number,c:string|number)=>`f(x) = ${a}/(x − ${b}) + ${c}`,challenge:'Generá una hipérbola con magnitud |a| ≥ 1.',hint:'Subí la magnitud de a y mirá cómo se separan las ramas.',insight:'La función no existe en x=b; ambas ramas no deben unirse en el gráfico.'}
+ {label:'Polinomio',formula:(a:string|number,b:string|number,c:string|number)=>`f(x) = ${formatted(a)}x² ${signed(b)}x ${signed(c)}`,challenge:'Convertí la función en una recta con pendiente positiva.',hint:'Hacé a=0 y elegí b positivo.',insight:'El término x² aporta curvatura; si a=0, la función es afín.'},
+ {label:'Sinusoide',formula:(a:string|number,b:string|number,c:string|number)=>`f(x) = ${formatted(a)} sen(${formatted(b)}x) ${signed(c)}`,challenge:'Conseguí una onda con amplitud al menos 1 y frecuencia positiva.',hint:'Subí |a| a 1 o más y hacé b positivo.',insight:'La amplitud es |a|, mientras que |b| controla la frecuencia angular.'},
+ {label:'Exponencial',formula:(a:string|number,b:string|number,c:string|number)=>`f(x) = ${formatted(a)} e^(${formatted(b)}x) ${signed(c)}`,challenge:'Construí crecimiento exponencial con a y b positivos.',hint:'Elegí a>0 y b>0. Un b negativo produce decaimiento.',insight:'La tasa instantánea depende de la propia magnitud exponencial.'},
+ {label:'Logaritmo',formula:(a:string|number,b:string|number,c:string|number)=>`f(x) = ${formatted(a)} ln(x ${shifted(b)}) ${signed(c)}`,challenge:'Ubicá la asíntota a la izquierda del origen y hacé a positivo.',hint:'El dominio es x>b. Elegí b negativo y a positivo.',insight:'La función solo existe para x>b y tiene una asíntota vertical en x=b.'},
+ {label:'Racional',formula:(a:string|number,b:string|number,c:string|number)=>`f(x) = ${formatted(a)}/(x ${shifted(b)}) ${signed(c)}`,challenge:'Generá una hipérbola con magnitud |a| ≥ 1.',hint:'Subí la magnitud de a y mirá cómo se separan las ramas.',insight:'La función no existe en x=b; ambas ramas no deben unirse en el gráfico.'}
 ] as const;
 
 export const lessons:Lesson[]=[
