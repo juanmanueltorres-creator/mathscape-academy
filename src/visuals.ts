@@ -1,5 +1,5 @@
 import type {SceneId} from './content';
-import {applyMatrix,determinant,integrand,lorenzPoints,quadratic,superRadius,surface,gradientSurface,surfaceGradient,type Vec2,type Vec3} from './math';
+import {applyMatrix,determinant,integrand,lorenzPoints,quadratic,superRadius,surface,gradientSurface,surfaceGradient,familyValue,familyAnchor,type Vec2,type Vec3} from './math';
 
 export type ViewState={angle:number;time:number;pointer?:Vec2;focus?:'all'|'lissajous'|'lorenz'|'gielis'};
 type Paint={c:CanvasRenderingContext2D;w:number;h:number;d:number;cx:number;cy:number;accent:string};
@@ -28,11 +28,13 @@ function grid(p:Paint,scale:number,origin:Vec2,units=5){
  return xy;
 }
 function curve(p:Paint,xy:(x:number,y:number)=>Vec2,fun:(x:number)=>number,color:string,xmin=-5,xmax=5,width=2.8,skip?:(x:number)=>boolean){
- const c=p.c;c.beginPath();let started=false;
+ const c=p.c;c.beginPath();let started=false;let previous:Vec2|null=null;
  for(let i=0;i<=480;i++){
   const x=xmin+(xmax-xmin)*i/480, y=fun(x);
-  if(!Number.isFinite(y)||Math.abs(y)>1e4||(skip&&skip(x))){started=false;continue}
-  const q=xy(x,y);if(!started){c.moveTo(...q);started=true}else c.lineTo(...q);
+  if(!Number.isFinite(y)||Math.abs(y)>1e4||(skip&&skip(x))){started=false;previous=null;continue}
+  const q=xy(x,y);
+  if(q[1]<-p.h*2||q[1]>p.h*3){started=false;previous=null;continue}
+  if(!started||previous&&Math.abs(q[1]-previous[1])>p.h*.8){c.moveTo(...q);started=true}else c.lineTo(...q);previous=q;
  }
  c.strokeStyle=color;c.lineWidth=width;c.shadowColor=color;c.shadowBlur=10;c.stroke();c.shadowBlur=0;
 }
@@ -95,12 +97,13 @@ function atlas(p:Paint,pr:Record<string,number>,view:ViewState){
  const c=p.c;const t=view.time,base=Math.min(p.w,p.h)*.31;
  c.globalCompositeOperation='lighter';
  // Halo de líneas basadas en superfórmula, no una imagen precalculada.
- if(view.focus==='all'||view.focus==='gielis')for(let layer=0;layer<40;layer++){
+ const compact=p.w<700,layerCount=compact?22:32;
+ if(view.focus==='all'||view.focus==='gielis')for(let layer=0;layer<layerCount;layer++){
   const pts:Vec2[]=[],phase=layer*.095+t*.13;
   const mod=layer%3;
   const m=5+mod,rad=base*(.68+layer/95);
-  for(let i=0;i<=210;i++){
-   const th=i/210*2*Math.PI,rr=Math.min(2.6,superRadius(th+phase,m,1.25,1.7,1.7));
+  for(let i=0;i<=160;i++){
+   const th=i/160*2*Math.PI,rr=Math.min(2.6,superRadius(th+phase,m,1.25,1.7,1.7));
    const X=p.cx+Math.cos(th+view.angle*.25)*rad*rr*.77;
    const Y=p.cy+Math.sin(th)*rad*rr*.41+Math.sin(th*3+phase)*22;
    pts.push([X,Y]);
@@ -109,8 +112,9 @@ function atlas(p:Paint,pr:Record<string,number>,view:ViewState){
  }
  const {freqA:a,freqB:b,phase}=pr;
  const orbitPts:Vec2[]=[];
- for(let i=0;i<=1500;i++){
-  const th=i/1500*2*Math.PI;
+ const samples=compact?720:1100;
+ for(let i=0;i<=samples;i++){
+  const th=i/samples*2*Math.PI;
   const x=Math.sin(a*th+phase)*base*.88;
   const y=Math.sin(b*th)*base*.7;
   orbitPts.push([p.cx+x,p.cy+y]);
@@ -118,14 +122,14 @@ function atlas(p:Paint,pr:Record<string,number>,view:ViewState){
  if(view.focus==='all'||view.focus==='lissajous')path(p,orbitPts,'#85e7ffbd',2.2,16);
  // Atractor de Lorenz precomputado, proyección rotante.
  const az=view.angle*.42+t*.14;
- const lorPts:Vec2[]=ORBIT.map(([x,y,z]:Vec3)=>{
+ const lorPts:Vec2[]=ORBIT.filter((_,i)=>!compact||i%2===0).map(([x,y,z]:Vec3)=>{
   const rx=x*Math.cos(az)-y*Math.sin(az);
   const ry=x*Math.sin(az)+y*Math.cos(az);
   return [p.cx+rx*base/27,p.cy+(ry*.5-(z-24)*.7)*base/30];
  });
  if(view.focus==='all'||view.focus==='lorenz')path(p,lorPts,'#c2a4ffaa',1,3);
- for(let i=0;i<190;i++){
-  const th=i*2.39996+t*.03,dist=Math.sqrt(i/190)*base*1.38;
+ for(let i=0;i<(compact?100:165);i++){
+  const th=i*2.39996+t*.03,dist=Math.sqrt(i/(compact?100:165))*base*1.38;
   dot(p,[p.cx+Math.cos(th)*dist,p.cy+Math.sin(th)*dist*.76],.55,rgba(['#74ecfb','#c49cff','#ffd2a4'][i%3],.32));
  }
  c.globalCompositeOperation='source-over';
@@ -135,7 +139,9 @@ function atlas(p:Paint,pr:Record<string,number>,view:ViewState){
 
 export function drawScene(canvas:HTMLCanvasElement,scene:SceneId,pr:Record<string,number>,view:ViewState,accent:string){
  const rect=canvas.getBoundingClientRect();if(rect.width===0||rect.height===0)return;
- const d=Math.min(window.devicePixelRatio||1,2),w=rect.width,h=rect.height;
+ const w=rect.width,h=rect.height;
+ // DPR adaptativo: prioriza nitidez legible sin multiplicar por cuatro los píxeles en Retina.
+ const d=Math.min(window.devicePixelRatio||1,w<700?1.25:1.6);
  if(canvas.width!==Math.round(w*d)||canvas.height!==Math.round(h*d)){canvas.width=Math.round(w*d);canvas.height=Math.round(h*d)}
  const c=canvas.getContext('2d');if(!c)return;c.setTransform(d,0,0,d,0,0);c.clearRect(0,0,w,h);
  const p:Paint={c,w,h,d,cx:w*.52,cy:h*.51,accent};
@@ -149,11 +155,17 @@ export function drawScene(canvas:HTMLCanvasElement,scene:SceneId,pr:Record<strin
  const xy=grid(p,scale,[scene==='integral'?w*.35:scene==='ode'?w*.14:p.cx,scene==='integral'?h*.79:scene==='ode'?h*.86:p.cy]);
  c.save();c.beginPath();c.rect(0,0,w,h);c.clip();
  if(scene==='functions'){
-  const fn=(x:number)=>pr.fa*x*x+pr.fb*x+pr.fc;
-  curve(p,xy,x=>Math.sin(x)*.5,'#d1a5ff66',-5,5,1.4);
+  const family=Math.max(0,Math.min(4,Math.round(pr.family||0)));
+  const fn=(x:number)=>familyValue(family,x,pr.fa,pr.fb,pr.fc);
+  curve(p,xy,x=>Math.sin(x)*.5,'#d1a5ff55',-5,5,1.2);
   curve(p,xy,fn,'#82dcff',-5,5,3);
-  dot(p,xy(0,pr.fc),5,'#ffcb85');
-  label(p,'— curva modificable',23,h-96,'#85deff');label(p,'— seno (referencia)',23,h-116,'#c5a9fb');
+  const anchor=familyAnchor(family,pr.fb),val=fn(anchor);
+  if(Number.isFinite(val))dot(p,xy(anchor,val),5,'#ffcb85');
+  if(family>=3){
+   const top=xy(pr.fb,5),bottom=xy(pr.fb,-5);
+   c.save();c.setLineDash([6,6]);line(p,top,bottom,'#ffb58899',1.2);c.restore();
+  }
+  label(p,'— familia activa',23,h-96,'#85deff');label(p,'— seno de referencia',23,h-116,'#c5a9fb');
  }
  if(scene==='limits'){
   const f=(x:number)=>Math.sin(x)/x;curve(p,xy,f,'#83def5',-4.5,4.5,2.7,x=>Math.abs(x)<.008);

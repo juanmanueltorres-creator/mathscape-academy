@@ -34,3 +34,24 @@ test('valores inválidos arrojan error',()=>{
  assert.throws(()=>midpointDoubleIntegral(.5,1,0),RangeError);
  assert.throws(()=>solveEuler(.2,2,4,0),RangeError);
 });
+
+import {familyValue,familyAnchor,familyDerivative} from '../src/math.ts';
+test('familias de funciones: valores y derivadas analíticas',()=>{
+ close(familyValue(0,2,3,4,5),25);
+ close(familyValue(1,Math.PI/2,2,1,0),2);
+ close(familyValue(2,0,2,.5,1),3);
+ close(familyDerivative(0,0,2,3),3);
+ close(familyDerivative(1,0,2,1.5),3);
+ close(familyDerivative(2,0,2,.5),1);
+ close(familyDerivative(3,2,3,1),3);
+ close(familyDerivative(4,2,3,1),-3);
+});
+test('asíntotas y restricciones del dominio no generan segmentos falsos',()=>{
+ assert.ok(Number.isNaN(familyValue(3,1,2,1,0)));
+ assert.ok(Number.isNaN(familyValue(3,.5,2,1,0)));
+ assert.ok(Number.isNaN(familyValue(4,1,2,1,0)));
+ close(familyValue(3,3,2,1,0),2*Math.log(2));
+ close(familyValue(4,3,2,1,0),1);
+ close(familyAnchor(3,1),2);
+ close(familyAnchor(4,-1),0);
+});

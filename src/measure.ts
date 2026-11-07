@@ -1,12 +1,19 @@
-import type {SceneId} from './content';
-import {derivativeQuadratic,secantQuadratic,leftRiemann,exactIntegral,exactDoubleIntegral,midpointDoubleIntegral,determinant,odeExact,solveEuler,norm2,surfaceGradient} from './math';
+import {functionFamilies,type SceneId} from './content';
+import {derivativeQuadratic,secantQuadratic,leftRiemann,exactIntegral,exactDoubleIntegral,midpointDoubleIntegral,determinant,odeExact,solveEuler,norm2,surfaceGradient,familyAnchor,familyValue,familyDerivative} from './math';
 export type Metric={label:string;value:string;detail?:string};
 export type Result={metrics:Metric[];explanation:string;passed:boolean;observation:string;formula:string};
 const num=(v:number,digits=3)=>Number(v.toFixed(digits)).toLocaleString('es-AR');
 const met=(label:string,v:number,detail?:string):Metric=>({label,value:num(v),detail});
 export function calculate(scene:SceneId,p:Record<string,number>):Result{
  if(scene==='atlas')return {metrics:[met('Frecuencia A',p.freqA),met('Frecuencia B',p.freqB),met('Desfase',p.phase)],explanation:'La superposición de tres sistemas matemáticos produce una composición compleja, aunque cada sistema tiene reglas propias. El atractor de Lorenz se muestra con parámetros clásicos fijos.',passed:p.freqA===3&&p.freqB===2,observation:`Relación ${p.freqA}:${p.freqB}. Dos frecuencias enteras producen una curva cerrada de Lissajous.`,formula:`x = sen(${p.freqA}t + ${num(p.phase,2)})  ·  y = sen(${p.freqB}t)`};
- if(scene==='functions')return {metrics:[met('Curvatura a',p.fa),met('Pendiente en x=0',p.fb),met('Intersección',p.fc)],explanation:'El coeficiente cuadrático modifica la curvatura. Cuando a = 0, desaparece el término x² y queda una función afín.',passed:Math.abs(p.fa)<.01&&p.fb>.1,observation:p.fa===0?'La curva ahora es una recta.':'La curva representa una función cuadrática.',formula:`f(x) = ${num(p.fa,2)}x² + ${num(p.fb,2)}x + ${num(p.fc,2)}`};
+ if(scene==='functions'){
+  const family=Math.max(0,Math.min(4,Math.round(p.family||0)));
+  const meta=functionFamilies[family],anchor=familyAnchor(family,p.fb);
+  const val=familyValue(family,anchor,p.fa,p.fb,p.fc);
+  const deriv=familyDerivative(family,anchor,p.fa,p.fb);
+  const passed=[Math.abs(p.fa)<.01&&p.fb>.1,Math.abs(p.fa)>=1&&p.fb>=1,p.fa>.5&&p.fb>.1,p.fa>.1&&p.fb<0,Math.abs(p.fa)>=1][family];
+  return {metrics:[{label:'Familia',value:meta.label},met(`f(${num(anchor,1)})`,val),met(`f′(${num(anchor,1)})`,deriv)],explanation:meta.insight,passed,observation:family>=3?`Dominio: x ${family===3?'>':'≠'} ${num(p.fb,2)}. La asíntota aparece en x=${num(p.fb,2)}.`:`La pendiente indicada corresponde a x=${num(anchor,1)}.`,formula:meta.formula(num(p.fa,2),num(p.fb,2),num(p.fc,2))};
+ }
  if(scene==='limits'){
   const v=Math.sin(p.lh)/p.lh,err=Math.abs(1-v);
   return {metrics:[met('f(+h)',v),met('f(−h)',v),met('Distancia a 1',err)],explanation:'El valor de sen(x)/x no está definido para x=0. Sin embargo, sus valores se acercan a 1 desde los dos lados.',passed:err<.001,observation:`Para h = ${num(p.lh,2)}, la función se aproxima a ${num(v,5)}.`,formula:'limₓ→₀ (sen x)/x = 1'};

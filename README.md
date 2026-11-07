@@ -59,3 +59,12 @@ Fuentes de referencia: [OpenStax Cálculo](https://openstax.org/subjects/math), 
 - Evaluar comprensión pedagógica con usuarios reales.
 - Agregar vistas WebGL sólo si aportan manipulación tridimensional que Canvas 2D no pueda ofrecer.
 - Nunca ejecutar un despliegue sin una instrucción explícita.
+
+
+## V0.3 · rendimiento, familias y refinamiento visual
+
+- **Render bajo demanda:** las ocho escenas estáticas no consumen `requestAnimationFrame` de forma continua. Solo el Atlas se anima; el render se pausa cuando se cambia de pestaña o sale del viewport.
+- **DPR adaptativo:** calidad del Canvas reducida suavemente en pantallas densas; menores capas generativas en pantallas angostas.
+- **Funciones:** familias polinómica, sinusoidal, exponencial, logarítmica y racional, con fórmulas, derivadas analíticas, dominios y desafíos propios. Asíntotas y discontinuidades se separan en el dibujo.
+- **Diseño:** controles segmentados, foco accesible, jerarquía editorial, detalles en tarjetas y marco del laboratorio, sin nuevas dependencias.
+- **Verificación:** `npm test`, `tsc --project tsconfig.mathcheck.json`. El build de React requiere instalar las dependencias de `package.json`.

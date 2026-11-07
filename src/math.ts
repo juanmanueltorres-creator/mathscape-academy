@@ -2,6 +2,28 @@
 export type Vec2 = readonly [number, number];
 export type Vec3 = readonly [number, number, number];
 export type Mat2 = readonly [number, number, number, number];
+/** Cinco familias con restricciones de dominio explícitas. */
+export const familyValue=(family:number,x:number,a:number,b:number,c:number):number=>{
+  switch(family){
+    case 1:return a*Math.sin(b*x)+c;
+    case 2:return a*Math.exp(b*x)+c;
+    case 3:return x>b?a*Math.log(x-b)+c:NaN;
+    case 4:return x===b?NaN:a/(x-b)+c;
+    default:return a*x*x+b*x+c;
+  }
+};
+/** Punto de lectura estable y derivada analítica de cada familia. */
+export const familyAnchor=(family:number,b:number)=>family>=3?b+1:0;
+export const familyDerivative=(family:number,x:number,a:number,b:number):number=>{
+  switch(family){
+    case 1:return a*b*Math.cos(b*x);
+    case 2:return a*b*Math.exp(b*x);
+    case 3:return x>b?a/(x-b):NaN;
+    case 4:return x===b?NaN:-a/((x-b)**2);
+    default:return 2*a*x+b;
+  }
+};
+
 export const quadratic = (x:number) => x*x;
 export const derivativeQuadratic = (x:number) => 2*x;
 export function secantQuadratic(x:number,h:number){
