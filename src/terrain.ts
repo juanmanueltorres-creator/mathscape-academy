@@ -66,7 +66,7 @@ function cachedTerrainIntegral(field:ElevationField,model:number,irregularity:nu
 export function terrainReport(p:Record<string,number>){
  const model=modelIndex(p.landform||0),irregularity=p.irregularity??1,datum=p.datum??1080;
  const n=clamp(Math.round(p.gridN||20),8,56);
- const x=clamp(p.pickX||0,-450,450),y=clamp(p.pickY||0,-450,450);
+ const x=clamp(p.pickX||0,-350,350),y=clamp(p.pickY||0,-350,350);
  const field:ElevationField=(a,b)=>terrainElevation(a,b,model,irregularity);
  const coarse=cachedTerrainIntegral(field,model,irregularity,datum,n);
  const fine=cachedTerrainIntegral(field,model,irregularity,datum,120);
