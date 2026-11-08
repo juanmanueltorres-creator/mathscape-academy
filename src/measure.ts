@@ -3,12 +3,14 @@ import {terrainReport,terrainEquation} from './terrain';
 import {calculateGeospatial} from './geo-measure';
 import {calculateGeodesy} from './geodesy-measure';
 import {calculateSpace} from './space-measure';
+import {calculateSoftware} from './software-measure';
 import {determinant,norm2,familyAnchor,familyValue,familyDerivative,derivativeExampleSlope,secantExample,exactIntegralExample,leftRiemannExample,exactSolidVolume,midpointSolidVolume,limitLeftRight,limitCenter,solveEulerModel,odeModelExact,gradientExample} from './math';
 export type Metric={label:string;value:string;detail?:string};
 export type Result={metrics:Metric[];explanation:string;passed:boolean;observation:string;formula:string};
 const num=(v:number,digits=3)=>Number(v.toFixed(digits)).toLocaleString('es-AR');
 const met=(label:string,v:number,detail?:string):Metric=>({label,value:num(v),detail});
 export function calculate(scene:SceneId,p:Record<string,number>):Result{
+ if(scene==='product'||scene==='software')return calculateSoftware(scene,p);
  if(scene==='geodesy')return calculateGeodesy(p);
  if(scene==='projection'||scene==='raster'||scene==='sensors')return calculateGeospatial(scene,p);
  if(scene==='satellites'||scene==='radars')return calculateSpace(scene,p);
