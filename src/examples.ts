@@ -3,6 +3,11 @@ import type {SceneId} from './content';
 /** Los ejemplos son escenas independientes; al elegirlos se resetean solo las variables que los definen. */
 export type Example={label:string;subtitle:string;params:Record<string,number>};
 export const examples:Partial<Record<SceneId,Example[]>>={
+ terrain:[
+  {label:'Lomas y quebradas',subtitle:'Combinación de elevaciones gaussianas',params:{landform:0,irregularity:.8,gridN:20,datum:1100,pickX:100,pickY:-100}},
+  {label:'Valle y cauce',subtitle:'Depresión curva y laderas asimétricas',params:{landform:1,irregularity:.6,gridN:22,datum:1025,pickX:50,pickY:50}},
+  {label:'Ladera irregular',subtitle:'Pendiente regional con ondulaciones',params:{landform:2,irregularity:1.1,gridN:24,datum:1110,pickX:200,pickY:-75}}
+ ],
  limits:[
   {label:'sen(x) / x',subtitle:'Límite removible en x=0',params:{limitModel:0,lh:.45}},
   {label:'Hueco algebraico',subtitle:'(x²−1)/(x−1) en x=1',params:{limitModel:1,lh:.45}},

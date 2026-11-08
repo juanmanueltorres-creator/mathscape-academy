@@ -84,3 +84,13 @@ npm run build
 ```
 
 La compilación React/Vite depende de instalar las dependencias de npm y aún no está validada en este entorno; verificar en Vercel antes del merge.
+
+## Puente Matemática → Geoespacial (experimento 09, rama propuesta)
+
+El capítulo **Terreno y relieve** relaciona derivadas parciales, gradiente, sumas de Riemann e integrales dobles con una superficie topográfica IRREGULAR **sintética**. Incluye tres paisajes, grilla 8–48 celdas por lado, cota de referencia, volumen por encima/debajo del plano, pendientes y un perfil que comparte la misma función z(x,y) con el mapa.
+
+El objetivo es enseñar qué cambia cuando pasamos de superficies ideales a datos muestreados. **No carga datos de terreno reales ni calcula riesgos, obras o alertas.** La diferencia respecto de una grilla sintética de 120×120 representa discretización, no precisión del DEM.
+
+Ver [docs/GEOSPATIAL_BRIDGE.md](docs/GEOSPATIAL_BRIDGE.md) para fórmulas, validaciones, límites científicos y el storyboard propuesto de la segunda ruta (proyecciones; ráster/vector/DEM; observación óptica y radar).
+
+Para probar los algoritmos: `npm test` y `npx tsc --project tsconfig.mathcheck.json`. La rama no altera `main` ni configura un despliegue.
