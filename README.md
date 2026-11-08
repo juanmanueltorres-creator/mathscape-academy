@@ -154,3 +154,11 @@ Los casos no reproducen arquitecturas internas de empresas ni APIs reales: las s
 La experiencia nueva no requiere librerías adicionales. Conserva las visualizaciones existentes y optimiza el contenido editorial de los capítulos 00, 09 y 13–15.
 
 Fuentes, currículo (FaMAF UNC 2026 y CS2023), librerías evaluadas y ruta de evolución: [SOFTWARE_PRODUCT_CURRICULUM_V10.md](docs/SOFTWARE_PRODUCT_CURRICULUM_V10.md).
+
+## V1.1 · JSON y contratos HTTP
+
+**20 experiencias interactivas.** El capítulo 19 abre un editor JSON y permite preparar solicitudes de terreno, publicaciones y transferencias, observar sintaxis, estructura y reglas de negocio, y comparar respuestas 400, 422, 201 y 202.
+
+El desafío consiste en provocar un rechazo y corregir la solicitud: un éxito nunca se confunde con un proceso pendiente. **No hay red, dinero ni backend real**: son ejemplos ilustrativos con validación en el navegador y pruebas de regresión.
+
+Fuentes y criterios: [currículo Software y Producto](docs/SOFTWARE_PRODUCT_CURRICULUM_V10.md). No se añadieron dependencias.

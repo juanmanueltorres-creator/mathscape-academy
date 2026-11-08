@@ -24,7 +24,7 @@ Las infografías del usuario se usan como guías de jerarquía: necesidad, medid
 |---|---|---|
 | 17 Primero el problema | Rutas, publicaciones, transferencias: necesidad, efecto y métrica | Implementado |
 | 18 ¿Qué sucede después del clic? | UI → HTTP → reglas → datos → respuesta; fallos y reintentos | Implementado |
-| 19 JSON, POST y contratos | Modificar un payload y observar validaciones | Planeado |
+| 19 JSON, POST y contratos | Editor JSON, solicitudes, sintaxis 400, reglas 422 y respuestas 201/202 | **Implementado** |
 | 20 Datos y consultas | Esquemas, restricciones, índices, SQL, transacciones | Planeado |
 | 21 Infraestructura | Servidor, CDN, contenedor, colas y réplicas | Planeado |
 | 22 Escala y latencia | Latencia p95, carga, costo y fiabilidad | Planeado |
@@ -45,3 +45,22 @@ Las infografías del usuario se usan como guías de jerarquía: necesidad, medid
 - Botones nativos y estados aria-pressed, diseño responsivo y lectura progresiva.
 - Pruebas de casos válidos, invalidación, reintentos y semántica de HTTP.
 - Compilar TypeScript y Vite; revisar preview, consola y diseño móvil antes de producción.
+
+## Iteración V1.1 · Editor de contratos
+
+**Un JSON no es un permiso para hacer cualquier cosa.** La persona prepara una solicitud, la edita, observa su validación y recibe una respuesta. La experiencia separa sintaxis, estructura y reglas de negocio; los errores aparecen donde ocurren.
+
+**Tres casos representativos** (simulaciones locales, sin invocar endpoints):
+- Terreno: POST /analisis/pendiente · bbox geográfico y EPSG:4326, resolución en metros. Un éxito 202 significa que el procesamiento podría continuar.
+- Publicaciones: POST /publicaciones · título, tamaño de archivo y visibilidad. Respuesta 201 si se crea el recurso en el modelo.
+- Transferencias: POST /transferencias · destino, monto en ARS y clave de idempotencia. Respuesta 202: solicitud aceptada, no liquidación; sin dinero real.
+
+**Ejercicio:** enviar un caso incorrecto (400/422), leer la causa, reparar y obtener 201/202. Solo entonces se marca completo el capítulo.
+
+**Estándares de referencia:**
+- [MDN · códigos HTTP](https://developer.mozilla.org/es/docs/Web/HTTP/Reference/Status): 201 creado, 202 aceptado, 400 sintaxis incorrecta, 422 contenido sintácticamente correcto pero inválido.
+- [JSON Schema · required y additionalProperties](https://json-schema.org/understanding-json-schema/reference/object): inspiración para un contrato explícito; la implementación usa validadores TypeScript deliberadamente simples, no un motor general JSON Schema.
+
+**Alcance:** las coordenadas, límites, saldos, rutas y respuestas son datos de ejemplo. El programa ejecuta JSON.parse y reglas locales, sin fetch, peticiones reales, procesamiento satelital ni transferencias bancarias.
+
+**Comprobaciones:** pruebas de sintaxis, tipos, campos faltantes y extra, valores inválidos, EPSG, bbox, montos, tamaño y corrección. Sin dependencias nuevas.
