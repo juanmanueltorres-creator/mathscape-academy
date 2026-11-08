@@ -65,7 +65,7 @@ export function calculate(scene:SceneId,p:Record<string,number>):Result{
    explanation:representations[Math.max(0,Math.min(2,viewMode))]+' Es un modelo sintético; los volúmenes no sustituyen un levantamiento ni un cálculo de movimiento de suelos.',
    passed:t.samplingDifferencePercent<1,
    observation:`${shapes[t.model]} · ${t.coarse.cells} celdas de ${num(t.coarse.cellSize,1)} m · comparación con grilla de 120×120. Diferencia de muestreo ≠ incertidumbre del DEM. SIN DATOS REALES.`,
-   formula:`${terrainEquation(t.model,t.irregularity)}\n${viewMode===1?`Curva de nivel: z(x,y)=c; Δc=${num(p.contourStep||50,0)} m\\n`:''}∇z≈((z(x+Δ,y)−z(x−Δ,y))/(2Δ), (z(x,y+Δ)−z(x,y−Δ))/(2Δ))\nθ=arctan(|∇z|) = ${num(t.slopeDegrees,2)}°\nV₊(z₀)=∬ᴰ max(z−z₀,0)dA ≈ Σᵢⱼ max(zᵢⱼ−${num(t.datum,0)},0)·${num(t.coarse.cellSize**2,0)} m²`
+   formula:`${terrainEquation(t.model,t.irregularity)}\n${viewMode===1?`Curva de nivel: z(x,y)=c; Δc=${num(p.contourStep||50,0)} m\n`:''}∇z≈((z(x+Δ,y)−z(x−Δ,y))/(2Δ), (z(x,y+Δ)−z(x,y−Δ))/(2Δ))\nθ=arctan(|∇z|) = ${num(t.slopeDegrees,2)}°\nV₊(z₀)=∬ᴰ max(z−z₀,0)dA ≈ Σᵢⱼ max(zᵢⱼ−${num(t.datum,0)},0)·${num(t.coarse.cellSize**2,0)} m²`
   };
  }
  const m=Math.round(p.gradientModel||0),grad=gradientExample(m,p.ga,p.gb,p.gx,p.gy),mag=norm2(grad);
