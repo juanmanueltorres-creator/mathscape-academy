@@ -132,3 +132,12 @@ La segunda ruta geoespacial continúa con tres experimentos, junto a los 13 ante
 Las fuentes, fórmulas, limitaciones y el plan de nueve niveles están documentados en [GEOSPATIAL_V08_SATELLITES_DEM_RADAR.md](docs/GEOSPATIAL_V08_SATELLITES_DEM_RADAR.md).
 
 No se incorporaron librerías nuevas para estas tres escenas. Three.js sigue siendo optativo y exclusivo del laboratorio 09. La muestra real SRTM está disponible sin conexión. La API pública de OpenTopoData puede bloquear solicitudes desde el navegador (CORS) o limitar consultas: si falla una actualización opcional, Mathscape conserva la muestra verificada e informa el motivo. No sustituye mediciones con superficies sintéticas.
+
+
+## V0.9 · Geodesia argentina, WGS84, UTM y Gauss-Krüger
+
+**17 experiencias en total.** Nuevo capítulo geoespacial interactivo: un mismo punto visto en coordenadas geográficas (grados) y plano UTM (metros); comparación educativa con las 7 fajas Gauss-Krüger asociadas a POSGAR07. Ejemplos de San Juan, Córdoba y Buenos Aires verificados contra resultados PROJ, con meridianos centrales, falsos orígenes, códigos EPSG y distancias.
+
+**Advertencia:** POSGAR07 es un marco geodésico nacional, no una proyección. El modo Gauss-Krüger aplica geometría WGS84 ilustrativa pero **no realiza una transformación WGS84 → POSGAR07 de datum/época**. No usar coordenadas de esta escena en trabajos topográficos, catastrales o de ingeniería.
+
+Ver [fuentes IGN y pruebas de geodesia](docs/GEODESY_UTM_POSGAR_V09.md). El capítulo no agrega dependencias pesadas ni afecta el módulo opcional Three.js. Si Vercel limita nuevas publicaciones, el avance de GitHub y su despliegue deben verificarse por separado.
