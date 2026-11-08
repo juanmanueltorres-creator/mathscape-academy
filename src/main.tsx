@@ -10,9 +10,10 @@ import {LOCATIONS} from './geodesy';
 import RealDemStage from './RealDemStage';
 import SoftwareStage from './SoftwareStage';
 import ApiContractStage from './ApiContractStage';
-import HardwareStage from './HardwareStage';
+
 import './styles.css';
 
+const HardwareStage=React.lazy(()=>import('./HardwareStage'));
 const TerrainThree=React.lazy(()=>import('./TerrainThree'));
 const number=(n:number)=>Number(n.toFixed(2)).toLocaleString('es-AR');
 const groups=[{label:'DESCUBRIR',ids:['atlas','functions','limits']},{label:'CÁLCULO',ids:['derivative','integral','double']},{label:'ESTRUCTURAS',ids:['matrix','ode','gradient']},{label:'APLICACIONES',ids:['terrain']},{label:'ATLAS GEOESPACIAL',ids:['projection','geodesy','raster','sensors','dem']},{label:'ESPACIO Y RADARES',ids:['satellites','radars']},{label:'SOFTWARE Y PRODUCTO',ids:['product','software','api','hardware']}];
@@ -112,7 +113,7 @@ function App(){
    </header>
    <div className="main-content">
     <section className="intro"><div className="overline"><span className="diamond">✧</span> {['product','software','api','hardware'].includes(scene)?'SOFTWARE / PRODUCTO':['projection','raster','sensors','dem','satellites','radars','geodesy'].includes(scene)?'GEOESPACIAL':'MATEMÁTICA'} / {current.section}</div><h1>{scene==='atlas'?<>La forma es <em>conocimiento.</em></>:<>{current.title.split(' ').slice(0,-1).join(' ')} <em>{current.title.split(' ').slice(-1)}</em></>}</h1><p>{current.description}</p></section>
-    {scene==='api'?<ApiContractStage onComplete={()=>setDone(prev=>prev.includes('api')?prev:[...prev,'api'])}/>:scene==='hardware'?<HardwareStage onComplete={()=>setDone(prev=>prev.includes('hardware')?prev:[...prev,'hardware'])}/>:<div className="workspace">
+    {scene==='api'?<ApiContractStage onComplete={()=>setDone(prev=>prev.includes('api')?prev:[...prev,'api'])}/>:scene==='hardware'?<Suspense fallback={<div className='hw-lab hw-loading'>Preparando la máquina…</div>}><HardwareStage onComplete={()=>setDone(prev=>prev.includes('hardware')?prev:[...prev,'hardware'])}/></Suspense>:<div className="workspace">
      <section className="visual-column"><div className="stage-frame"><div className="stage-corner" aria-hidden="true">EXPERIMENT / {current.no}</div>
       <div className="stage-top"><div className="stage-label"><span className="stage-icon">✳</span><div><span>MATHSCAPE / LAB</span><strong>{sceneName[scene]}</strong></div></div><div className="stage-tools">{scene==='atlas'&&<button onClick={()=>setPlaying(x=>!x)} title={playing?'Pausar':'Reanudar'} aria-label={playing?'Pausar animación':'Reanudar animación'}>{playing?'Ⅱ':'▶'}</button>}<button onClick={reset} title="Restablecer" aria-label="Restablecer parámetros">↺</button></div></div>
       {scene==='product'||scene==='software'?<SoftwareStage view={scene} product={params.softwareProduct||0} mode={params.softwareMode||0} step={params.softwareStep||0} onProduct={chooseSoftware} onMode={i=>update('softwareMode',i)} onStep={i=>update('softwareStep',i)} onExplore={()=>select('software')}/>:scene==='dem'?<RealDemStage data={realDem} params={params} status={demStatus} error={demError} retry={()=>setDemRetry(n=>n+1)}/>:scene==='terrain'&&Math.round(params.terrainView||0)===2?<Suspense fallback={<div className='terrain-loading'>Preparando relieve 3D…</div>}><TerrainThree params={params} onFallback={()=>update('terrainView',0)}/></Suspense>:<Stage scene={scene} params={params} accent={current.accent} playing={playing} focus={focus} resetKey={resetKey}/>}
