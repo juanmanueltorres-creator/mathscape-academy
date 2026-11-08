@@ -31,7 +31,7 @@ La vista "DEM real · San Juan" llama a:
 - **Vista:** puntos y curvas interpoladas sobre la grilla; perfil formado por valores devueltos; pendientes aproximadas por diferencias finitas y distancias locales equirectangulares, nunca por grados crudos.
 - **Volumen:** integración de alturas medias de celdas respecto de un plano de referencia arbitrario. **Es una aproximación didáctica**, no cubicación geotécnica, movimiento de tierras o incertidumbre del SRTM.
 - **Validación:** se verifican dataset, coordenadas, cardinalidad de respuesta, finitud de alturas y NoData; ninguna lectura inválida se reemplaza con altitudes inventadas.
-- **Limitación operacional:** la API pública limita consultas (máximo 100 puntos/solicitud, 1 consulta/s). Mathscape consulta 81 puntos de una vez, con caché en memoria y botón de reintentar. Si falla o se alcanza el límite, muestra error. No guarda secretos ni solicita credenciales.
+- **Limitación operacional:** la API pública limita consultas (máximo 100 puntos/solicitud, 1 consulta/s). Mathscape guarda las 81 alturas reales en el código y puede mostrar el mapa sin solicitudes externas. El botón de actualización intenta consultar 81 puntos de una vez; si falla por CORS, cuota o red, conserva el recorte verificado y muestra el fallo. No se genera ningún DEM ficticio como sustituto. No guarda secretos ni solicita credenciales.
 - **Fundamental:** el navegador NO descarga ni lee un GeoTIFF nativo. Este es un **muestreo auténtico de un DEM**; un cargador geoespacial validado será otra iteración.
 
 ### Qué exigir para pasar a un DEM georreferenciado profesional
