@@ -27,10 +27,10 @@ Las infografías del usuario se usan como guías de jerarquía: necesidad, medid
 | 19 JSON, POST y contratos | Editor JSON, solicitudes, sintaxis 400, reglas 422 y respuestas 201/202 | **Implementado** |
 | 20 Dentro de una máquina | CPU, RAM, SSD, OS, firmware, DNS y respuesta web con fallos | **Implementado** |
 | 21 Datos y consultas | Esquemas, restricciones, índices, SQL, transacciones | Planeado |
-| 21 Infraestructura | Servidor, CDN, contenedor, colas y réplicas | Planeado |
-| 22 Escala y latencia | Latencia p95, carga, costo y fiabilidad | Planeado |
-| 23 Diseño de sistemas | Elegir componentes con tradeoffs concretos | Planeado |
-| 24 Casos propios | GeoPlatform, Opportunity OS y Question Radar con evidencias | Planeado |
+| 22 Infraestructura | Servidor, CDN, contenedor, colas y réplicas | Planeado |
+| 23 Escala y latencia | Latencia p95, carga, costo y fiabilidad | Planeado |
+| 24 Diseño de sistemas | Elegir componentes con tradeoffs concretos | Planeado |
+| 25 Casos propios | GeoPlatform, Opportunity OS y Question Radar con evidencias | Planeado |
 
 ## Reglas editoriales y científicas
 - Una idea activa por pantalla; título corto, una frase de contexto, interacción y efecto.

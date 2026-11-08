@@ -1,6 +1,34 @@
-# Mathscape Academy V0.2 — The Mathematical Playground
+# Mathscape Academy — Matemática · Geoespacial · Software
 
-**Estado:** desarrollo local / rama de revisión. Sin despliegue público, sin backend y sin Blender.
+**Estado documental (2026-11-08):** V1.2, **21 capítulos implementados (00–20)**, React + TypeScript + Vite. La fuente del inventario de escenas es `src/content.ts`.
+
+**Para agentes y colaboradores:** empezar por **[AGENTS.md](AGENTS.md)**. Reúne el orden de lectura y las reglas operativas. Los siguientes documentos rigen las decisiones de continuidad:
+
+| Documento rector | Pregunta que responde |
+| --- | --- |
+| [Visión de producto](docs/PRODUCT_NORTH_STAR.md) | ¿Qué estamos construyendo, para quién y qué se preserva? |
+| [Dirección artística y editorial](docs/CREATIVE_EDITORIAL_DIRECTION.md) | ¿Cómo se ve, escribe y enseña sin saturar? |
+| [Registro de decisiones](docs/ARCHITECTURE_DECISIONS.md) | ¿Por qué elegimos esta arquitectura y qué no debemos improvisar? |
+| [Protocolo de agentes](docs/AGENT_WORKFLOW.md) | ¿Qué leer, investigar, probar y registrar antes de mergear? |
+
+**Rutas vigentes:** 00–09 Matemática; 10–16 Geoespacial; 17–20 Software/Producto. Los capítulos 00 y 09 son anclas de identidad; se cuida especialmente la continuidad científica y visual de 13–15. La siguiente expansión candidata es **21 · Datos y consultas**, luego de QA y pulido de escenas existentes.
+
+**Verificación histórica:** último merge V1.2 `33d4850` con [CI de GitHub aprobada](https://github.com/juanmanueltorres-creator/mathscape-academy/actions/runs/42446520388) y **105 pruebas**. Esto **no confirma** que V1.2 esté publicada: el último estado conocido de Vercel era un bloqueo por límite diario de builds. Revisar CI y deploys actuales antes de describir el estado presente.
+
+**Ejecutar localmente:**
+
+```bash
+npm install
+npm test
+npm run build
+npm run dev
+```
+
+> **Nota de lectura:** los apartados de versiones V0.2–V1.2 que siguen se conservan como **historial de desarrollo**. Tienen instrucciones, números y estados propios de cada fecha y pueden quedar obsoletos. Para continuar el proyecto, prevalecen `AGENTS.md`, los documentos rectores y el código de `main`.
+
+---
+
+## Historial — V0.2 · The Mathematical Playground
 
 Experiencia en React + TypeScript + Vite con gráficos científicos y matemáticas verificables. Recupera los experimentos generativos iniciales (Lissajous, Lorenz y superfórmula) y va más allá de una colección de tarjetas: **nueve escenas interactivas**, controles matemáticos, desafíos y comparación entre aproximaciones y soluciones exactas.
 
