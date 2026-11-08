@@ -45,13 +45,22 @@ export function terrainGradient(field:ElevationField,x:number,y:number,step:numb
  if(!(step>0))throw new RangeError('El paso debe ser positivo');
  return [(field(x+step,y)-field(x-step,y))/(2*step),(field(x,y+step)-field(x,y-step))/(2*step)];
 }
+// Cachear solo integrales del terreno; mover el punto o rotar la cámara no altera el volumen.
+const integralCache=new Map<string,TerrainSummary>();
+function cachedTerrainIntegral(field:ElevationField,model:number,irregularity:number,datum:number,n:number){
+ const key=[model,irregularity,datum,n].join('|');
+ const value=integralCache.get(key);if(value)return value;
+ const computed=integrateElevationField(field,n,datum);
+ if(integralCache.size>=32)integralCache.clear();
+ integralCache.set(key,computed);return computed;
+}
 export function terrainReport(p:Record<string,number>){
  const model=modelIndex(p.landform||0),irregularity=p.irregularity??1,datum=p.datum??1080;
  const n=clamp(Math.round(p.gridN||20),8,56);
  const x=clamp(p.pickX||0,-450,450),y=clamp(p.pickY||0,-450,450);
  const field:ElevationField=(a,b)=>terrainElevation(a,b,model,irregularity);
- const coarse=integrateElevationField(field,n,datum);
- const fine=integrateElevationField(field,120,datum);
+ const coarse=cachedTerrainIntegral(field,model,irregularity,datum,n);
+ const fine=cachedTerrainIntegral(field,model,irregularity,datum,120);
  const gradient=terrainGradient(field,x,y,coarse.cellSize);
  const slopePercent=Math.hypot(...gradient)*100;
  const slopeDegrees=Math.atan(slopePercent/100)*180/Math.PI;
