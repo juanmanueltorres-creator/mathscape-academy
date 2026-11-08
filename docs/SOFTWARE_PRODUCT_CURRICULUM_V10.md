@@ -25,7 +25,8 @@ Las infografías del usuario se usan como guías de jerarquía: necesidad, medid
 | 17 Primero el problema | Rutas, publicaciones, transferencias: necesidad, efecto y métrica | Implementado |
 | 18 ¿Qué sucede después del clic? | UI → HTTP → reglas → datos → respuesta; fallos y reintentos | Implementado |
 | 19 JSON, POST y contratos | Editor JSON, solicitudes, sintaxis 400, reglas 422 y respuestas 201/202 | **Implementado** |
-| 20 Datos y consultas | Esquemas, restricciones, índices, SQL, transacciones | Planeado |
+| 20 Dentro de una máquina | CPU, RAM, SSD, OS, firmware, DNS y respuesta web con fallos | **Implementado** |
+| 21 Datos y consultas | Esquemas, restricciones, índices, SQL, transacciones | Planeado |
 | 21 Infraestructura | Servidor, CDN, contenedor, colas y réplicas | Planeado |
 | 22 Escala y latencia | Latencia p95, carga, costo y fiabilidad | Planeado |
 | 23 Diseño de sistemas | Elegir componentes con tradeoffs concretos | Planeado |
@@ -64,3 +65,34 @@ Las infografías del usuario se usan como guías de jerarquía: necesidad, medid
 **Alcance:** las coordenadas, límites, saldos, rutas y respuestas son datos de ejemplo. El programa ejecuta JSON.parse y reglas locales, sin fetch, peticiones reales, procesamiento satelital ni transferencias bancarias.
 
 **Comprobaciones:** pruebas de sintaxis, tipos, campos faltantes y extra, valores inválidos, EPSG, bbox, montos, tamaño y corrección. Sin dependencias nuevas.
+
+## Iteración V1.2 · Dentro de una máquina
+
+**Pregunta inicial:** ¿qué necesita una computadora para convertir un clic en una respuesta?
+
+### Experimentos implementados
+
+1. **La máquina:** placa madre vectorial diseñada para la aplicación; seis componentes seleccionables: CPU, RAM, SSD, interfaz de red, placa madre y GPU opcional. Cada selección enseña función, ejemplo concreto y confusión frecuente.
+2. **Encender:** cinco momentos conceptuales: firmware → cargador de arranque → kernel → servicios → aplicación. El orden preciso puede variar según el hardware y el sistema operativo.
+3. **Conectarse:** siete momentos desde la dirección ingresada en el navegador hasta la representación de una página, distinguiendo claramente computadora local y servidor remoto. Tres escenarios: conexión normal, red desconectada y servidor no disponible.
+4. **Microdesafío:** reconocer qué ejecuta instrucciones (CPU), dónde residen temporalmente datos activos (RAM) y dónde persisten archivos (SSD). No se marca completado si hay respuestas incorrectas.
+
+### Decisiones de rigor
+
+- El esquema de motherboard es un **dibujo original interactivo**, no una fotografía, plano eléctrico, lectura de CPU o captura de un equipo real.
+- El modelo de cinco capas es **conceptual**, no una pila física rígida. Las redes cruzan dispositivos y sistemas; un servidor remoto es otra máquina.
+- HTTPS sobre TCP suele usar TLS y TCP, mientras HTTP/3 usa QUIC; DNS puede resolverse desde caché. La simulación no captura paquetes reales.
+- GPU dedicada, Docker, Kubernetes y servicios distribuidos no son requisitos universales para una aplicación web. Se estudian en capítulos posteriores si corresponde.
+- Las fallas no pretenden reproducir exactamente los códigos o tiempos de una red real; demuestran el lugar y el efecto de una interrupción.
+
+### Fuentes curriculares y de ingeniería
+
+- [ACM / IEEE / AAAI CS2023 · áreas de conocimiento](https://csed.acm.org/knowledge-areas/): Architecture and Organization, Operating Systems, Networking and Communication, Systems Fundamentals y Human-Computer Interaction.
+- [UBA Computación · Plan 2023](https://computacion.dc.uba.ar/plan-de-estudios-2023/): Sistemas Digitales y Arquitectura y Organización de Computadores.
+- [Operating Systems: Three Easy Pieces](https://pages.cs.wisc.edu/~remzi/OSTEP/): procesos, memoria, concurrencia y persistencia.
+- [MDN · Cómo funciona la web](https://developer.mozilla.org/es/docs/Learn_web_development/Getting_started/Web_standards/How_the_web_works): DNS, HTTP, cliente/servidor, recursos.
+- [ArchVisor](https://github.com/Omega-Mu-Gamma-Studio/ArchVisor) y [Inside the CPU](https://github.com/iamamits/Inside-the-CPU-Interactive-Computer-Architecture-Simulator): referencias de interacción; sin copiar elementos ni agregar dependencias.
+
+### Continuidad
+
+El capítulo 20 permite avanzar sin interrumpir los capítulos 00, 09, 13, 14 y 15. Próximo desarrollo: **21 · Datos y consultas** con esquemas, restricciones, SQL y transacciones a partir de un caso geoespacial concreto. Mantener una sola idea activa, el texto breve y la evidencia diferenciada de la simulación.

@@ -162,3 +162,11 @@ Fuentes, currículo (FaMAF UNC 2026 y CS2023), librerías evaluadas y ruta de ev
 El desafío consiste en provocar un rechazo y corregir la solicitud: un éxito nunca se confunde con un proceso pendiente. **No hay red, dinero ni backend real**: son ejemplos ilustrativos con validación en el navegador y pruebas de regresión.
 
 Fuentes y criterios: [currículo Software y Producto](docs/SOFTWARE_PRODUCT_CURRICULUM_V10.md). No se añadieron dependencias.
+
+## V1.2 · La máquina detrás del software
+
+**21 experiencias.** Nuevo capítulo interactivo 20: placa madre vectorial con CPU, RAM, SSD, interfaz de red y GPU opcional; arranque firmware → kernel → procesos; solicitud web entre cliente y servidor con modos de fallo de red y del servicio.
+
+El recorrido es un **modelo didáctico** y no una inspección real del dispositivo. Incluye un microdesafío de tres preguntas sobre CPU, RAM y SSD. El diseño vectorial se dibuja en React/SVG sin imágenes pesadas ni dependencias nuevas.
+
+Temario, referencias y límites: [Software y Producto / Anatomía de la máquina](docs/SOFTWARE_PRODUCT_CURRICULUM_V10.md).
