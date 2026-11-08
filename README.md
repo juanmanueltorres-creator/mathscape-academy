@@ -131,4 +131,4 @@ La segunda ruta geoespacial continúa con tres experimentos, junto a los 13 ante
 
 Las fuentes, fórmulas, limitaciones y el plan de nueve niveles están documentados en [GEOSPATIAL_V08_SATELLITES_DEM_RADAR.md](docs/GEOSPATIAL_V08_SATELLITES_DEM_RADAR.md).
 
-No se incorporaron librerías nuevas para estas tres escenas. Three.js sigue siendo optativo y exclusivo del laboratorio 09. El servicio público de OpenTopoData puede limitar consultas; la UI indica claramente los errores sin sustituir resultados.
+No se incorporaron librerías nuevas para estas tres escenas. Three.js sigue siendo optativo y exclusivo del laboratorio 09. La muestra real SRTM está disponible sin conexión. La API pública de OpenTopoData puede bloquear solicitudes desde el navegador (CORS) o limitar consultas: si falla una actualización opcional, Mathscape conserva la muestra verificada e informa el motivo. No sustituye mediciones con superficies sintéticas.
