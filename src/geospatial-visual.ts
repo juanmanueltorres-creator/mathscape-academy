@@ -1,4 +1,4 @@
-import {projectGeographic,projectionDistortion,projectionNames,rasterInfo,rasterValue,syntheticSpectra,syntheticColor,sensorLabels,clip,DEG} from './geospatial';
+import {projectGeographic,projectionDistortion,projectionNames,rasterInfo,rasterValue,syntheticSpectra,syntheticColor,sensorLabels,clip,DEG,projectionFitScale,spectralPixelCenter} from './geospatial';
 import type {SceneId} from './content';
 
 type Ctx=CanvasRenderingContext2D;
@@ -27,10 +27,10 @@ function projection(c:Ctx,w:number,h:number,p:Record<string,number>){
  const gp=globe(lon,lat);if(gp[2]){disk(c,gp[0],gp[1],5,'#ffd18e');line(c,gp[0],gp[1],gp[0]+28,gp[1]-17,'#ffd18e',1.4)}
  text(c,'ESFERA (vista ecuatorial)',Math.max(12,leftX-R),leftY+R+28);
  c.fillStyle='#0d1930';c.fillRect(mx,my,mw,mh);c.strokeStyle='#48617c';c.strokeRect(mx,my,mw,mh);
- const maxY=mode===1?Math.abs(projectGeographic(0,80,mode)[1]):mode===2?1:Math.PI/2;
+ const unit=projectionFitScale(mw,mh,mode);
  const toScreen=(lo:number,la:number):[number,number]=>{
   const [x,y]=projectGeographic(lo,la,mode);
-  return [mx+(x+Math.PI)/(2*Math.PI)*mw,my+mh/2-y/maxY*(mh*.46)];
+  return [mx+mw/2+x*unit,my+mh/2-y*unit];
  };
  c.save();c.beginPath();c.rect(mx,my,mw,mh);c.clip();
  for(let lo=-180;lo<=180;lo+=30){const a=toScreen(lo,-80),b=toScreen(lo,80);line(c,a[0],a[1],b[0],b[1],'rgba(138,168,218,.27)')}
@@ -86,9 +86,10 @@ function sensors(c:Ctx,w:number,h:number,p:Record<string,number>){
   c.fillStyle='rgb('+color[0]+','+color[1]+','+color[2]+')';
   c.fillRect(x+i*cell,y+(n-1-j)*cell,cell+.4,cell+.4);
  }
- const px=clip((p.sensorX||0)/1000+.5,0,1),py=clip(.5-(p.sensorY||0)/1000,0,1);
- const gx=x+size*px,gy=y+size*py;
- c.beginPath();c.arc(gx,gy,6,0,Math.PI*2);c.strokeStyle='#ffffff';c.lineWidth=2;c.stroke();disk(c,gx,gy,2,'#ffffff');
+ const selected=spectralPixelCenter(n,p.sensorX||0,p.sensorY||0);
+ const gx=x+(selected.i+.5)*cell,gy=y+(n-selected.j-.5)*cell;
+ c.strokeStyle='#ffffff';c.lineWidth=1.6;c.strokeRect(x+selected.i*cell,y+(n-1-selected.j)*cell,cell,cell);
+ c.beginPath();c.arc(gx,gy,4,0,Math.PI*2);c.strokeStyle='#ffffff';c.lineWidth=1.6;c.stroke();disk(c,gx,gy,1.8,'#ffffff');
  c.strokeStyle='#8292ad';c.strokeRect(x,y,size,size);
  text(c,(sensorLabels[mode]||sensorLabels[0]).toUpperCase(),x,Math.max(17,y-14),'#d0f0ed');
  text(c,'SENSOR MULTIESPECTRAL SIMULADO',x,Math.min(h-28,y+size+25),'#98b5d0');
