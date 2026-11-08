@@ -54,5 +54,5 @@ export function drawTerrainContours(c:CanvasRenderingContext2D,w:number,h:number
  c.beginPath();c.arc(pickedX,pickedY,4,0,2*Math.PI);c.fillStyle='#ffdda3';c.fill();
  c.font='9px ui-monospace,monospace';c.fillStyle='#93acc9';
  c.fillText('−500 m',l,Math.min(h-8,bottom+17));c.fillText('+500 m',r-44,Math.min(h-8,bottom+17));
- c.fillStyle='#8da9bd';c.fillText('ISOALTITUD · MODELO SINTÉTICO',l,Math.min(h-7,bottom+27));
+ if(h>470){c.fillStyle='#8da9bd';c.fillText('ISOALTITUD · MODELO SINTÉTICO',l,bottom+29)}
 }
