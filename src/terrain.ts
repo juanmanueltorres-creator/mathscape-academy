@@ -16,7 +16,7 @@ export function terrainElevation(x:number,y:number,model=0,irregularity=1):numbe
  const texture=r*(25*Math.sin(x/71)*Math.cos(y/83)+9*Math.sin((x+2*y)/32));
  if(m===1){ // valle encajonado, cauce curvo
   const channel=y-.28*x-42*Math.sin(x/180);
-  return 1000+.00027*(x+140)**2+.00012*(y-50)**2-115*Math.exp(-(channel/103)**2)+texture*.6;
+  return 1000+.00027*(x+140)**2+.00012*(y-50)**2-115*Math.exp(-((channel/103)**2))+texture*.6;
  }
  if(m===2){ // ladera con formas de movimiento de suelos
   return 1110+.16*x-.055*y+85*gaussian(x,y,-110,70,240)-95*gaussian(x,y,240,-150,130)+texture;
