@@ -4,11 +4,11 @@ import {PARTS,LAYERS,JOURNEYS,HARDWARE_QUIZ,getPart,journeyState,quizCorrect,typ
 type View='machine'|'boot'|'web';
 type Props={onComplete:()=>void};
 
-function Board({selected}: {selected:HardwarePartId}){
+function Board({selected,onSelect}: {selected:HardwarePartId;onSelect:(part:HardwarePartId)=>void}){
  const active=(id:HardwarePartId)=>selected===id;
  const stroke=(id:HardwarePartId)=>active(id)?getPart(id).accent:'#48647e';
  const fill=(id:HardwarePartId)=>active(id)?'#214d64':'#142d43';
- return <svg className='hw-board-svg' viewBox='0 0 600 390' role='img' aria-label={'Placa madre ilustrativa, componente seleccionado: '+getPart(selected).label}>
+ return <svg className='hw-board-svg' viewBox='0 0 600 390' role='group' aria-label={'Placa madre ilustrativa, componente seleccionado: '+getPart(selected).label}>
   <defs><linearGradient id='board-bg' x1='0' x2='1' y1='0' y2='1'><stop stopColor='#142d44'/><stop offset='1' stopColor='#091a2d'/></linearGradient>
    <pattern id='board-trace' width='28' height='28' patternUnits='userSpaceOnUse'><path d='M28 0H0V28' fill='none' stroke='#214b5a' strokeWidth='.6' opacity='.55'/></pattern>
   </defs>
@@ -35,6 +35,18 @@ function Board({selected}: {selected:HardwarePartId}){
   <path d='M487 146l10 18-10 18-10-18z' fill='#d88dbf' opacity='.85'/>
   <text x='487' y='218' textAnchor='middle' fill='#efc9e7' fontSize='12' fontWeight='750'>GPU</text>
   <circle cx='96' cy='65' r='5' fill='#71dcd4'/><circle cx='508' cy='65' r='5' fill='#71dcd4'/>
+  {([
+   {id:'cpu',x:137,y:127,w:119,h:119},
+   {id:'ram',x:325,y:90,w:99,h:157},
+   {id:'ssd',x:101,y:282,w:185,h:42},
+   {id:'nic',x:453,y:274,w:63,h:57},
+   {id:'gpu',x:461,y:117,w:52,h:123},
+   {id:'motherboard',x:77,y:46,w:53,h:68}
+  ] as const).map(hotspot=><rect key={hotspot.id} className={'hw-hit '+(selected===hotspot.id?'active':'')}
+   x={hotspot.x} y={hotspot.y} width={hotspot.w} height={hotspot.h} rx='6'
+   role='button' tabIndex={0} aria-label={'Seleccionar '+getPart(hotspot.id).label}
+   onClick={()=>onSelect(hotspot.id)}
+   onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();onSelect(hotspot.id)}}}/>)}
   <text x='78' y='18' fill='#8fa8c5' fontSize='12' fontFamily='monospace'>BOARD / ESQUEMA DIDÁCTICO</text>
   <text x='82' y='377' fill='#6e92a8' fontSize='10' fontFamily='monospace'>Representación conceptual · no es un plano electrónico real</text>
  </svg>;
@@ -74,7 +86,7 @@ export default function HardwareStage({onComplete}:Props){
     <button type='button' key={key} className={view===key?'active':''} aria-pressed={view===key} onClick={()=>chooseView(key)}><span>{num}</span>{label}</button>)}
   </nav>
   {view==='machine'?<div className='hw-machine-layout'>
-   <div className='hw-board-panel'><Board selected={part}/><p className='hw-board-caption'>Tocá un componente para descubrir qué hace.</p></div>
+   <div className='hw-board-panel'><Board selected={part} onSelect={setPart}/><p className='hw-board-caption'>Tocá un componente para descubrir qué hace.</p></div>
    <div className='hw-components'>
     <div className='hw-component-picker' role='group' aria-label='Componentes físicos'>
      {PARTS.map(item=><button key={item.id} type='button' aria-pressed={part===item.id} className={part===item.id?'active':''}
