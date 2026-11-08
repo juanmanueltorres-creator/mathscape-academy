@@ -7,8 +7,8 @@ import {drawScene} from './visuals';
 import './styles.css';
 
 const number=(n:number)=>Number(n.toFixed(2)).toLocaleString('es-AR');
-const groups=[{label:'DESCUBRIR',ids:['atlas','functions','limits']},{label:'CÁLCULO',ids:['derivative','integral','double']},{label:'ESTRUCTURAS',ids:['matrix','ode','gradient']}];
-const sceneName:Record<string,string>={atlas:'Generative field',functions:'Coordinate study',limits:'Continuity / limit',derivative:'Instantaneous change',integral:'Area accumulation',double:'Volume accumulation',matrix:'Linear transformation',ode:'Dynamic systems',gradient:'Slope field'};
+const groups=[{label:'DESCUBRIR',ids:['atlas','functions','limits']},{label:'CÁLCULO',ids:['derivative','integral','double']},{label:'ESTRUCTURAS',ids:['matrix','ode','gradient']},{label:'APLICACIONES',ids:['terrain']}];
+const sceneName:Record<string,string>={atlas:'Generative field',functions:'Coordinate study',limits:'Continuity / limit',derivative:'Instantaneous change',integral:'Area accumulation',double:'Volume accumulation',matrix:'Linear transformation',ode:'Dynamic systems',gradient:'Slope field',terrain:'Terrain analysis / synthetic DEM'};
 
 type AtlasFocus='lissajous'|'lorenz'|'gielis';
 function Stage({scene,params,accent,playing,focus,resetKey}:{scene:SceneId;params:Record<string,number>;accent:string;playing:boolean;focus:AtlasFocus;resetKey:number}){
@@ -39,12 +39,12 @@ function Stage({scene,params,accent,playing,focus,resetKey}:{scene:SceneId;param
   return()=>{stop();observer.disconnect();document.removeEventListener('visibilitychange',onVisibility)};
  },[playing,scene,animate]);
  const down=(e:React.PointerEvent<HTMLCanvasElement>)=>{
-  if(!['atlas','double','gradient'].includes(scene))return;
+  if(!['atlas','double','gradient','terrain'].includes(scene))return;
   drag.current={x:e.clientX,angle:angle.current};e.currentTarget.setPointerCapture(e.pointerId);
  };
  const move=(e:React.PointerEvent<HTMLCanvasElement>)=>{if(!drag.current)return;angle.current=drag.current.angle+(e.clientX-drag.current.x)*.008;animate()};
  const up=()=>{drag.current=null};
- return <canvas ref={canvas} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} aria-label={scene==='double'?'Superficie matemática z igual a uno más amplitud por x cuadrado más y cuadrado':scene==='atlas'?'Composición generativa animada de atractor Lorenz, Lissajous y superfórmula':'Gráfico matemático de '+sceneName[scene]}/>;
+ return <canvas ref={canvas} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} aria-label={scene==='terrain'?'Terreno sintético con malla de elevación y perfil topográfico':scene==='double'?'Superficie matemática z igual a uno más amplitud por x cuadrado más y cuadrado':scene==='atlas'?'Composición generativa animada de atractor Lorenz, Lissajous y superfórmula':'Gráfico matemático de '+sceneName[scene]}/>;
 }
 function App(){
  const [scene,setScene]=useState<SceneId>('functions');
@@ -77,14 +77,14 @@ function App(){
    <div className="side-head"><span className="overline">EXPERIMENTAL LEARNING</span><p>La matemática no se contempla. <strong>Se manipula.</strong></p></div>
    <nav className="chapters" aria-label="Exploraciones matemáticas">{groups.map(group=><div className="group" key={group.label}><div className="group-name">{group.label}</div>{group.ids.map(id=>{
     const item=lessons.find(l=>l.id===id as SceneId)!;
-    return <button key={id} className={'chapter '+(id===scene?'current':'')} onClick={()=>select(item.id)} aria-current={scene===id?'page':undefined}><span className="chapter-index">{item.no}</span><span className="chapter-title">{id==='atlas'?'El universo generativo':id==='functions'?'Funciones':id==='limits'?'Límites y continuidad':id==='derivative'?'Derivadas':id==='integral'?'Integrales':id==='double'?'Integrales dobles':id==='matrix'?'Matrices':id==='ode'?'Ecuaciones diferenciales':'Gradientes'}</span><span className="completed">{done.includes(item.id)?'✓':id===scene?'◉':'·'}</span></button>
+    return <button key={id} className={'chapter '+(id===scene?'current':'')} onClick={()=>select(item.id)} aria-current={scene===id?'page':undefined}><span className="chapter-index">{item.no}</span><span className="chapter-title">{id==='atlas'?'El universo generativo':id==='functions'?'Funciones':id==='limits'?'Límites y continuidad':id==='derivative'?'Derivadas':id==='integral'?'Integrales':id==='double'?'Integrales dobles':id==='matrix'?'Matrices':id==='ode'?'Ecuaciones diferenciales':id==='terrain'?'Terreno y relieve':'Gradientes'}</span><span className="completed">{done.includes(item.id)?'✓':id===scene?'◉':'·'}</span></button>
    })}</div>)}</nav>
    <div className="side-bottom"><span className="tiny-dot"/><div><strong>Una idea por experimento.</strong><small>Matemática real · Arte vivo.</small></div></div>
   </aside>
   <div className="right-area">
    <header className="header">
     <div className="breadcrumb"><button className="menu-toggle" onClick={()=>setMobileMenu(p=>!p)} aria-label="Abrir navegación">☰</button><span>MATHSCAPE</span><span className="slash">/</span><span>INTERACTIVE STUDIO</span><span className="slash">/</span><strong>{current.no}</strong></div>
-    <div className="header-right"><span className="workspace-status"><span className="pulse"/> ADAPTIVE RENDER</span><span className="progress">{String(completeCount).padStart(2,'0')} <span>/ 09 EXP.</span></span></div>
+    <div className="header-right"><span className="workspace-status"><span className="pulse"/> ADAPTIVE RENDER</span><span className="progress">{String(completeCount).padStart(2,'0')} <span>/ {String(lessons.length).padStart(2,'0')} EXP.</span></span></div>
    </header>
    <div className="main-content">
     <section className="intro"><div className="overline"><span className="diamond">✧</span> MATHEMATICAL EXPLORATION / {current.section}</div><h1>{scene==='atlas'?<>La forma es <em>conocimiento.</em></>:<>{current.title.split(' ').slice(0,-1).join(' ')} <em>{current.title.split(' ').slice(-1)}</em></>}</h1><p>{current.description}</p></section>
@@ -93,13 +93,13 @@ function App(){
       <div className="stage-top"><div className="stage-label"><span className="stage-icon">✳</span><div><span>LIVE MATHEMATICS</span><strong>{sceneName[scene]}</strong></div></div><div className="stage-tools">{scene==='atlas'&&<button onClick={()=>setPlaying(x=>!x)} title={playing?'Pausar':'Reanudar'} aria-label={playing?'Pausar animación':'Reanudar animación'}>{playing?'Ⅱ':'▶'}</button>}<button onClick={reset} title="Restablecer" aria-label="Restablecer parámetros">↺</button></div></div>
       <Stage scene={scene} params={params} accent={current.accent} playing={playing} focus={focus} resetKey={resetKey}/>
       {scene==='atlas'&&<div className="focus-switch" aria-label="Geometría generativa">{([['lissajous','Lissajous'],['lorenz','Lorenz'],['gielis','Gielis']] as [AtlasFocus,string][]).map(([key,label],i)=><button key={key} onClick={()=>{setFocus(key);update('atlasModel',i)}} className={focus===key?'active':''} aria-pressed={focus===key}>{label}</button>)}</div>}
-      <div className="stage-footer"><span className="scene-tag">● {scene==='atlas'?'GENERATIVE SYSTEMS':scene==='double'?'DOUBLE INTEGRAL / SURFACE':scene==='gradient'?'PARTIAL DERIVATIVES':scene.toUpperCase()}</span><span>{['atlas','double','gradient'].includes(scene)?'MOUSE DRAG ↔ ROTATE':'CHANGE PARAMETERS ↗ OBSERVE'}</span></div>
+      <div className="stage-footer"><span className="scene-tag">● {scene==='atlas'?'GENERATIVE SYSTEMS':scene==='double'?'DOUBLE INTEGRAL / SURFACE':scene==='gradient'?'PARTIAL DERIVATIVES':scene==='terrain'?'TERRAIN / RASTER & CALCULUS':scene.toUpperCase()}</span><span>{['atlas','double','gradient','terrain'].includes(scene)?'MOUSE DRAG ↔ ROTATE':'CHANGE PARAMETERS ↗ OBSERVE'}</span></div>
      </div>
      <div className="metrics">{info.metrics.map((m,i)=><div className="stat" key={m.label}><span className="stat-name">{m.label}</span><strong>{m.value}</strong><span className="stat-rule" style={{opacity:i===0?1:.45}}/></div>)}</div>
      <div className="context-strip"><span className="context-icon">↗</span><p>{info.observation}</p></div>
      </section>
      <section className="inspector" aria-label="Panel de experimentación"><div className="inspector-inner">
-      <div className="inspector-top"><div><span className="overline">PARAMETER LAB</span><h2>Experimentá.</h2></div><span className="step-num">{current.no}<span>/09</span></span></div>
+      <div className="inspector-top"><div><span className="overline">PARAMETER LAB</span><h2>Experimentá.</h2></div><span className="step-num">{current.no}<span>/{lessons.length}</span></span></div>
       {sceneExamples.length>0&&<div className="example-lab"><span className="field-label">EJEMPLOS PARA EXPERIMENTAR</span><div className="example-options">{sceneExamples.map(ex=><button key={ex.label} type="button" className={Object.entries(ex.params).every(([k,v])=>params[k]===v)?'active':''} title={ex.subtitle} onClick={()=>applyExample(ex.params)}><b>{ex.label}</b><small>{ex.subtitle}</small></button>)}</div></div>}<div className="formula-card"><span className="field-label">FÓRMULA · DOMINIO · RESULTADO</span><div className="formula-text" aria-live="polite">{info.formula}</div></div>
       {scene==='functions'&&<div className="family-lab"><span className="field-label">FAMILIA / TIPO DE FUNCIÓN</span><div className="family-options" role="group" aria-label="Tipo de función">{functionFamilies.map((f,i)=><button key={f.label} type="button" className={i===family?'active':''} aria-pressed={i===family} onClick={()=>update('family',i)}>{f.label}</button>)}</div></div>}
       <div className="control-head"><span className="field-label">VARIABLES DE CONTROL</span><button onClick={reset}>RESTABLECER ↺</button></div>
