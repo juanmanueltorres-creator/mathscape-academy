@@ -25,6 +25,7 @@ La vista "DEM real · San Juan" llama a:
 - **Servicio:** [OpenTopoData](https://www.opentopodata.org/), endpoint [srtm90m](https://www.opentopodata.org/datasets/srtm/).
 - **Conjunto:** SRTM versión 3, producto nominal 3 arc-seconds ≈90 m.
 - **Huella geográfica:** centro lat = −31.4000°, lon = −69.1000°; recorte de ±0.004° en latitud y ±0.005° en longitud. Zona precordillerana de San Juan.
+- **Disponibilidad V0.8.1:** se guardaron los 81 valores reales devueltos el 2026-11-08 UTC en `src/srtm-snapshot.ts`. Esa instantánea verificada se carga localmente de manera predeterminada, porque el navegador público mostró errores de acceso de red/CORS aunque la API respondía por acceso directo. El usuario puede intentar una actualización voluntaria; si falla, se conservan los valores verificados.
 - **Representación:** 81 posiciones solicitadas (malla 9×9) con interpolación bilineal declarada por la API. La **separación de muestras** es de aprox. 111 m N–S y 119 m E–O; **no equivale a la resolución nativa** del SRTM.
 - **Referencia horizontal:** geográficas EPSG:4326, WGS84. **Referencia vertical:** EGM96, unidades metros. Referencia: [USGS SRTM product specification](https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm).
 - **Vista:** puntos y curvas interpoladas sobre la grilla; perfil formado por valores devueltos; pendientes aproximadas por diferencias finitas y distancias locales equirectangulares, nunca por grados crudos.
