@@ -3,7 +3,7 @@ import {terrainContours,terrainField} from './terrain-geometry';
 
 /** Map view uses exactly the same synthetic elevation function as the 3D mesh and volume integration. */
 export function drawTerrainContours(c:CanvasRenderingContext2D,w:number,h:number,p:Record<string,number>){
- const t=terrainReport(p),n=t.n,side=Math.min(w*.74,h*.57),x0=w/2-side/2,y0=Math.max(65,(h*.74-side)/2),step=side/n;
+ const t=terrainReport(p),n=t.n,side=Math.min(w*.74,h<450?h*.50:h*.56),x0=w/2-side/2,y0=Math.max(65,(h*.72-side)/2),step=side/n;
  const field=terrainField(t.model,t.irregularity);
  const contours=[...Array(Math.max(0,Math.ceil((t.fine.max-t.fine.min)/Math.max(10,p.contourStep||50))+1)).keys()]
   .map(i=>Math.floor(t.fine.min/(p.contourStep||50))*(p.contourStep||50)+i*(p.contourStep||50))
@@ -38,15 +38,21 @@ export function drawTerrainContours(c:CanvasRenderingContext2D,w:number,h:number
  c.font='600 10px ui-monospace,monospace';c.fillStyle='#d8edf5';
  c.fillText('CURVAS DE NIVEL · '+(p.contourStep||50)+' m',x0,Math.max(46,y0-12));
  c.fillStyle='#91a8c5';c.fillText('MAPA PLANO SINTÉTICO · 1 km × 1 km',x0,Math.min(h-80,y0+side+18));
- // Keep 2D topographic profile in the lower 20% of the stage.
- const l=27,r=w-28,top=h*.82,bottom=h*.93,values:number[]=[];
+ // A legible cross-section in its own panel: same y as highlighted map transect.
+ const l=28,r=w-28,top=Math.max(y0+side+30,h*.755),bottom=h*.925,values:number[]=[];
  for(let i=0;i<=100;i++)values.push(field(-500+i*10,t.y));
  const bottomZ=Math.min(t.datum,...values)-20,topZ=Math.max(t.datum,...values)+20;
  const scaleY=(z:number)=>bottom-(z-bottomZ)/(topZ-bottomZ)*(bottom-top);
- c.strokeStyle='rgba(255,189,115,.54)';c.setLineDash([5,4]);c.beginPath();c.moveTo(l,scaleY(t.datum));c.lineTo(r,scaleY(t.datum));c.stroke();c.setLineDash([]);
- c.strokeStyle='#8ce5f5';c.lineWidth=2;c.beginPath();
+ c.fillStyle='rgba(9,23,39,.94)';c.fillRect(l-11,top-27,r-l+22,bottom-top+38);
+ c.strokeStyle='rgba(121,162,195,.45)';c.lineWidth=1;c.strokeRect(l-11,top-27,r-l+22,bottom-top+38);
+ c.font='600 10px ui-monospace,monospace';c.fillStyle='#e2f3ff';c.fillText('PERFIL TOPOGRÁFICO  /  y='+t.y.toFixed(0)+' m',l,top-11);
+ c.strokeStyle='rgba(255,189,115,.7)';c.setLineDash([5,4]);c.beginPath();c.moveTo(l,scaleY(t.datum));c.lineTo(r,scaleY(t.datum));c.stroke();c.setLineDash([]);
+ c.strokeStyle='#8ce5f5';c.lineWidth=2.5;c.shadowBlur=7;c.shadowColor='#6ad4f9';c.beginPath();
  for(let i=0;i<values.length;i++){const x=l+(r-l)*i/100,y=scaleY(values[i]);if(i===0)c.moveTo(x,y);else c.lineTo(x,y)}
- c.stroke();
- c.font='9px ui-monospace,monospace';c.fillStyle='#a5bad4';c.fillText('PERFIL TOPOGRÁFICO · y='+t.y.toFixed(0)+' m',l,top-9);
- c.fillStyle='#8da9bd';c.fillText('LÍNEAS: ISOALTITUD · MALLA '+n+'×'+n,l,h-11);
+ c.stroke();c.shadowBlur=0;
+ const pickedX=l+(t.x+500)/1000*(r-l),pickedY=scaleY(t.z);
+ c.beginPath();c.arc(pickedX,pickedY,4,0,2*Math.PI);c.fillStyle='#ffdda3';c.fill();
+ c.font='9px ui-monospace,monospace';c.fillStyle='#93acc9';
+ c.fillText('−500 m',l,Math.min(h-8,bottom+17));c.fillText('+500 m',r-44,Math.min(h-8,bottom+17));
+ c.fillStyle='#8da9bd';c.fillText('ISOALTITUD · MODELO SINTÉTICO',l,Math.min(h-7,bottom+27));
 }
