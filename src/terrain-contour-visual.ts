@@ -3,7 +3,7 @@ import {terrainContours,terrainField} from './terrain-geometry';
 
 /** Map view uses exactly the same synthetic elevation function as the 3D mesh and volume integration. */
 export function drawTerrainContours(c:CanvasRenderingContext2D,w:number,h:number,p:Record<string,number>){
- const t=terrainReport(p),n=t.n,side=Math.min(w*.77,h*.61),x0=w/2-side/2,y0=Math.max(65,(h*.74-side)/2),step=side/n;
+ const t=terrainReport(p),n=t.n,side=Math.min(w*.74,h*.57),x0=w/2-side/2,y0=Math.max(65,(h*.74-side)/2),step=side/n;
  const field=terrainField(t.model,t.irregularity);
  const contours=[...Array(Math.max(0,Math.ceil((t.fine.max-t.fine.min)/Math.max(10,p.contourStep||50))+1)).keys()]
   .map(i=>Math.floor(t.fine.min/(p.contourStep||50))*(p.contourStep||50)+i*(p.contourStep||50))
