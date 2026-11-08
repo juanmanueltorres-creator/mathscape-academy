@@ -1,5 +1,5 @@
 import type {Result,Metric} from './measure';
-import {orbitSummary,ORBIT_MISSIONS} from './satellites';
+import {orbitSummary} from './satellites';
 import {RADAR_KINDS,radarSummary} from './radar-lab';
 import type {SceneId} from './content';
 const fmt=(n:number,digits=1)=>n.toLocaleString('es-AR',{maximumFractionDigits:digits});
