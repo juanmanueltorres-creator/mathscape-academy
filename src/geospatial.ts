@@ -23,6 +23,20 @@ export function projectionDistortion(latDeg:number,mode:number){
  const east=1/cos, north=mode===1?1/cos:mode===2?cos:1;
  return {east,north,area:east*north,aspect:east/north};
 }
+/** One screen scale for both projected axes: avoid inventing deformation in the rendering. */
+export function projectionFitScale(w:number,h:number,mode:number):number{
+ if(!(w>0&&h>0))throw new RangeError('Viewport inválido');
+ const ymax=Math.abs(projectGeographic(0,80,mode)[1]);
+ return Math.min(w/(2*Math.PI),h*.9/(2*ymax));
+}
+/** Exact same cell-center selection is shared by visible sensor pixels and metrics. */
+export function spectralPixelCenter(n:number,x:number,y:number){
+ if(!Number.isInteger(n)||n<8||n>64)throw new RangeError('Grilla espectral inválida');
+ const cell=1000/n;
+ const i=clip(Math.floor((clip(x,-499.999,499.999)+500)/cell),0,n-1);
+ const j=clip(Math.floor((clip(y,-499.999,499.999)+500)/cell),0,n-1);
+ return {i,j,x:-500+(i+.5)*cell,y:-500+(j+.5)*cell};
+}
 export function haversineKm(lon1:number,lat1:number,lon2:number,lat2:number){
  const p1=lat1*DEG,p2=lat2*DEG,dphi=p2-p1,dl=(lon2-lon1)*DEG;
  const a=Math.sin(dphi/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2;
