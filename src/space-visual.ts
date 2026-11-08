@@ -73,7 +73,7 @@ export function drawRadarLab(c:CanvasRenderingContext2D,w:number,h:number,p:Reco
     const val=saturate((z+10)/75,0,1);
     c.fillStyle=val<.22?'#0c2834':val<.4?'#177c89':val<.6?'#46a46f':val<.79?'#d5ae56':'#e86d6a';
    }else{
-    const az=Math.atan2(ny,nx)*180/Math.PI;
+    const az=Math.atan2(nx,ny)*180/Math.PI; // bearing clockwise from North
     const vr=radialVelocity(wind,dir,az),a=saturate(Math.abs(vr)/40,0,1);
     c.fillStyle=vr>=0?'rgb('+(30+190*a).toFixed(0)+','+(49+65*a).toFixed(0)+','+(80+35*a).toFixed(0)+')'
       :'rgb('+(23+38*a).toFixed(0)+','+(55+155*a).toFixed(0)+','+(81+108*a).toFixed(0)+')';
@@ -86,7 +86,7 @@ export function drawRadarLab(c:CanvasRenderingContext2D,w:number,h:number,p:Reco
   for(let ang=0;ang<360;ang+=45){const a=rad(ang);line(c,cx,cy,cx+r*Math.cos(a),cy+r*Math.sin(a),'#91b3c044',.75)}
   dot(c,cx,cy,4,'#ffe0ac');
   const bearing=rad(p.radarBearing??45);
-  line(c,cx,cy,cx+Math.cos(-bearing)*r,cy+Math.sin(-bearing)*r,'#ffdda1',2.3);
+  line(c,cx,cy,cx+Math.sin(bearing)*r,cy-Math.cos(bearing)*r,'#ffdda1',2.3);
   font(c,mode===0?'REFLECTIVIDAD · ECOS ATMOSFÉRICOS':'DOPPLER · MOVIMIENTO RADIAL',Math.max(12,cx-r),Math.max(25,cy-r-22),'#dceff6');
   font(c,mode===0?'CAMPO DE dBZ INVENTADO':'VIENTO UNIFORME INVENTADO',Math.max(15,cx-r),Math.min(h-46,cy+r+27),'#92b1c8',10);
  }else{
