@@ -108,3 +108,14 @@ Para probar los algoritmos: `npm test` y `npx tsc --project tsconfig.mathcheck.j
 **Investigación y trazabilidad:** [docs/GEOSPATIAL_EDUCATION_V06.md](docs/GEOSPATIAL_EDUCATION_V06.md) y [docs/GEOSPATIAL_BRIDGE.md](docs/GEOSPATIAL_BRIDGE.md).
 
 **Calidad:** `npm test` (pruebas matemáticas y geoespaciales), `npm run build` (TypeScript + Vite) y preview PR en Vercel. Un check externo verde no sustituye pruebas manuales de interfaz.
+
+
+## V0.7 · Curvas de nivel + terreno Three.js bajo demanda
+
+El capítulo **09 · Terreno y relieve** ahora permite cambiar entre: (1) vista 2.5D original, (2) mapa de curvas de nivel con equidistancia variable y perfil sincronizado, y (3) malla 3D Three.js con órbita y zoom. Las tres representaciones provienen de **una misma función sintética de elevación**, con unidades de metros. La escena 3D se importa y ejecuta únicamente al seleccionarla, se dibuja bajo demanda y libera recursos WebGL al abandonarla; si falla el contexto gráfico se puede volver al Canvas original.
+
+- `npm test` cubre intersección de curvas de nivel, geometría, orientación de triángulos, cálculo y módulos geoespaciales previos.
+- `npm run build` controla tipos de TypeScript y genera un chunk separado para Three.js.
+- [Investigación y decisiones de arquitectura](docs/TERRAIN_3D_RESEARCH_V07.md).
+
+**No se cargan DEM reales ni hay CRS/datum geodésico:** las cotas y el mapa continúan siendo ejemplos educativos, no información topográfica de campo.
