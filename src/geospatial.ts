@@ -64,8 +64,8 @@ export function syntheticSpectra(x:number,y:number,drought=0):Reflectance{
   if(wet)return water[band];
   return soil[band]*(1-vegetation)+plant[band]*vegetation;
  };
- const red=clip(mix('red')+dry*.02,0,1);
- const nir=clip(mix('nir')-dry*.11,0,1);
+ const red=clip(mix('red')+(wet?0:dry*.02),0,1);
+ const nir=clip(mix('nir')-(wet?0:dry*.11),0,1);
  return {blue:mix('blue'),green:mix('green'),red,nir,swir:mix('swir'),className:wet?'agua sintética':vegetation>.55?'vegetación sintética':'suelo mixto sintético'};
 }
 export function bandProducts(v:Reflectance){
