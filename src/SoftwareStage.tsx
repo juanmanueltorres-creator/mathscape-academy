@@ -1,7 +1,7 @@
 import type {ProductId} from './software';
 import {modelDecision,PRODUCTS} from './software';
 type Props={
- view:'product'|'system';product:number;mode:number;step:number;
+ view:'product'|'software';product:number;mode:number;step:number;
  onProduct:(i:number)=>void;onMode:(i:number)=>void;onStep:(i:number)=>void;onExplore:()=>void;
 };
 const modeNames=['Funciona','Dato inválido','Reintento'] as const;
