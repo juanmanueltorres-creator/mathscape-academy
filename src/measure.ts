@@ -1,6 +1,7 @@
 import {functionFamilies,type SceneId} from './content';
 import {terrainReport,terrainEquation} from './terrain';
 import {calculateGeospatial} from './geo-measure';
+import {calculateSpace} from './space-measure';
 import {determinant,norm2,familyAnchor,familyValue,familyDerivative,derivativeExampleSlope,secantExample,exactIntegralExample,leftRiemannExample,exactSolidVolume,midpointSolidVolume,limitLeftRight,limitCenter,solveEulerModel,odeModelExact,gradientExample} from './math';
 export type Metric={label:string;value:string;detail?:string};
 export type Result={metrics:Metric[];explanation:string;passed:boolean;observation:string;formula:string};
@@ -8,6 +9,7 @@ const num=(v:number,digits=3)=>Number(v.toFixed(digits)).toLocaleString('es-AR')
 const met=(label:string,v:number,detail?:string):Metric=>({label,value:num(v),detail});
 export function calculate(scene:SceneId,p:Record<string,number>):Result{
  if(scene==='projection'||scene==='raster'||scene==='sensors')return calculateGeospatial(scene,p);
+ if(scene==='satellites'||scene==='radars')return calculateSpace(scene,p);
  if(scene==='atlas'){
   const m=Math.round(p.atlasModel||0),formula=[`x=sen(${p.freqA}t + ${num(p.phase,2)}); y=sen(${p.freqB}t)`,`x′=10(y−x), y′=x(28−z)−y, z′=xy−8z/3`,`r(θ)=[|cos(${p.gielisSymmetry}θ/4)|ⁿ²+|sen(${p.gielisSymmetry}θ/4)|ⁿ³]^(−1/${num(p.gielisExponent,2)})`][m]||'';
   return {metrics:[met('Frecuencia A',p.freqA),met('Frecuencia B',p.freqB),{label:'Sistema',value:['Lissajous','Lorenz','Gielis'][m]}],explanation:['Las dos frecuencias construyen una órbita periódica. Cambiá a/b y el desfase para explorar los patrones.','El atractor de Lorenz es un sistema caótico determinista con parámetros clásicos.','La superfórmula combina simetrías y exponentes; no es una simulación física.'][m],passed:m===0?p.freqA===3&&p.freqB===2:m===1?p.lorenzSpeed<.5:p.gielisSymmetry>=8,observation:'Tres sistemas separados para evitar sobrecarga gráfica. Cada experiencia conserva su propia ecuación.',formula};
