@@ -48,3 +48,17 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent,#a99cff)
 .stage-frame canvas:active{cursor:grabbing}
 @media(max-width:1030px){.example-lab{grid-column:1 / -1}.formula-card{grid-column:1}.control-head{grid-row:auto}.sliders{grid-row:auto}.explain{grid-row:auto}.task{grid-row:auto}.next{grid-row:auto}}
 @media(max-width:730px){.example-options{grid-template-columns:repeat(2,minmax(0,1fr))}.formula-text{font-size:12px}.stage-frame canvas{touch-action:none}}
+
+
+/* V0.6 — Dos rutas, un solo laboratorio. Controles visibles sin ocultar las escenas previas. */
+.route-picker{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:19px 0 20px;border:1px solid #3c4c67;border-radius:12px;padding:5px;background:#0b172a}
+.route-picker button{min-width:0;padding:10px 7px;border:1px solid transparent;border-radius:8px;background:transparent;color:#91a8c6;font-size:11px;font-weight:650;letter-spacing:.05px;transition:background .18s,border-color .18s,color .18s;cursor:pointer}
+.route-picker button.active{background:#182b40;border-color:#69c8d480;color:#e5f8ff;box-shadow:inset 0 0 19px #58bccc10}
+.route-picker button:hover:not(.active){color:#e2f4ff;background:#19273c}
+.route-picker button:focus-visible{outline:2px solid #80e9da;outline-offset:2px}
+.group-name{font-variant-numeric:tabular-nums}
+.chapter.current .chapter-title{color:#e7fbff}
+.chapter:hover .chapter-title{color:#dcecfb}
+.stage-frame:has(canvas){isolation:isolate}
+@media(max-width:1260px){.route-picker{margin:14px 0}.route-picker button{font-size:10px;padding:9px 5px}}
+@media(max-width:730px){.route-picker{margin-top:16px}.stage-frame{overflow:hidden}.stage-frame canvas{max-width:100%}}
