@@ -67,7 +67,7 @@ function App(){
  const select=(id:SceneId)=>{setScene(id);setResponse('idle');setMobileMenu(false);};
  const update=(key:string,value:number)=>{setParams(prev=>({...prev,[key]:value}));setResponse('idle')};
  const applyExample=(values:Record<string,number>)=>{setParams(prev=>({...prev,...values}));setResponse('idle');setResetKey(x=>x+1)};
- const controls=current.controls.filter(c=>scene==='double'?(c.key==='height'?[1,3,4].includes(modelIndex):c.key==='amplitude'?modelIndex===0:true):scene==='ode'?(c.key!=='capacity'||params.odeModel===1):scene==='atlas'?(focus==='lissajous'?['freqA','freqB','phase'].includes(c.key):focus==='lorenz'?c.key==='lorenzSpeed':['gielisSymmetry','gielisExponent'].includes(c.key)):true);
+ const controls=current.controls.filter(c=>scene==='terrain'?(c.key!=='contourStep'||Math.round(params.terrainView||0)===1):scene==='double'?(c.key==='height'?[1,3,4].includes(modelIndex):c.key==='amplitude'?modelIndex===0:true):scene==='ode'?(c.key!=='capacity'||params.odeModel===1):scene==='atlas'?(focus==='lissajous'?['freqA','freqB','phase'].includes(c.key):focus==='lorenz'?c.key==='lorenzSpeed':['gielisSymmetry','gielisExponent'].includes(c.key)):true);
  const reset=()=>{setParams(prev=>{const next={...prev};for(const c of current.controls)next[c.key]=defaults[c.key];if(scene==='functions')next.family=0;return next});setResponse('idle');setResetKey(x=>x+1)};
  const check=()=>{const ok=info.passed;setResponse(ok?'correct':'retry');if(ok)setDone(prev=>prev.includes(scene)?prev:[...prev,scene])};
  const next=()=>select(lessons[(lessons.findIndex(l=>l.id===scene)+1)%lessons.length].id);
