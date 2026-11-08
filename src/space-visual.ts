@@ -1,4 +1,4 @@
-import {ORBIT_MISSIONS,orbitSummary,groundPoint,rad} from './satellites';
+import {ORBIT_MISSIONS,orbitSummary,groundPoint,orbitEllipsePoint,rad} from './satellites';
 import {radarSummary,syntheticReflectivity,radialVelocity,syntheticSigma0,sigmaToDb} from './radar-lab';
 const font=(c:CanvasRenderingContext2D,text:string,x:number,y:number,color='#a2bed4',size=11)=>{
  c.fillStyle=color;c.font='600 '+size+'px ui-monospace, monospace';c.fillText(text,x,y);
@@ -30,9 +30,11 @@ export function drawSatelliteLab(c:CanvasRenderingContext2D,w:number,h:number,p:
  }
  c.restore();
  c.setLineDash([5,5]);c.strokeStyle='#e1c48a88';c.lineWidth=1.3;
- c.beginPath();c.ellipse(gx,gy,r*1.25,r*.34,m.inclinationDeg>0?-.48:0,0,Math.PI*2);c.stroke();c.setLineDash([]);
+ const rotation=m.inclinationDeg>0?-.48:0;
+ c.beginPath();c.ellipse(gx,gy,r*1.25,r*.34,rotation,0,Math.PI*2);c.stroke();c.setLineDash([]);
  const phase=t/summary.period*2*Math.PI;
- const satX=gx+Math.cos(phase)*r*1.25,satY=gy+Math.sin(phase)*r*.34;
+ const [dx,dy]=orbitEllipsePoint(phase,r*1.25,r*.34,rotation);
+ const satX=gx+dx,satY=gy+dy;
  dot(c,satX,satY,5,'#ffe6ac');
  c.shadowColor='#ffdea4';c.shadowBlur=15;dot(c,satX,satY,2.5,'#fff4ca');c.shadowBlur=0;
  font(c,'ÓRBITA ILUSTRATIVA',Math.max(15,gx-r),Math.max(30,gy-r-27),'#b7dbe7',10);
