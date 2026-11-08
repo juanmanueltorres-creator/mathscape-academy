@@ -1,10 +1,13 @@
 import {functionFamilies,type SceneId} from './content';
+import {terrainReport,terrainEquation} from './terrain';
+import {calculateGeospatial} from './geo-measure';
 import {determinant,norm2,familyAnchor,familyValue,familyDerivative,derivativeExampleSlope,secantExample,exactIntegralExample,leftRiemannExample,exactSolidVolume,midpointSolidVolume,limitLeftRight,limitCenter,solveEulerModel,odeModelExact,gradientExample} from './math';
 export type Metric={label:string;value:string;detail?:string};
 export type Result={metrics:Metric[];explanation:string;passed:boolean;observation:string;formula:string};
 const num=(v:number,digits=3)=>Number(v.toFixed(digits)).toLocaleString('es-AR');
 const met=(label:string,v:number,detail?:string):Metric=>({label,value:num(v),detail});
 export function calculate(scene:SceneId,p:Record<string,number>):Result{
+ if(scene==='projection'||scene==='raster'||scene==='sensors')return calculateGeospatial(scene,p);
  if(scene==='atlas'){
   const m=Math.round(p.atlasModel||0),formula=[`x=sen(${p.freqA}t + ${num(p.phase,2)}); y=sen(${p.freqB}t)`,`x′=10(y−x), y′=x(28−z)−y, z′=xy−8z/3`,`r(θ)=[|cos(${p.gielisSymmetry}θ/4)|ⁿ²+|sen(${p.gielisSymmetry}θ/4)|ⁿ³]^(−1/${num(p.gielisExponent,2)})`][m]||'';
   return {metrics:[met('Frecuencia A',p.freqA),met('Frecuencia B',p.freqB),{label:'Sistema',value:['Lissajous','Lorenz','Gielis'][m]}],explanation:['Las dos frecuencias construyen una órbita periódica. Cambiá a/b y el desfase para explorar los patrones.','El atractor de Lorenz es un sistema caótico determinista con parámetros clásicos.','La superfórmula combina simetrías y exponentes; no es una simulación física.'][m],passed:m===0?p.freqA===3&&p.freqB===2:m===1?p.lorenzSpeed<.5:p.gielisSymmetry>=8,observation:'Tres sistemas separados para evitar sobrecarga gráfica. Cada experiencia conserva su propia ecuación.',formula};
@@ -47,6 +50,17 @@ export function calculate(scene:SceneId,p:Record<string,number>):Result{
  if(scene==='ode'){
   const m=Math.round(p.odeModel||0),points=solveEulerModel(m,p.k,p.y0,4,p.dt,p.capacity),approx=points.at(-1)!.y,exact=odeModelExact(m,p.k,p.y0,4,p.capacity),err=Math.abs(approx-exact);
   return {metrics:[met('Euler · t=4',approx),met('Exacta · t=4',exact),met('Error',err),met('Pasos',points.length-1)],explanation:m===0?'En el modelo exponencial la tasa es proporcional al estado y.':'El modelo logístico agrega capacidad de carga K, que frena el crecimiento cuando y se acerca a K.',passed:err<.035,observation:`Modelo ${m===0?'exponencial':'logístico'}, paso Δt=${num(p.dt,2)}. Reducir el paso reduce normalmente el error.`,formula:m===0?`y′=${num(p.k,2)}y ; y(t)=y₀e^(kt)`:`y′=${num(p.k,2)}y(1−y/${num(p.capacity,2)})\ny(t)=K/[1+(K/y₀−1)e^(−kt)]`};
+ }
+ if(scene==='terrain'){
+  const t=terrainReport(p);
+  const shapes=['Lomas y quebradas','Valle con cauce curvo','Ladera con ondulaciones'];
+  return {
+   metrics:[met('Cota del punto (m)',t.z),met('Pendiente (%)',t.slopePercent),met('Corte sobre z₀ (m³)',t.coarse.above),met('Relleno bajo z₀ (m³)',t.coarse.below),met('Dif. por resolución (%)',t.samplingDifferencePercent)],
+   explanation:'El relieve combina lomas, depresiones y ondulaciones SINTÉTICAS. La pendiente se estima con diferencias centrales; los volúmenes se obtienen sumando columnas de celdas. Corte y relleno aquí son ilustrativos respecto de un plano, NO un diseño de obra real.',
+   passed:t.samplingDifferencePercent<1,
+   observation:`${shapes[t.model]} · ${t.coarse.cells} celdas de ${num(t.coarse.cellSize,1)} m · comparación con grilla de 120×120. Diferencia de muestreo ≠ incertidumbre del DEM. SIN DATOS REALES.`,
+   formula:`${terrainEquation(t.model,t.irregularity)}\n∇z≈((z(x+Δ,y)−z(x−Δ,y))/(2Δ), (z(x,y+Δ)−z(x,y−Δ))/(2Δ))\nθ=arctan(|∇z|) = ${num(t.slopeDegrees,2)}°\nV₊(z₀)=∬ᴰ max(z−z₀,0)dA ≈ Σᵢⱼ max(zᵢⱼ−${num(t.datum,0)},0)·${num(t.coarse.cellSize**2,0)} m²`
+  };
  }
  const m=Math.round(p.gradientModel||0),grad=gradientExample(m,p.ga,p.gb,p.gx,p.gy),mag=norm2(grad);
  const formulas=[`z=${num(p.ga,2)}x²+${num(p.gb,2)}y²\n∇z=(2ax, 2by)`,`z=${num(p.ga,2)}x²−${num(p.gb,2)}y²\n∇z=(2ax, −2by)`,`z=${num(p.ga,2)}e^(−${num(p.gb,2)}(x²+y²))\n∇z=−2b(x,y)z`];

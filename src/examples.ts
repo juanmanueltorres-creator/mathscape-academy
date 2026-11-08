@@ -3,6 +3,28 @@ import type {SceneId} from './content';
 /** Los ejemplos son escenas independientes; al elegirlos se resetean solo las variables que los definen. */
 export type Example={label:string;subtitle:string;params:Record<string,number>};
 export const examples:Partial<Record<SceneId,Example[]>>={
+ terrain:[
+  {label:'Lomas y quebradas',subtitle:'Combinación de elevaciones gaussianas',params:{landform:0,irregularity:.8,gridN:20,datum:1100,pickX:100,pickY:-100}},
+  {label:'Valle y cauce',subtitle:'Depresión curva y laderas asimétricas',params:{landform:1,irregularity:.6,gridN:22,datum:1025,pickX:50,pickY:50}},
+  {label:'Ladera irregular',subtitle:'Pendiente regional con ondulaciones',params:{landform:2,irregularity:1.1,gridN:24,datum:1110,pickX:200,pickY:-75}}
+ ],
+ projection:[
+  {label:'Equidistante',subtitle:'Agrandamiento hacia los polos',params:{projectionMode:0,probeLat:60,probeLon:-60}},
+  {label:'Mercator',subtitle:'Conforme, agranda superficies',params:{projectionMode:1,probeLat:60,probeLon:20}},
+  {label:'Equivalente',subtitle:'Conserva área en la esfera',params:{projectionMode:2,probeLat:60,probeLon:20}}
+ ],
+ raster:[
+  {label:'Píxel grueso',subtitle:'8×8, se pierde detalle',params:{rasterN:8,rasterTerrain:0,rasterRough:.8,rasterMask:0}},
+  {label:'Más resolución',subtitle:'40×40, más detalle',params:{rasterN:40,rasterTerrain:0,rasterRough:.8,rasterMask:0}},
+  {label:'NoData',subtitle:'Ausencia de medición, no altura cero',params:{rasterN:40,rasterTerrain:1,rasterMask:1,rasterRough:.8}}
+ ],
+ sensors:[
+  {label:'Color natural',subtitle:'RGB, visible ilustrativo',params:{sensorMode:0,sensorDryness:.1}},
+  {label:'Falso color',subtitle:'Infrarrojo / rojo / verde',params:{sensorMode:1,sensorDryness:.1}},
+  {label:'NDVI',subtitle:'Vegetación en rojo e NIR',params:{sensorMode:2,sensorDryness:.1}},
+  {label:'NDWI',subtitle:'Agua con verde e NIR',params:{sensorMode:3,sensorDryness:.1}},
+  {label:'Sequedad',subtitle:'Experimento, no observación real',params:{sensorMode:2,sensorDryness:.9}}
+ ],
  limits:[
   {label:'sen(x) / x',subtitle:'Límite removible en x=0',params:{limitModel:0,lh:.45}},
   {label:'Hueco algebraico',subtitle:'(x²−1)/(x−1) en x=1',params:{limitModel:1,lh:.45}},

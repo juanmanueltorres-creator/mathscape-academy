@@ -84,3 +84,27 @@ npm run build
 ```
 
 La compilación React/Vite depende de instalar las dependencias de npm y aún no está validada en este entorno; verificar en Vercel antes del merge.
+
+## Puente Matemática → Geoespacial (experimento 09, rama propuesta)
+
+El capítulo **Terreno y relieve** relaciona derivadas parciales, gradiente, sumas de Riemann e integrales dobles con una superficie topográfica IRREGULAR **sintética**. Incluye tres paisajes, grilla 8–48 celdas por lado, cota de referencia, volumen por encima/debajo del plano, pendientes y un perfil que comparte la misma función z(x,y) con el mapa.
+
+El objetivo es enseñar qué cambia cuando pasamos de superficies ideales a datos muestreados. **No carga datos de terreno reales ni calcula riesgos, obras o alertas.** La diferencia respecto de una grilla sintética de 120×120 representa discretización, no precisión del DEM.
+
+Ver [docs/GEOSPATIAL_BRIDGE.md](docs/GEOSPATIAL_BRIDGE.md) para fórmulas, validaciones, límites científicos y el storyboard propuesto de la segunda ruta (proyecciones; ráster/vector/DEM; observación óptica y radar).
+
+Para probar los algoritmos: `npm test` y `npx tsc --project tsconfig.mathcheck.json`. La rama no altera `main` ni configura un despliegue.
+
+## V0.6 · Atlas Geoespacial Interactivo
+
+**De los números al planeta:** dos rutas de aprendizaje en la misma aplicación. Continúan intactos los laboratorios de matemática; la nueva ruta Geoespacial tiene tres escenas independientes:
+
+- **10 · Proyecciones:** esfera con graticula y Mercator / equidistante / equivalente, deformación local, fórmulas y factores de área.
+- **11 · Ráster × vector:** terreno sintético como píxeles, detalle según resolución, capas de líneas ficticias y celdas NoData.
+- **12 · Bandas y sensores:** reflectancias ópticas sintéticas, RGB/falso color, NDVI y NDWI de McFeeters.
+
+**Límites:** no se utilizan mapas reales, imágenes satelitales, CRS nacionales ni DEM importados. Este prototipo es exclusivamente educativo; la respuesta matemática y los gráficos salen de funciones deterministas. Nunca utilizarlo para riesgo, alertas ni decisiones técnicas sin validación y datos adecuados.
+
+**Investigación y trazabilidad:** [docs/GEOSPATIAL_EDUCATION_V06.md](docs/GEOSPATIAL_EDUCATION_V06.md) y [docs/GEOSPATIAL_BRIDGE.md](docs/GEOSPATIAL_BRIDGE.md).
+
+**Calidad:** `npm test` (pruebas matemáticas y geoespaciales), `npm run build` (TypeScript + Vite) y preview PR en Vercel. Un check externo verde no sustituye pruebas manuales de interfaz.
