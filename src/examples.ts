@@ -18,6 +18,12 @@ export const examples:Partial<Record<SceneId,Example[]>>={
   {label:'Efecto Doppler',subtitle:'Velocidad radial · m/s',params:{radarType:1,radarWind:25,radarDirection:100,radarBearing:45}},
   {label:'Radar SAR',subtitle:'Retrodispersión de superficie · dB',params:{radarType:2,radarRoughness:.7,radarIncidence:35}}
  ],
+
+ geodesy:[
+  {label:'San Juan',subtitle:'WGS84 · UTM 19S y GK faja 2',params:{geodesyLocation:0,geoLat:-31.4,geoLon:-69.1,geoCRS:0}},
+  {label:'Córdoba',subtitle:'UTM 20S y Gauss-Krüger faja 4',params:{geodesyLocation:1,geoLat:-31.42,geoLon:-64.18,geoCRS:0}},
+  {label:'Buenos Aires',subtitle:'UTM 21S y Gauss-Krüger faja 6',params:{geodesyLocation:2,geoLat:-34.6,geoLon:-58.38,geoCRS:1}}
+ ],
  terrain:[
   {label:'Lomas y quebradas',subtitle:'Combinación de elevaciones gaussianas',params:{landform:0,irregularity:.8,gridN:20,datum:1100,pickX:100,pickY:-100}},
   {label:'Valle y cauce',subtitle:'Depresión curva y laderas asimétricas',params:{landform:1,irregularity:.6,gridN:22,datum:1025,pickX:50,pickY:50}},
