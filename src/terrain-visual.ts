@@ -21,7 +21,7 @@ export function drawTerrainLayer(c:CanvasRenderingContext2D,w:number,h:number,p:
   const pts:[[number,number],[number,number],[number,number],[number,number]]=[[x,y],[x+dx,y],[x+dx,y+dx],[x,y+dx]];
   const projected=pts.map(([a,b])=>project(a,b,terrainElevation(a,b,r.model,r.irregularity)));
   const average=pts.reduce((sum,[a,b])=>sum+terrainElevation(a,b,r.model,r.irregularity),0)/4;
-  cells.push({depth:project(x+dx/2,y+dx/2,average)[2],poly:projected.map(v=>[v[0],v[1]]),z:average});
+  cells.push({depth:project(x+dx/2,y+dx/2,average)[2],poly:projected.map(v=>[v[0],v[1]] as [number,number]),z:average});
  }
  cells.sort((a,b)=>a.depth-b.depth);
  for(const cell of cells){
