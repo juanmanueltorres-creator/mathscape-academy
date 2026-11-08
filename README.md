@@ -125,7 +125,7 @@ El capítulo **09 · Terreno y relieve** ahora permite cambiar entre: (1) vista 
 
 La segunda ruta geoespacial continúa con tres experimentos, junto a los 13 anteriores:
 
-- **13 · DEM real / San Juan:** consulta en navegador 81 alturas reales del producto SRTM v3 (nominal ~90 m) mediante OpenTopoData. Visualiza muestras, curvas interpoladas, perfil, pendiente local y volumen respecto de una cota. Fuente **identificada** y estado de carga/error; sin datos falsos cuando la API no responde. **No es un GeoTIFF original ni un DEM completo descargado.**
+- **13 · DEM real / San Juan:** incluye una muestra verificada de 81 alturas reales SRTM v3 (nominal ~90 m) consultadas a OpenTopoData el 2026-11-08 UTC, empaquetada para funcionar sin conexión; ofrece actualización opcional desde la API. Visualiza muestras, curvas interpoladas, perfil, pendiente local y volumen respecto de una cota. Fuente **identificada** y estado de carga/error; sin datos falsos cuando la API no responde. **No es un GeoTIFF original ni un DEM completo descargado.**
 - **14 · Satélites y órbitas:** Sentinel-2 (ESA), SAOCOM (CONAE) y un geoestacionario ideal. Comparador de altura, velocidad, período, horizonte y traza conceptual sobre la Tierra. **No muestra posiciones en vivo, no son efemérides.**
 - **15 · Radares:** distingue reflectividad meteorológica (dBZ), velocidad Doppler (m/s) y SAR satelital (σ⁰ en dB). Los tres patrones visuales son **simulaciones** para enseñar física, nunca datos medidos.
 
