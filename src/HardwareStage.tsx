@@ -45,7 +45,7 @@ export default function HardwareStage({onComplete}:Props){
  const [journeyStep,setJourneyStep]=useState(0);
  const [fault,setFault]=useState<FaultId>('none');
  const [quizIndex,setQuizIndex]=useState(0);
- const [answer,setAnswer]=useState<HardwarePartId|null>(null);
+ const [wrongAnswer,setWrongAnswer]=useState(false);
  const [solved,setSolved]=useState(false);
  const journey:JourneyId=view==='boot'?'boot':'web';
  const steps=JOURNEYS[journey];
@@ -55,8 +55,9 @@ export default function HardwareStage({onComplete}:Props){
  const chooseView=(next:View)=>{setView(next);setJourneyStep(0);setFault('none')};
  const chooseFault=(next:FaultId)=>{setFault(next);setJourneyStep(0)};
  const respond=(id:HardwarePartId)=>{
-  setAnswer(id);
-  if(quizCorrect(quizIndex,id)){
+  const correct=quizCorrect(quizIndex,id);
+  setWrongAnswer(!correct);
+  if(correct){
    if(quizIndex===HARDWARE_QUIZ.length-1){if(!solved){setSolved(true);onComplete()}}
    else setQuizIndex(n=>n+1);
   }
@@ -65,7 +66,7 @@ export default function HardwareStage({onComplete}:Props){
   <header className='hw-intro'>
    <div><span className='hw-kicker'>DE LA MÁQUINA A LA EXPERIENCIA</span>
     <h2>¿Qué hay detrás de una app?</h2>
-    <p>Elegí una pieza. SeguÍ el arranque. Después, viajá con una solicitud.</p></div>
+    <p>Elegí una pieza. Seguí el arranque. Después, viajá con una solicitud.</p></div>
    <span className='hw-illustrative'>MODELO INTERACTIVO</span>
   </header>
   <nav className='hw-view-tabs' aria-label='Explorar el sistema'>
@@ -118,7 +119,7 @@ export default function HardwareStage({onComplete}:Props){
       {(['cpu','ram','ssd'] as const).map(id=><button key={id} type='button'
        aria-label={getPart(id).label} onClick={()=>respond(id)}>{getPart(id).label}</button>)}
      </div>
-     {answer!==null&&answer!==HARDWARE_QUIZ[Math.max(0,quizIndex-1)].answer&&quizIndex===0&&<small>Probá otra pieza y mirá su función.</small>}
+     {wrongAnswer&&<small>Probá otra pieza y mirá su función.</small>}
     </>}
    </div>
    <div className='hw-reference'><a href='https://developer.mozilla.org/es/docs/Learn_web_development/Getting_started/Web_standards/How_the_web_works' target='_blank' rel='noopener noreferrer'>Cómo funciona la web ↗</a>
