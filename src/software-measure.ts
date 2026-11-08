@@ -25,6 +25,6 @@ export function calculateSoftware(view:'product'|'software',p:Record<string,numb
   explanation:active.detail,
   observation:outcome.message,
   formula:outcome.request+'\n'+outcome.response+'\n\nDECISIÓN · '+caseData.tradeoff,
-  passed:mode===2&&caseData.id==='bank'?outcome.idempotent:mode===1?!outcome.changed:outcome.state!=='rejected',
+  passed:mode===1&&outcome.state==='rejected'&&!outcome.changed,
  };
 }
