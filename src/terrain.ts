@@ -24,6 +24,15 @@ export function terrainElevation(x:number,y:number,model=0,irregularity=1):numbe
  return 1060+255*gaussian(x,y,-175,95,200)+128*gaussian(x,y,210,-70,245)-150*gaussian(x,y,-30,-175,170)+texture;
 }
 
+/** Forma simbólica exacta de cada paisaje para conectar gráfica, ecuación y cálculo. */
+export function terrainEquation(model:number,irregularity:number):string{
+ const r=clamp(irregularity,0,1.5).toFixed(2),m=modelIndex(model);
+ const texture='T=25sen(x/71)cos(y/83)+9sen((x+2y)/32)';
+ const G='G(cx,cy,s)=exp(−[(x−cx)²+(y−cy)²]/(2s²))';
+ if(m===1)return `c=y−0.28x−42sen(x/180)\nz=1000+0.00027(x+140)²+0.00012(y−50)²−115exp(−(c/103)²)+0.6·${r}T\n${texture}`;
+ if(m===2)return `z=1110+0.16x−0.055y+85G(−110,70,240)−95G(240,−150,130)+${r}T\n${G}\n${texture}`;
+ return `z=1060+255G(−175,95,200)+128G(210,−70,245)−150G(−30,−175,170)+${r}T\n${G}\n${texture}`;
+}
 /** Volumen por método de puntos medios sobre celdas horizontales de igual área. */
 export function integrateElevationField(field:ElevationField,n:number,datum:number,extent=TERRAIN_EXTENT_M):TerrainSummary{
  if(!Number.isInteger(n)||n<2||n>512||!Number.isFinite(datum)||!Number.isFinite(extent)||extent<=0)throw new RangeError('Malla o datum inválido');
