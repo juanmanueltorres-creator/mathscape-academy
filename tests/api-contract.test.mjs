@@ -79,3 +79,25 @@ test('la corrección del mismo JSON cambia la respuesta de fallo a éxito',()=>{
  assert.equal(rejected.ok,false);assert.equal(accepted.ok,true);
  assert.notEqual(rejected.status,accepted.status);
 });
+
+test('respuesta 201 respeta la visibilidad que efectivamente aceptó',()=>{
+ const requestBody={...contractById('social').initial,visibilidad:'publica'};
+ const response=request('social',requestBody);
+ assert.equal(response.status,201);
+ assert.equal(response.body.visibilidad,'publica');
+ assert.equal(request('social',contractById('social').initial).body.visibilidad,'privada');
+});
+test('respuesta de transferencia identifica la clave recibida, no un identificador fijo',()=>{
+ const requestBody={...contractById('bank').initial,clave_idempotencia:'op-otro-321'};
+ const response=request('bank',requestBody);
+ assert.equal(response.status,202);
+ assert.equal(response.body.id,requestBody.clave_idempotencia);
+ assert.equal(response.body.estado,'pendiente');
+});
+test('respuesta geoespacial informa CRS y resolución realmente solicitados',()=>{
+ const requestBody={...contractById('terrain').initial,resolucion_m:90};
+ const response=request('terrain',requestBody);
+ assert.equal(response.status,202);
+ assert.equal(response.body.crs,'EPSG:4326');
+ assert.equal(response.body.resolucion_m,90);
+});
