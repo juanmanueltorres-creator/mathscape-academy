@@ -3,6 +3,21 @@ import type {SceneId} from './content';
 /** Los ejemplos son escenas independientes; al elegirlos se resetean solo las variables que los definen. */
 export type Example={label:string;subtitle:string;params:Record<string,number>};
 export const examples:Partial<Record<SceneId,Example[]>>={
+
+ dem:[
+  {label:'Punto central',subtitle:'Precordillera de San Juan, 81 muestras SRTM',params:{demX:4,demY:4,demContours:50,demDatum:2500}},
+  {label:'Otro perfil',subtitle:'Moverse a la fila norte de la grilla',params:{demX:6,demY:2,demContours:75,demDatum:2600}}
+ ],
+ satellites:[
+  {label:'Sentinel-2',subtitle:'Óptico · heliosincrónico · 786 km',params:{orbitModel:0,orbitTime:360}},
+  {label:'SAOCOM',subtitle:'SAR banda L · CONAE · 620 km',params:{orbitModel:1,orbitTime:240}},
+  {label:'GEO',subtitle:'Ideal ecuatorial · ≈35 786 km',params:{orbitModel:2,orbitTime:720}}
+ ],
+ radars:[
+  {label:'Ecos de lluvia',subtitle:'Radar meteorológico · dBZ',params:{radarType:0,radarDbz:55}},
+  {label:'Efecto Doppler',subtitle:'Velocidad radial · m/s',params:{radarType:1,radarWind:25,radarDirection:100,radarBearing:45}},
+  {label:'Radar SAR',subtitle:'Retrodispersión de superficie · dB',params:{radarType:2,radarRoughness:.7,radarIncidence:35}}
+ ],
  terrain:[
   {label:'Lomas y quebradas',subtitle:'Combinación de elevaciones gaussianas',params:{landform:0,irregularity:.8,gridN:20,datum:1100,pickX:100,pickY:-100}},
   {label:'Valle y cauce',subtitle:'Depresión curva y laderas asimétricas',params:{landform:1,irregularity:.6,gridN:22,datum:1025,pickX:50,pickY:50}},

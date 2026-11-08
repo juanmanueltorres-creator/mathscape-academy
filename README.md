@@ -119,3 +119,16 @@ El capítulo **09 · Terreno y relieve** ahora permite cambiar entre: (1) vista 
 - [Investigación y decisiones de arquitectura](docs/TERRAIN_3D_RESEARCH_V07.md).
 
 **No se cargan DEM reales ni hay CRS/datum geodésico:** las cotas y el mapa continúan siendo ejemplos educativos, no información topográfica de campo.
+
+
+## V0.8 · Datos de terreno reales, satélites y radares
+
+La segunda ruta geoespacial continúa con tres experimentos, junto a los 13 anteriores:
+
+- **13 · DEM real / San Juan:** consulta en navegador 81 alturas reales del producto SRTM v3 (nominal ~90 m) mediante OpenTopoData. Visualiza muestras, curvas interpoladas, perfil, pendiente local y volumen respecto de una cota. Fuente **identificada** y estado de carga/error; sin datos falsos cuando la API no responde. **No es un GeoTIFF original ni un DEM completo descargado.**
+- **14 · Satélites y órbitas:** Sentinel-2 (ESA), SAOCOM (CONAE) y un geoestacionario ideal. Comparador de altura, velocidad, período, horizonte y traza conceptual sobre la Tierra. **No muestra posiciones en vivo, no son efemérides.**
+- **15 · Radares:** distingue reflectividad meteorológica (dBZ), velocidad Doppler (m/s) y SAR satelital (σ⁰ en dB). Los tres patrones visuales son **simulaciones** para enseñar física, nunca datos medidos.
+
+Las fuentes, fórmulas, limitaciones y el plan de nueve niveles están documentados en [GEOSPATIAL_V08_SATELLITES_DEM_RADAR.md](docs/GEOSPATIAL_V08_SATELLITES_DEM_RADAR.md).
+
+No se incorporaron librerías nuevas para estas tres escenas. Three.js sigue siendo optativo y exclusivo del laboratorio 09. El servicio público de OpenTopoData puede limitar consultas; la UI indica claramente los errores sin sustituir resultados.
