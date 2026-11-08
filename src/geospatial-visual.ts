@@ -5,7 +5,6 @@ type Ctx=CanvasRenderingContext2D;
 const line=(c:Ctx,x1:number,y1:number,x2:number,y2:number,color:string,width=1)=>{c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.strokeStyle=color;c.lineWidth=width;c.stroke()};
 const text=(c:Ctx,s:string,x:number,y:number,color='#afc5df',size=11)=>{c.fillStyle=color;c.font='600 '+size+'px ui-monospace, SFMono-Regular, monospace';c.fillText(s,x,y)};
 const disk=(c:Ctx,x:number,y:number,r:number,col:string)=>{c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fillStyle=col;c.fill()};
-const within=(v:number,a:number,b:number)=>Math.max(a,Math.min(b,v));
 function projection(c:Ctx,w:number,h:number,p:Record<string,number>){
  const mode=Math.round(p.projectionMode||0),lat=clip(p.probeLat??45,-75,75),lon=clip(p.probeLon??-60,-150,150);
  const leftX=w*.255,leftY=h*.49,R=Math.min(w*.19,h*.29),mx=w*.54,my=h*.24,mw=w*.405,mh=h*.51;
