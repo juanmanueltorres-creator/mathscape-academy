@@ -44,7 +44,7 @@ export const JOURNEYS:Record<JourneyId,readonly JourneyStep[]>={
  ],
  web:[
   {layer:'experience',heading:'Escribís una dirección',action:'El navegador prepara la navegación.',detail:'Se interpreta la URL. Puede haber recursos guardados en caché.',machine:'local'},
-  {layer:'network',heading:'Resuelve el dominio',action:'DNS obtiene una dirección, si hace falta.',detail:'El resolvedor puede usar caché antes de consultar un servidor DNS.',machine:'both'},
+  {layer:'network',heading:'Resuelve el dominio',action:'DNS obtiene una dirección, si hace falta.',detail:'El resolvedor puede usar caché; si consulta un DNS remoto, ya intervienen la interfaz y la red.',machine:'both'},
   {layer:'os',heading:'Establece una conexión',action:'La pila de red participa en TCP y TLS.',detail:'Para HTTPS sobre TCP, el sistema y el navegador establecen transporte y protección. HTTP/3 usa QUIC en lugar de TCP.',machine:'local'},
   {layer:'hardware',heading:'Sale por la red',action:'El adaptador transmite datos.',detail:'La interfaz de red envía tramas a la red; los routers encaminan paquetes hasta el destino.',machine:'both'},
   {layer:'services',heading:'Responde el servidor',action:'Una aplicación remota procesa la solicitud.',detail:'El servidor puede usar CPU, RAM y disco propios y consultar otra base de datos o servicio.',machine:'remote'},
