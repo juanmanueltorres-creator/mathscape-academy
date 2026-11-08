@@ -47,7 +47,7 @@ export function terrainMeshSamples(model:number,roughness:number,n:number,extent
  }
  for(let j=0;j<n;j++)for(let i=0;i<n;i++){
   const a=j*(n+1)+i,b=a+1,d=a+n+1,c=d+1;
-  faces.push(a,b,c,a,c,d);
+  faces.push(a,c,b,a,d,c);
  }
  return {positions,faces,vertices:(n+1)**2,triangles:2*n*n};
 }
