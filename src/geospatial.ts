@@ -3,7 +3,7 @@
  * All figures and reflectances below are SYNTHETIC educational data.
  * Mathematical projection formulas assume a unit sphere, not WGS84 geodesy.
  */
-import {terrainElevation} from './terrain';
+import {terrainElevation} from './terrain.ts';
 
 export type Point = readonly [number,number];
 export type Reflectance={blue:number;green:number;red:number;nir:number;swir:number;className:string};
