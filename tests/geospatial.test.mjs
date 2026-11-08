@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {projectGeographic,projectionDistortion,haversineKm,rasterValue,rasterInfo,syntheticSpectra,bandProducts,normalizedDifference,syntheticColor} from '../src/geospatial.ts';
+import {projectGeographic,projectionDistortion,haversineKm,rasterValue,rasterInfo,projectionFitScale,spectralPixelCenter,syntheticSpectra,bandProducts,normalizedDifference,syntheticColor} from '../src/geospatial.ts';
 const close=(a,b,tol=1e-9)=>assert.ok(Math.abs(a-b)<tol,'expected '+a+' ≈ '+b);
 test('Equirectangular, Mercator y equivalente tienen centro en 0,0',()=>{
  for(let i=0;i<3;i++){const [x,y]=projectGeographic(0,0,i);close(x,0);close(y,0)}
@@ -54,4 +54,30 @@ test('Las representaciones dan valores RGB válidos',()=>{
   assert.equal(rgb.length,3);
   for(const component of rgb)assert.ok(Number.isInteger(component)&&component>=0&&component<=255);
  }
+});
+
+test('La grilla Mercator conserva escala idéntica en ambos ejes al renderizar',()=>{
+ const width=400,height=270,k=projectionFitScale(width,height,1);
+ const y80=projectGeographic(0,80,1)[1];
+ assert.ok(2*Math.PI*k<=width+1e-9);
+ assert.ok(2*y80*k<=height*.9+1e-9);
+ // Un círculo geográfico infinitesimal debe permanecer circular (Mercator conforme).
+ const d=.0001,lat=60,lon=0;
+ const base=projectGeographic(lon,lat,1);
+ const east=projectGeographic(lon+d/Math.cos(lat*Math.PI/180),lat,1);
+ const north=projectGeographic(lon,lat+d,1);
+ const dx=(east[0]-base[0])*k,dy=(north[1]-base[1])*k;
+ assert.ok(Math.abs(dx/dy-1)<.00002,'anisotropía no deseada en Mercator');
+});
+test('Las métricas de sensores consultan el centro del píxel realmente dibujado',()=>{
+ const sample=spectralPixelCenter(12,-450,150);
+ const cell=1000/12;
+ close(sample.x,-500+(sample.i+.5)*cell);
+ close(sample.y,-500+(sample.j+.5)*cell);
+ const rendered=syntheticSpectra(sample.x,sample.y,.1);
+ const metrics=bandProducts(rendered);
+ assert.ok(metrics.ndvi>=-1&&metrics.ndvi<=1);
+ assert.ok(metrics.ndwi>=-1&&metrics.ndwi<=1);
+ const sameCell=spectralPixelCenter(12,sample.x+1,sample.y+1);
+ assert.equal(sameCell.i,sample.i);assert.equal(sameCell.j,sample.j);
 });
