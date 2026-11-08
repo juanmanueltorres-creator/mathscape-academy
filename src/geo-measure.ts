@@ -1,6 +1,6 @@
 import type {SceneId} from './content';
 import type {Result,Metric} from './measure';
-import {projectionDistortion,projectionNames,rasterInfo,syntheticSpectra,bandProducts,sensorLabels} from './geospatial';
+import {projectionDistortion,projectionNames,rasterInfo,syntheticSpectra,bandProducts,sensorLabels,spectralPixelCenter} from './geospatial';
 const fmt=(n:number,digits=2)=>Number(n.toFixed(digits)).toLocaleString('es-AR');
 const metric=(label:string,n:number,digits=2):Metric=>({label,value:fmt(n,digits)});
 export function calculateGeospatial(scene:SceneId,p:Record<string,number>):Result{
@@ -28,13 +28,14 @@ export function calculateGeospatial(scene:SceneId,p:Record<string,number>):Resul
   };
  }
  const mode=Math.round(p.sensorMode||0),dry=p.sensorDryness||0;
- const r=syntheticSpectra(p.sensorX||0,p.sensorY||0,dry),i=bandProducts(r);
+ const sample=spectralPixelCenter(Math.round(p.sensorN||32),p.sensorX||0,p.sensorY||0);
+ const r=syntheticSpectra(sample.x,sample.y,dry),i=bandProducts(r);
  const label=sensorLabels[mode]||sensorLabels[0];
  const formulas=['R=rojo, G=verde, B=azul','R=NIR, G=rojo, B=verde','NDVI=(NIR−Rojo)/(NIR+Rojo)','NDWI=(Verde−NIR)/(Verde+NIR)'];
  return {
   metrics:[{label:'Visualización',value:label},metric('Reflectancia roja',r.red,3),metric('Reflectancia NIR',r.nir,3),metric('NDVI',i.ndvi,3),metric('NDWI',i.ndwi,3)],
   explanation:'Un sensor multiespectral registra bandas, no una fotografía de color universal. Combinar rojo e infrarrojo próximo permite explorar vegetación; comparar verde y NIR (NDWI de McFeeters) resalta agua en algunos contextos. Los índices pueden confundirse con suelo, sombras y condiciones atmosféricas.',
-  observation:'Material de celda: '+r.className+'. Parámetros de reflectancia SINTÉTICOS, sin atmósfera, nubes, calibración ni incertidumbre. No representa un dato Landsat/SAOCOM ni predice una sequía.',
+  observation:'Material de celda: '+r.className+' (centro: '+fmt(sample.x,1)+' m, '+fmt(sample.y,1)+' m). Parámetros de reflectancia SINTÉTICOS, sin atmósfera, nubes, calibración ni incertidumbre. No representa un dato Landsat/SAOCOM ni predice una sequía.',
   formula:(formulas[mode]||formulas[0])+'\nNDVI='+fmt(i.ndvi,3)+'; NDWI='+fmt(i.ndwi,3)+'\nÍndice ≠ clasificación o riesgo validado',
   passed:mode>=2&&Number.isFinite(i.ndvi)&&Number.isFinite(i.ndwi)
  };
