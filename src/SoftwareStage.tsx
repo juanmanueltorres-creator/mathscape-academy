@@ -1,3 +1,4 @@
+import type {CSSProperties} from 'react';
 import type {ProductId} from './software';
 import {modelDecision,PRODUCTS} from './software';
 type Props={
@@ -20,7 +21,7 @@ export default function SoftwareStage({view,product,mode,step,onProduct,onMode,o
  const {p,outcome}=modelDecision(product,mode);
  const selected=p.nodes[Math.max(0,Math.min(5,Math.round(step)))];
  const code=toCode(p.id,mode);
- return <div className={'software-stage software-'+view} aria-label='Laboratorio interactivo de producto y arquitectura'>
+ return <div className={'software-stage software-'+view} style={{'--case-accent':p.accent} as CSSProperties} aria-label='Laboratorio interactivo de producto y arquitectura'>
   <div className='sw-tabs' role='group' aria-label='Elegir caso de producto'>{PRODUCTS.map((candidate,i)=>
    <button key={candidate.id} type='button' className={i===product?'selected':''}
      aria-pressed={i===product} onClick={()=>onProduct(i)}>
