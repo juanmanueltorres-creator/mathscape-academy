@@ -234,6 +234,9 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent,#a99cff)
 .hw-machine-layout{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(310px,.92fr);gap:13px;align-items:stretch}
 .hw-board-panel{background:#0c192aea;border:1px solid #324c66;border-radius:13px;padding:10px 11px;display:flex;flex-direction:column;justify-content:center;min-width:0}
 .hw-board-svg{width:100%;height:auto;display:block;max-height:390px}
+.hw-hit{fill:transparent;stroke:transparent;stroke-width:1.5;cursor:pointer;transition:fill .15s,stroke .15s}
+.hw-hit:hover,.hw-hit:focus-visible{fill:#f2feff20;stroke:#cef4ff;stroke-width:2.5}
+.hw-hit.active{stroke:#b6f0f7ac;fill:#9ddfea0a}
 .hw-board-caption{margin:0 0 6px;text-align:center;font-size:10px;color:#9db9c7;letter-spacing:.4px}
 .hw-components{min-width:0;display:flex;flex-direction:column;gap:11px}
 .hw-component-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
