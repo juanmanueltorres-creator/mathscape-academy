@@ -1,5 +1,6 @@
 import type {SceneId} from './content';
 import {drawGeospatialScene} from './geospatial-visual';
+import {drawGeodesy} from './geodesy-visual';
 import {drawSatelliteLab,drawRadarLab} from './space-visual';
 import {drawTerrainLayer} from './terrain-visual';
 import {drawTerrainContours} from './terrain-contour-visual';
@@ -222,6 +223,7 @@ export function drawScene(canvas:HTMLCanvasElement,scene:SceneId,pr:Record<strin
  // Glow ambiental discreto. No afecta la relación matemática de los gráficos.
  const glow=c.createRadialGradient(p.cx,p.cy,10,p.cx,p.cy,Math.max(w,h)*.6);
  glow.addColorStop(0,rgba(accent,.10));glow.addColorStop(1,'#00000000');c.fillStyle=glow;c.fillRect(0,0,w,h);
+ if(scene==='geodesy'){drawGeodesy(c,w,h,pr);return}
  if(scene==='projection'||scene==='raster'||scene==='sensors'){drawGeospatialScene(c,w,h,scene,pr);return}
  if(scene==='satellites'){drawSatelliteLab(c,w,h,pr);return}
  if(scene==='radars'){drawRadarLab(c,w,h,pr);return}
