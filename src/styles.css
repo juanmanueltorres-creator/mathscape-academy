@@ -62,3 +62,19 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent,#a99cff)
 .stage-frame:has(canvas){isolation:isolate}
 @media(max-width:1260px){.route-picker{margin:14px 0}.route-picker button{font-size:10px;padding:9px 5px}}
 @media(max-width:730px){.route-picker{margin-top:16px}.stage-frame{overflow:hidden}.stage-frame canvas{max-width:100%}}
+
+/* V0.7 · Three comparative views: 2.5D, topographic isolines, and on-demand WebGL. */
+.terrain-view-switch{position:absolute;z-index:6;left:50%;bottom:63px;transform:translateX(-50%);display:flex;align-items:center;gap:4px;padding:5px;border:1px solid #395a68;border-radius:28px;background:#071a29e6;backdrop-filter:blur(15px);box-shadow:0 9px 32px #0007;max-width:calc(100% - 20px)}
+.terrain-view-switch button{white-space:nowrap;font-size:11px;font-weight:650;color:#a8c2d6;background:transparent;border-radius:22px;padding:9px 12px;transition:background .15s,color .15s}
+.terrain-view-switch button:hover{color:#fff;background:#2944549a}
+.terrain-view-switch button.active{background:#82e5cd;color:#0a2630;box-shadow:0 2px 12px #73e8c73f}
+.terrain-view-switch button:focus-visible{outline:2px solid #bafff0;outline-offset:2px}
+.terrain-three-host{position:absolute;inset:0;width:100%;height:100%;z-index:0;touch-action:none}
+.terrain-three-host canvas{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:none}
+.terrain-three-host canvas:active{cursor:grabbing}
+.terrain-three-caption{position:absolute;left:24px;top:86px;color:#83aaba;letter-spacing:1px;line-height:1.65;font:600 9px ui-monospace,monospace;pointer-events:none;text-shadow:0 1px 6px #06111d}
+.terrain-webgl-fallback,.terrain-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;text-align:center;color:#d7eafa;background:#0b1727}
+.terrain-webgl-fallback strong{font-size:18px}.terrain-webgl-fallback p{max-width:280px;color:#b6c8d9;font-size:12px}
+.terrain-webgl-fallback button{border:1px solid #6c9dad;border-radius:10px;padding:12px 16px;background:#203e4c;color:white}
+@media(max-width:730px){.terrain-view-switch{bottom:52px}.terrain-view-switch button{padding:8px 9px;font-size:10px}.terrain-three-caption{top:76px;left:12px;font-size:8px}}
+@media(max-width:440px){.terrain-view-switch{gap:1px;padding:4px}.terrain-view-switch button{font-size:9px;padding:8px 7px}.terrain-three-caption{display:none}}

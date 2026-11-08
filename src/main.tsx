@@ -1,4 +1,4 @@
-import React,{useCallback,useEffect,useMemo,useRef,useState} from 'react';
+import React,{Suspense,useCallback,useEffect,useMemo,useRef,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {defaults,lessons,functionFamilies,type SceneId} from './content';
 import {examples} from './examples';
@@ -6,6 +6,7 @@ import {calculate} from './measure';
 import {drawScene} from './visuals';
 import './styles.css';
 
+const TerrainThree=React.lazy(()=>import('./TerrainThree'));
 const number=(n:number)=>Number(n.toFixed(2)).toLocaleString('es-AR');
 const groups=[{label:'DESCUBRIR',ids:['atlas','functions','limits']},{label:'CÁLCULO',ids:['derivative','integral','double']},{label:'ESTRUCTURAS',ids:['matrix','ode','gradient']},{label:'APLICACIONES',ids:['terrain']},{label:'ATLAS GEOESPACIAL',ids:['projection','raster','sensors']}];
 const sceneName:Record<string,string>={atlas:'Generative field',functions:'Coordinate study',limits:'Continuity / limit',derivative:'Instantaneous change',integral:'Area accumulation',double:'Volume accumulation',matrix:'Linear transformation',ode:'Dynamic systems',gradient:'Slope field',terrain:'Terrain analysis / synthetic DEM',projection:'From sphere to map',raster:'Pixel & vector field',sensors:'Multispectral interpretation'};
@@ -39,7 +40,7 @@ function Stage({scene,params,accent,playing,focus,resetKey}:{scene:SceneId;param
   return()=>{stop();observer.disconnect();document.removeEventListener('visibilitychange',onVisibility)};
  },[playing,scene,animate]);
  const down=(e:React.PointerEvent<HTMLCanvasElement>)=>{
-  if(!['atlas','double','gradient','terrain'].includes(scene))return;
+  if(!['atlas','double','gradient','terrain'].includes(scene)||(scene==='terrain'&&params.terrainView===1))return;
   drag.current={x:e.clientX,angle:angle.current};e.currentTarget.setPointerCapture(e.pointerId);
  };
  const move=(e:React.PointerEvent<HTMLCanvasElement>)=>{if(!drag.current)return;angle.current=drag.current.angle+(e.clientX-drag.current.x)*.008;animate()};
@@ -66,7 +67,7 @@ function App(){
  const select=(id:SceneId)=>{setScene(id);setResponse('idle');setMobileMenu(false);};
  const update=(key:string,value:number)=>{setParams(prev=>({...prev,[key]:value}));setResponse('idle')};
  const applyExample=(values:Record<string,number>)=>{setParams(prev=>({...prev,...values}));setResponse('idle');setResetKey(x=>x+1)};
- const controls=current.controls.filter(c=>scene==='double'?(c.key==='height'?[1,3,4].includes(modelIndex):c.key==='amplitude'?modelIndex===0:true):scene==='ode'?(c.key!=='capacity'||params.odeModel===1):scene==='atlas'?(focus==='lissajous'?['freqA','freqB','phase'].includes(c.key):focus==='lorenz'?c.key==='lorenzSpeed':['gielisSymmetry','gielisExponent'].includes(c.key)):true);
+ const controls=current.controls.filter(c=>scene==='terrain'?(c.key!=='contourStep'||Math.round(params.terrainView||0)===1):scene==='double'?(c.key==='height'?[1,3,4].includes(modelIndex):c.key==='amplitude'?modelIndex===0:true):scene==='ode'?(c.key!=='capacity'||params.odeModel===1):scene==='atlas'?(focus==='lissajous'?['freqA','freqB','phase'].includes(c.key):focus==='lorenz'?c.key==='lorenzSpeed':['gielisSymmetry','gielisExponent'].includes(c.key)):true);
  const reset=()=>{setParams(prev=>{const next={...prev};for(const c of current.controls)next[c.key]=defaults[c.key];if(scene==='functions')next.family=0;return next});setResponse('idle');setResetKey(x=>x+1)};
  const check=()=>{const ok=info.passed;setResponse(ok?'correct':'retry');if(ok)setDone(prev=>prev.includes(scene)?prev:[...prev,scene])};
  const next=()=>select(lessons[(lessons.findIndex(l=>l.id===scene)+1)%lessons.length].id);
@@ -92,9 +93,10 @@ function App(){
     <div className="workspace">
      <section className="visual-column"><div className="stage-frame"><div className="stage-corner" aria-hidden="true">EXPERIMENT / {current.no}</div>
       <div className="stage-top"><div className="stage-label"><span className="stage-icon">✳</span><div><span>LIVE MATHEMATICS</span><strong>{sceneName[scene]}</strong></div></div><div className="stage-tools">{scene==='atlas'&&<button onClick={()=>setPlaying(x=>!x)} title={playing?'Pausar':'Reanudar'} aria-label={playing?'Pausar animación':'Reanudar animación'}>{playing?'Ⅱ':'▶'}</button>}<button onClick={reset} title="Restablecer" aria-label="Restablecer parámetros">↺</button></div></div>
-      <Stage scene={scene} params={params} accent={current.accent} playing={playing} focus={focus} resetKey={resetKey}/>
+      {scene==='terrain'&&Math.round(params.terrainView||0)===2?<Suspense fallback={<div className='terrain-loading'>Preparando relieve 3D…</div>}><TerrainThree params={params} onFallback={()=>update('terrainView',0)}/></Suspense>:<Stage scene={scene} params={params} accent={current.accent} playing={playing} focus={focus} resetKey={resetKey}/>}
+      {scene==='terrain'&&<div className='terrain-view-switch' role='group' aria-label='Representación del terreno'>{[['0','Relieve 2.5D'],['1','Curvas de nivel'],['2','Terreno 3D']] .map(([mode,label])=><button key={mode} type='button' className={Math.round(params.terrainView||0)===Number(mode)?'active':''} aria-pressed={Math.round(params.terrainView||0)===Number(mode)} onClick={()=>update('terrainView',Number(mode))}>{label}</button>)}</div>}
       {scene==='atlas'&&<div className="focus-switch" aria-label="Geometría generativa">{([['lissajous','Lissajous'],['lorenz','Lorenz'],['gielis','Gielis']] as [AtlasFocus,string][]).map(([key,label],i)=><button key={key} onClick={()=>{setFocus(key);update('atlasModel',i)}} className={focus===key?'active':''} aria-pressed={focus===key}>{label}</button>)}</div>}
-      <div className="stage-footer"><span className="scene-tag">● {scene==='atlas'?'GENERATIVE SYSTEMS':scene==='double'?'DOUBLE INTEGRAL / SURFACE':scene==='gradient'?'PARTIAL DERIVATIVES':scene==='terrain'?'TERRAIN / RASTER & CALCULUS':scene==='projection'?'GEO / MAP PROJECTIONS':scene==='raster'?'GEO / RASTER × VECTOR':scene==='sensors'?'GEO / SPECTRAL BANDS':scene.toUpperCase()}</span><span>{['atlas','double','gradient','terrain'].includes(scene)?'MOUSE DRAG ↔ ROTATE':'CHANGE PARAMETERS ↗ OBSERVE'}</span></div>
+      <div className="stage-footer"><span className="scene-tag">● {scene==='atlas'?'GENERATIVE SYSTEMS':scene==='double'?'DOUBLE INTEGRAL / SURFACE':scene==='gradient'?'PARTIAL DERIVATIVES':scene==='terrain'?'TERRAIN / RASTER & CALCULUS':scene==='projection'?'GEO / MAP PROJECTIONS':scene==='raster'?'GEO / RASTER × VECTOR':scene==='sensors'?'GEO / SPECTRAL BANDS':scene.toUpperCase()}</span><span>{scene==='terrain'&&params.terrainView===1?'LEÉ LAS CURVAS · COMPARÁ CON EL PERFIL':scene==='terrain'&&params.terrainView===2?'MOUSE ↔ ÓRBITA / ZOOM':(['atlas','double','gradient','terrain'].includes(scene)?'MOUSE DRAG ↔ ROTATE':'CHANGE PARAMETERS ↗ OBSERVE')}</span></div>
      </div>
      <div className="metrics">{info.metrics.map((m,i)=><div className="stat" key={m.label}><span className="stat-name">{m.label}</span><strong>{m.value}</strong><span className="stat-rule" style={{opacity:i===0?1:.45}}/></div>)}</div>
      <div className="context-strip"><span className="context-icon">↗</span><p>{info.observation}</p></div>
@@ -110,7 +112,7 @@ function App(){
       <button className="next" onClick={next}>SIGUIENTE EXPLORACIÓN <span>→</span></button>
      </div></section>
     </div>
-    <footer className="footer"><span>© MATHSCAPE ACADEMY · EXPERIMENTAL EDUCATION</span><span>REACT / TYPESCRIPT / CANVAS 2D · SIN BLENDER</span></footer>
+    <footer className="footer"><span>© MATHSCAPE ACADEMY · EXPERIMENTAL EDUCATION</span><span>REACT / TYPESCRIPT / CANVAS 2D + THREE.JS BAJO DEMANDA</span></footer>
    </div>
   </div>
  </div>;

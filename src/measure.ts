@@ -53,13 +53,19 @@ export function calculate(scene:SceneId,p:Record<string,number>):Result{
  }
  if(scene==='terrain'){
   const t=terrainReport(p);
+  const viewMode=Math.round(p.terrainView||0);
+  const representations=[
+   'La perspectiva 2.5D muestra el mismo z(x,y) del perfil. Girar la cámara cambia el dibujo, no las elevaciones ni los volúmenes.',
+   'Una curva de nivel conecta posiciones donde z(x,y)=c. El intervalo vertical es una diferencia de altura en metros; curvas juntas indican mayor pendiente local. Se interpolan a partir de una grilla, no se miden en campo.',
+   'Three.js transforma en triángulos las mismas elevaciones z(x,y). El plano semitransparente representa la cota z₀: la parte superior y la inferior se integran por separado. La rotación no cambia el volumen calculado.'
+  ];
   const shapes=['Lomas y quebradas','Valle con cauce curvo','Ladera con ondulaciones'];
   return {
    metrics:[met('Cota del punto (m)',t.z),met('Pendiente (%)',t.slopePercent),met('Corte sobre z₀ (m³)',t.coarse.above),met('Relleno bajo z₀ (m³)',t.coarse.below),met('Dif. por resolución (%)',t.samplingDifferencePercent)],
-   explanation:'El relieve combina lomas, depresiones y ondulaciones SINTÉTICAS. La pendiente se estima con diferencias centrales; los volúmenes se obtienen sumando columnas de celdas. Corte y relleno aquí son ilustrativos respecto de un plano, NO un diseño de obra real.',
+   explanation:representations[Math.max(0,Math.min(2,viewMode))]+' Es un modelo sintético; los volúmenes no sustituyen un levantamiento ni un cálculo de movimiento de suelos.',
    passed:t.samplingDifferencePercent<1,
    observation:`${shapes[t.model]} · ${t.coarse.cells} celdas de ${num(t.coarse.cellSize,1)} m · comparación con grilla de 120×120. Diferencia de muestreo ≠ incertidumbre del DEM. SIN DATOS REALES.`,
-   formula:`${terrainEquation(t.model,t.irregularity)}\n∇z≈((z(x+Δ,y)−z(x−Δ,y))/(2Δ), (z(x,y+Δ)−z(x,y−Δ))/(2Δ))\nθ=arctan(|∇z|) = ${num(t.slopeDegrees,2)}°\nV₊(z₀)=∬ᴰ max(z−z₀,0)dA ≈ Σᵢⱼ max(zᵢⱼ−${num(t.datum,0)},0)·${num(t.coarse.cellSize**2,0)} m²`
+   formula:`${terrainEquation(t.model,t.irregularity)}\n${viewMode===1?`Curva de nivel: z(x,y)=c; Δc=${num(p.contourStep||50,0)} m\n`:''}∇z≈((z(x+Δ,y)−z(x−Δ,y))/(2Δ), (z(x,y+Δ)−z(x,y−Δ))/(2Δ))\nθ=arctan(|∇z|) = ${num(t.slopeDegrees,2)}°\nV₊(z₀)=∬ᴰ max(z−z₀,0)dA ≈ Σᵢⱼ max(zᵢⱼ−${num(t.datum,0)},0)·${num(t.coarse.cellSize**2,0)} m²`
   };
  }
  const m=Math.round(p.gradientModel||0),grad=gradientExample(m,p.ga,p.gb,p.gx,p.gy),mag=norm2(grad);
