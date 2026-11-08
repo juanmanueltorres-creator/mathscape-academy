@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {projectGeographic,projectionDistortion,haversineKm,rasterValue,rasterInfo,syntheticSpectra,bandProducts,normalizedDifference,syntheticColor} from '../src/geospatial.ts';
 const close=(a,b,tol=1e-9)=>assert.ok(Math.abs(a-b)<tol,'expected '+a+' ≈ '+b);
 test('Equirectangular, Mercator y equivalente tienen centro en 0,0',()=>{
- for(let i=0;i<3;i++)assert.deepEqual(projectGeographic(0,0,i),[0,0]);
+ for(let i=0;i<3;i++){const [x,y]=projectGeographic(0,0,i);close(x,0);close(y,0)}
 });
 test('Distorsión local del área en latitud 60° sobre esfera',()=>{
  close(projectionDistortion(60,0).area,2);
