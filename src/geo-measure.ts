@@ -2,7 +2,7 @@ import type {SceneId} from './content';
 import type {Result,Metric} from './measure';
 import {projectionDistortion,projectionNames,rasterInfo,syntheticSpectra,bandProducts,sensorLabels} from './geospatial';
 const fmt=(n:number,digits=2)=>Number(n.toFixed(digits)).toLocaleString('es-AR');
-const metric=(label:string,n:number,detail?:string):Metric=>({label,value:fmt(n),detail});
+const metric=(label:string,n:number,digits=2):Metric=>({label,value:fmt(n,digits)});
 export function calculateGeospatial(scene:SceneId,p:Record<string,number>):Result{
  if(scene==='projection'){
   const mode=Math.round(p.projectionMode||0),lat=p.probeLat??45,lon=p.probeLon??-60;
