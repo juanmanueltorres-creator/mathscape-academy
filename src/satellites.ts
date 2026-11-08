@@ -15,6 +15,11 @@ export const ORBIT_MISSIONS:readonly OrbitMission[]=[
 export const rad=(x:number)=>x*Math.PI/180;
 export const deg=(x:number)=>x*180/Math.PI;
 export const normalizeLon=(x:number)=>((x+180)%360+360)%360-180;
+/** Illustration only: marker follows exactly the same rotated ellipse drawn on Canvas. */
+export function orbitEllipsePoint(phase:number,rx:number,ry:number,rotation:number):readonly [number,number]{
+ const a=rx*Math.cos(phase),b=ry*Math.sin(phase);
+ return [a*Math.cos(rotation)-b*Math.sin(rotation),a*Math.sin(rotation)+b*Math.cos(rotation)];
+}
 export function orbitPeriodMin(heightKm:number){
  if(!Number.isFinite(heightKm)||heightKm<150||heightKm>100000)throw new RangeError('Altura orbital inválida');
  return 2*Math.PI*Math.sqrt((R_EARTH_KM+heightKm)**3/MU_EARTH)/60;
