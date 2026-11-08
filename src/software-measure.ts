@@ -1,5 +1,5 @@
 import type {Result,Metric} from './measure';
-import {modelDecision} from './software';
+import {modelDecision} from './software.ts';
 const metric=(label:string,value:string):Metric=>({label,value});
 export function calculateSoftware(view:'product'|'software',p:Record<string,number>):Result{
  const product=p.softwareProduct??0,mode=p.softwareMode??0,step=p.softwareStep??0;
