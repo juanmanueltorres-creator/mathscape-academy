@@ -93,4 +93,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent,#a99cff)
 .data-source-card span{font-size:9px;font-weight:750;color:#84d2c9;letter-spacing:1.3px}
 .data-source-card a{font-size:12px;font-weight:650;color:#c7f8f1;text-decoration:underline;text-decoration-color:#679ba3;text-underline-offset:3px}
 .data-source-card small{font-size:10px;line-height:1.5;color:#95aebf}
+.data-source-card .dem-refresh{border:1px solid #527e89;border-radius:8px;background:#203846;color:#ddf7f4;text-align:left;padding:9px 11px;font-size:11px;font-weight:700;margin-top:3px}
+.data-source-card .dem-refresh:hover:not(:disabled){background:#315769}
+.data-source-card .dem-refresh:disabled{opacity:.6;cursor:wait}
+.data-source-card .dem-source-error{color:#ffbf96}
 @media(max-width:690px){.real-dem-source{left:13px;top:78px;font-size:8px}.real-dem-message{padding:20px}.real-dem-message p{font-size:11px}}
