@@ -43,3 +43,37 @@ El vector violeta proyectado sobre el plano representa la dirección del gradien
 - La validación **completa** de React/Vite requiere `npm install`, `npm run build` y pruebas de interacción en un navegador real. No declarar esa validación como superada hasta ejecutarla.
 - La interfaz usa Canvas 2D y proyección, no WebGL. Rotar el modelo modifica sólo la perspectiva, nunca los datos.
 - No hay IA generativa ni persistencia del progreso todavía; los capítulos resueltos duran solamente la sesión del navegador.
+
+## V0.4 · Galería de ejemplos con fórmulas y dominios
+
+Los ejemplos son seleccionables, independientes y muestran la **misma función en el gráfico y en el cálculo**. La entrada predeterminada es el capítulo de funciones; el Atlas tiene tres escenas independientes (Lissajous, Lorenz y Gielis), con Lorenz calculado solamente bajo demanda, tope de 20 cuadros/s, pausa por visibilidad y DPR limitado.
+
+### Integrales dobles (dominios y volúmenes)
+
+La integral doble para el volumen de un sólido vertical usa `V=∬_D (z_superior-z_inferior) dA`. En los casos circulares, `D={x²+y²≤R²}` y se usa la sustitución polar `dA=r dr dθ` para las sumas de Riemann con puntos medios. El caso cuadrático utiliza un cuadrado y puntos medios cartesianos.
+
+| Modelo | Integrando (espesor vertical) | Resultado exacto |
+|---|---|---|
+| Cilindro | `H` sobre disco | `πR²H` |
+| Esfera completa | `2√(R²−x²−y²)` sobre disco | `4πR³/3` |
+| Hemisferio superior | `√(R²−x²−y²)` sobre disco | `2πR³/3` |
+| Paraboloide | `H(1−(x²+y²)/R²)` sobre disco | `πR²H/2` |
+| Cono | `H(1−√(x²+y²)/R)` sobre disco | `πR²H/3` |
+| Cuadrática | `1+a(x²+y²)` sobre `[-b,b]²` | `4b²+(8/3)ab⁴` |
+
+**Nota:** para la esfera completa, el gráfico muestra las dos hojas `z=±√(R²−x²−y²)` y la integral calcula la diferencia entre ambas. No se presenta erróneamente media esfera como esfera completa.
+
+### Familias en otras escenas
+
+- Límites: `sen(x)/x`, discontinuidad removible en `(x²−1)/(x−1)` y salto.
+- Derivadas: `x²`, `sen(x)`, `eˣ`; pendiente secante y pendiente analítica.
+- Integrales simples: `x²/4+1/2`, `1+sen(x)`, `1+x/2`; suma izquierda y primitiva exacta.
+- Matrices: identidad, cizalla, rotación 90°, proyección singular.
+- Ecuaciones diferenciales: exponencial y logística; Euler frente a soluciones exactas.
+- Gradientes: paraboloide, silla de montar y gaussiana (gradientes analíticos).
+
+### Rendimiento y límites de verificación
+
+El Atlas no mezcla tres renderizados. Se inicia en funciones, y cada modo se dibuja por separado. La trayectoria de Lorenz se genera de forma diferida y se reutiliza en memoria. Las escenas no animadas se redibujan solo ante cambios. Las mallas están limitadas para equipos modestos. No se agregaron dependencias.
+
+Las pruebas automatizadas cubren valores exactos, convergencia numérica y dominios. La sintaxis TSX y el motor matemático se validaron por separado; una compilación React/Vite con dependencias instaladas debe ejecutarse en CI/Vercel antes de fusionar.
