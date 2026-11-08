@@ -1,4 +1,4 @@
-import {terrainElevation,TERRAIN_EXTENT_M,type ElevationField} from './terrain';
+import {terrainElevation,TERRAIN_EXTENT_M,type ElevationField} from './terrain.ts';
 
 /** A segment connects equal-elevation points in projected local metres. */
 export type XY=readonly [number,number];
