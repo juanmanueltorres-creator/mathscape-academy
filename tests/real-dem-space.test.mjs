@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {DEM_SPEC,demCoordinates,demAPIURL,parseDemResponse,demReport,interpolateDem} from '../src/real-dem.ts';
+import {DEM_SPEC,demCoordinates,demAPIURL,parseDemResponse,demReport,interpolateDem,bundledRealDem,loadRealDem} from '../src/real-dem.ts';
 import {ORBIT_MISSIONS,GEO_HEIGHT_KM,SIDEREAL_DAY_S,orbitPeriodMin,orbitalVelocityKmS,horizonHalfAngleRad,groundPoint,orbitSummary,orbitEllipsePoint} from '../src/satellites.ts';
 import {RADAR_KINDS,dbzToLinear,linearToDbz,radialVelocity,radarSummary,syntheticSigma0,sigmaToDb} from '../src/radar-lab.ts';
 const close=(a,b,tol=1e-7)=>assert.ok(Math.abs(a-b)<=tol,'expected '+a+' ≈ '+b);
@@ -88,4 +88,13 @@ test('El satélite de la ilustración siempre sigue su órbita dibujada y rotada
   const unrotY=-x*Math.sin(rotation)+y*Math.cos(rotation);
   close(unrotX**2/(rx*rx)+unrotY**2/(ry*ry),1,1e-10);
  }
+});
+
+test('La grilla SRTM verificada se ve sin depender de conexión de red',async()=>{
+ const grid=bundledRealDem();
+ assert.equal(grid.origin,'snapshot');assert.equal(grid.valid,81);assert.equal(grid.noData,0);
+ assert.equal(grid.min,2386);assert.equal(grid.max,2661);
+ assert.equal(grid.points[0].z,2386);assert.equal(grid.points[40].z,2518);assert.equal(grid.points[80].z,2538);
+ const returned=await loadRealDem();
+ assert.equal(returned.origin,'snapshot');assert.deepEqual(returned.points,grid.points);
 });

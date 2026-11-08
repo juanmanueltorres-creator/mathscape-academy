@@ -22,6 +22,6 @@ export default function RealDemStage({data,params,status,error,retry}:{data:DemG
    <p>{status==='error'?(error||'No se pudo conectar con el proveedor'):'81 puntos, WGS84 y alturas EGM96. Sin reemplazar datos faltantes por simulaciones.'}</p>
    {status==='error'&&<button type='button' onClick={retry}>Reintentar consulta</button>}
   </div>}
-  {data&&<div className='real-dem-source'>DATOS CONSULTADOS · SRTM V3 / OpenTopoData · {data.requestedAt.slice(0,10)}</div>}
+  {data&&<div className='real-dem-source'>{data.origin==='snapshot'?'MUESTRA VERIFICADA · SRTM V3 / OpenTopoData':'ACTUALIZACIÓN DESDE API · SRTM V3'} · {data.requestedAt.slice(0,10)}</div>}
  </div>;
 }

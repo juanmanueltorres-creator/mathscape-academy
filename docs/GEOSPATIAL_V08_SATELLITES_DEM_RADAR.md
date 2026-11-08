@@ -25,12 +25,13 @@ La vista "DEM real · San Juan" llama a:
 - **Servicio:** [OpenTopoData](https://www.opentopodata.org/), endpoint [srtm90m](https://www.opentopodata.org/datasets/srtm/).
 - **Conjunto:** SRTM versión 3, producto nominal 3 arc-seconds ≈90 m.
 - **Huella geográfica:** centro lat = −31.4000°, lon = −69.1000°; recorte de ±0.004° en latitud y ±0.005° en longitud. Zona precordillerana de San Juan.
+- **Disponibilidad V0.8.1:** se guardaron los 81 valores reales devueltos el 2026-11-08 UTC en `src/srtm-snapshot.ts`. Esa instantánea verificada se carga localmente de manera predeterminada, porque el navegador público mostró errores de acceso de red/CORS aunque la API respondía por acceso directo. El usuario puede intentar una actualización voluntaria; si falla, se conservan los valores verificados.
 - **Representación:** 81 posiciones solicitadas (malla 9×9) con interpolación bilineal declarada por la API. La **separación de muestras** es de aprox. 111 m N–S y 119 m E–O; **no equivale a la resolución nativa** del SRTM.
 - **Referencia horizontal:** geográficas EPSG:4326, WGS84. **Referencia vertical:** EGM96, unidades metros. Referencia: [USGS SRTM product specification](https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm).
 - **Vista:** puntos y curvas interpoladas sobre la grilla; perfil formado por valores devueltos; pendientes aproximadas por diferencias finitas y distancias locales equirectangulares, nunca por grados crudos.
 - **Volumen:** integración de alturas medias de celdas respecto de un plano de referencia arbitrario. **Es una aproximación didáctica**, no cubicación geotécnica, movimiento de tierras o incertidumbre del SRTM.
 - **Validación:** se verifican dataset, coordenadas, cardinalidad de respuesta, finitud de alturas y NoData; ninguna lectura inválida se reemplaza con altitudes inventadas.
-- **Limitación operacional:** la API pública limita consultas (máximo 100 puntos/solicitud, 1 consulta/s). Mathscape consulta 81 puntos de una vez, con caché en memoria y botón de reintentar. Si falla o se alcanza el límite, muestra error. No guarda secretos ni solicita credenciales.
+- **Limitación operacional:** la API pública limita consultas (máximo 100 puntos/solicitud, 1 consulta/s). Mathscape guarda las 81 alturas reales en el código y puede mostrar el mapa sin solicitudes externas. El botón de actualización intenta consultar 81 puntos de una vez; si falla por CORS, cuota o red, conserva el recorte verificado y muestra el fallo. No se genera ningún DEM ficticio como sustituto. No guarda secretos ni solicita credenciales.
 - **Fundamental:** el navegador NO descarga ni lee un GeoTIFF nativo. Este es un **muestreo auténtico de un DEM**; un cargador geoespacial validado será otra iteración.
 
 ### Qué exigir para pasar a un DEM georreferenciado profesional

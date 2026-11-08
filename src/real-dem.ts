@@ -1,3 +1,4 @@
+import {SRTM_SNAPSHOT} from './srtm-snapshot.ts';
 /** REAL topographic samples via OpenTopoData SRTMGL3 v3.
  * These are API-sampled, bilinearly interpolated elevations, NOT a native GeoTIFF.
  * WGS84 longitude/latitude, EGM96 orthometric elevations in metres.
@@ -11,7 +12,7 @@ export const DEM_SPEC={
  docsURL:'https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm'
 } as const;
 export type DemPoint=Readonly<{lat:number;lon:number;z:number|null}>;
-export type DemGrid={n:number;points:DemPoint[];requestedAt:string;min:number;max:number;valid:number;noData:number;dxMeters:number;dyMeters:number;sourceURL:string};
+export type DemGrid={n:number;points:DemPoint[];requestedAt:string;min:number;max:number;valid:number;noData:number;dxMeters:number;dyMeters:number;sourceURL:string;origin:'snapshot'|'live'};
 export const demCoordinates=()=>{
  const result:{lat:number;lon:number}[]=[];
  for(let j=0;j<DEM_SPEC.n;j++)for(let i=0;i<DEM_SPEC.n;i++)result.push({
@@ -24,7 +25,7 @@ export function demAPIURL(){
  const locations=demCoordinates().map(p=>p.lat+','+p.lon).join('|');
  return 'https://api.opentopodata.org/v1/srtm90m?'+new URLSearchParams({locations,interpolation:'bilinear'}).toString();
 }
-export function parseDemResponse(input:unknown,requestedAt:string):DemGrid{
+export function parseDemResponse(input:unknown,requestedAt:string,origin:'snapshot'|'live'='live'):DemGrid{
  if(!input||typeof input!=='object'||(input as {status?:unknown}).status!=='OK')throw new Error('El proveedor no devolvió estado OK');
  const rows=(input as {results?:unknown}).results;
  if(!Array.isArray(rows)||rows.length!==DEM_SPEC.n**2)throw new Error('La respuesta no contiene los 81 puntos solicitados');
@@ -49,20 +50,37 @@ export function parseDemResponse(input:unknown,requestedAt:string):DemGrid{
  return {n:DEM_SPEC.n,points,requestedAt,min,max,valid,noData:points.length-valid,
   dxMeters:2*DEM_SPEC.lonHalfSpan*mPerDegLon/(DEM_SPEC.n-1),
   dyMeters:2*DEM_SPEC.latHalfSpan*mPerDegLat/(DEM_SPEC.n-1),
-  sourceURL:demAPIURL()};
+  sourceURL:demAPIURL(),origin};
 }
-let cache:DemGrid|null=null;let inflight:Promise<DemGrid>|null=null;
-export function loadRealDem():Promise<DemGrid>{
- if(cache)return Promise.resolve(cache);
+/** A real, source-verified offline snapshot; NOT a fallback to fabricated elevation. */
+export function bundledRealDem():DemGrid{
+ const coords=demCoordinates();
+ if(SRTM_SNAPSHOT.dataset!=='srtm90m'||SRTM_SNAPSHOT.size!==DEM_SPEC.n||SRTM_SNAPSHOT.elevations.length!==81)
+  throw new Error('La muestra SRTM empaquetada no coincide con sus metadatos');
+ const response={
+  status:'OK',
+  results:SRTM_SNAPSHOT.elevations.map((elevation,index)=>({
+   dataset:'srtm90m',elevation,location:{lat:coords[index].lat,lng:coords[index].lon}
+  }))
+ };
+ return parseDemResponse(response,SRTM_SNAPSHOT.retrievedAtUTC,'snapshot');
+}
+let cache:DemGrid|null=null;
+let inflight:Promise<DemGrid>|null=null;
+/** Browser-safe by default; external re-query happens ONLY on explicit refresh. */
+export function loadRealDem(refresh=false):Promise<DemGrid>{
+ if(!refresh){
+  if(!cache)cache=bundledRealDem();
+  return Promise.resolve(cache);
+ }
  if(inflight)return inflight;
  const task=(async()=>{
-  const controller=new AbortController();
-  const timeout=setTimeout(()=>controller.abort(),15000);
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
   try{
    const response=await fetch(demAPIURL(),{signal:controller.signal,headers:{Accept:'application/json'}});
    if(!response.ok)throw new Error('El proveedor respondió HTTP '+response.status+(response.status===429?' (límite temporal de consultas)':''));
    const data=await response.json();
-   const result=parseDemResponse(data,new Date().toISOString());
+   const result=parseDemResponse(data,new Date().toISOString(),'live');
    cache=result;return result;
   }finally{clearTimeout(timeout)}
  })();

@@ -63,6 +63,10 @@ function App(){
  const [demStatus,setDemStatus]=useState<'idle'|'loading'|'ready'|'error'>('idle');
  const [demError,setDemError]=useState<string|null>(null);
  const [demRetry,setDemRetry]=useState(0);
+ const refreshDem=()=>{
+  setDemStatus('loading');setDemError(null);
+  loadRealDem(true).then(result=>{setRealDem(result);setDemStatus('ready')}).catch(e=>{setDemStatus('ready');setDemError(e instanceof Error?e.message:'No se pudo consultar la fuente')});
+ };
  useEffect(()=>{
   if(scene!=='dem'||realDem)return;
   let active=true;setDemStatus('loading');setDemError(null);
@@ -117,7 +121,7 @@ function App(){
      <section className="inspector" aria-label="Panel de experimentación"><div className="inspector-inner">
       <div className="inspector-top"><div><span className="overline">PARAMETER LAB</span><h2>Experimentá.</h2></div><span className="step-num">{current.no}<span>/{lessons.length}</span></span></div>
       {sceneExamples.length>0&&<div className="example-lab"><span className="field-label">EJEMPLOS PARA EXPERIMENTAR</span><div className="example-options">{sceneExamples.map(ex=><button key={ex.label} type="button" className={Object.entries(ex.params).every(([k,v])=>params[k]===v)?'active':''} title={ex.subtitle} onClick={()=>applyExample(ex.params)}><b>{ex.label}</b><small>{ex.subtitle}</small></button>)}</div></div>}<div className="formula-card"><span className="field-label">FÓRMULA · DOMINIO · RESULTADO</span><div className="formula-text" aria-live="polite">{info.formula}</div></div>
-      {scene==='dem'&&<div className='data-source-card'><span>FUENTE VERIFICABLE</span><a href='https://www.opentopodata.org/datasets/srtm/' target='_blank' rel='noopener noreferrer'>OpenTopoData · SRTM v3 ↗</a><small>WGS84 / EGM96 · puntos reales interpolados · no GeoTIFF original</small></div>}
+      {scene==='dem'&&<div className='data-source-card'><span>FUENTE VERIFICABLE</span><a href='https://www.opentopodata.org/datasets/srtm/' target='_blank' rel='noopener noreferrer'>OpenTopoData · SRTM v3 ↗</a><small>WGS84 / EGM96 · muestra verificada guardada en el proyecto · no GeoTIFF original</small><button type='button' className='dem-refresh' disabled={demStatus==='loading'} onClick={refreshDem}>{demStatus==='loading'?'Consultando fuente…':'Actualizar datos desde API'}</button>{demError&&<small role='status' className='dem-source-error'>No se pudo actualizar: {demError}. Se conserva la muestra real verificada.</small>}</div>}
       {scene==='functions'&&<div className="family-lab"><span className="field-label">FAMILIA / TIPO DE FUNCIÓN</span><div className="family-options" role="group" aria-label="Tipo de función">{functionFamilies.map((f,i)=><button key={f.label} type="button" className={i===family?'active':''} aria-pressed={i===family} onClick={()=>update('family',i)}>{f.label}</button>)}</div></div>}
       <div className="control-head"><span className="field-label">VARIABLES DE CONTROL</span><button onClick={reset}>RESTABLECER ↺</button></div>
       <div className="sliders">{controls.map(ctl=><label className="slider" key={ctl.key}><div><span>{ctl.label}</span><output>{number(params[ctl.key])}{ctl.unit||''}</output></div><input type="range" min={ctl.min} max={ctl.max} step={ctl.step} value={params[ctl.key]} onChange={e=>update(ctl.key,Number(e.currentTarget.value))} /></label>)}</div>
