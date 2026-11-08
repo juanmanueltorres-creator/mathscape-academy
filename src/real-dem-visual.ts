@@ -1,4 +1,4 @@
-import {DEM_SPEC,at,demReport,interpolateDem,type DemGrid} from './real-dem';
+import {at,interpolateDem,type DemGrid} from './real-dem';
 import {terrainContours} from './terrain-geometry';
 
 export function drawSampledDEM(c:CanvasRenderingContext2D,w:number,h:number,grid:DemGrid,p:Record<string,number>){
