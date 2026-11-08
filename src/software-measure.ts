@@ -1,7 +1,7 @@
 import type {Result,Metric} from './measure';
 import {modelDecision} from './software';
 const metric=(label:string,value:string):Metric=>({label,value});
-export function calculateSoftware(view:'product'|'system',p:Record<string,number>):Result{
+export function calculateSoftware(view:'product'|'software',p:Record<string,number>):Result{
  const product=p.softwareProduct??0,mode=p.softwareMode??0,step=p.softwareStep??0;
  const {p:caseData,outcome,nodes}=modelDecision(product,mode);
  const active=nodes[Math.max(0,Math.min(5,Math.round(step)))];
