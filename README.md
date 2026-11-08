@@ -141,3 +141,16 @@ No se incorporaron librerías nuevas para estas tres escenas. Three.js sigue sie
 **Advertencia:** POSGAR07 es un marco geodésico nacional, no una proyección. El modo Gauss-Krüger aplica geometría WGS84 ilustrativa pero **no realiza una transformación WGS84 → POSGAR07 de datum/época**. No usar coordenadas de esta escena en trabajos topográficos, catastrales o de ingeniería.
 
 Ver [fuentes IGN y pruebas de geodesia](docs/GEODESY_UTM_POSGAR_V09.md). El capítulo no agrega dependencias pesadas ni afecta el módulo opcional Three.js. Si Vercel limita nuevas publicaciones, el avance de GitHub y su despliegue deben verificarse por separado.
+
+## V1.0 · Software y Producto
+
+Mathscape ahora conecta Matemática, Geoespacial y Software/Producto en **19 experimentos**. Dos capítulos interactivos nuevos:
+
+- **17 · Primero el problema:** elegir entre rutas, publicaciones y transferencias; entender necesidad, objetivo, recorrido y el efecto de cada etapa.
+- **18 · ¿Qué sucede después del clic?:** recorrer seis capas de un sistema, observar HTTP, validación, reglas, datos y estados; comparar éxito, rechazo y reintento.
+
+Los casos no reproducen arquitecturas internas de empresas ni APIs reales: las solicitudes, respuestas, códigos HTTP y escenarios son **modelos didácticos**. El experimento bancario ilustra idempotencia y confirma que `202 Accepted` no significa dinero liquidado.
+
+La experiencia nueva no requiere librerías adicionales. Conserva las visualizaciones existentes y optimiza el contenido editorial de los capítulos 00, 09 y 13–15.
+
+Fuentes, currículo (FaMAF UNC 2026 y CS2023), librerías evaluadas y ruta de evolución: [SOFTWARE_PRODUCT_CURRICULUM_V10.md](docs/SOFTWARE_PRODUCT_CURRICULUM_V10.md).
