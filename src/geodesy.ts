@@ -18,7 +18,6 @@ export const LOCATIONS=[
  {name:'Córdoba · ciudad',lat:-31.42,lon:-64.18},
  {name:'Buenos Aires · ciudad',lat:-34.6,lon:-58.38}
 ] as const;
-const square=(x:number)=>x*x;
 const clamp=(n:number,a:number,b:number)=>Math.min(b,Math.max(a,n));
 function meridionalArc(phi:number){
  const e=WGS84_E2,e4=e*e,e6=e4*e;
