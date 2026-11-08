@@ -12,7 +12,7 @@ test('integral de volumen con corte y relleno',()=>{
 });
 test('gradiente discreto aproxima correctamente una ladera plana',()=>{
  const slope=terrainGradient((x,y)=>1000+.12*x-.05*y,100,-75,25);
- close(slope[0],.12);close(slope[1],-.05);close(Math.atan(Math.hypot(...slope))*180/Math.PI,7.4074127,1e-4);
+ close(slope[0],.12);close(slope[1],-.05);close(Math.atan(Math.hypot(...slope))*180/Math.PI,7.4069121,1e-4);
 });
 test('paisajes deterministas con valores finitos',()=>{
  for(let m=0;m<3;m++)for(let x=-500;x<=500;x+=125)for(let y=-500;y<=500;y+=125){
