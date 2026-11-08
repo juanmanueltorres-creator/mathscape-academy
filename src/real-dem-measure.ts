@@ -16,7 +16,7 @@ export function calculateRealDem(data:DemGrid|null,p:Record<string,number>,state
   metrics:[m('Elevación SRTM (m)',r.point.z===null?'NoData':fmt(r.point.z)),m('Pendiente aprox. (°)',r.slope===null?'NoData':fmt(r.slope,2)),m('Área muestreada (km²)',fmt(r.area/1e6,3)),m('Volumen neto vs z₀ (m³)',fmt(net,0)),m('Puntos válidos',data.valid+' / 81')],
   explanation:'Esta es una grilla de 81 elevaciones REALMENTE consultadas al conjunto SRTM90m v3. Las curvas se interpolan entre muestras, y la pendiente usa diferencias finitas. La cuadrícula no es un GeoTIFF nativo. El volumen relativo a un plano es demostrativo: no sirve para calcular excavaciones ni estimar incertidumbre topográfica.',
   passed:data.valid>=75 && r.slope!==null,
-  observation:'Fuente: '+DEM_SPEC.source+' · EPSG:4326 WGS84 · altura EGM96 (m). Separación de muestras: '+fmt(data.dxMeters,0)+' m E-O × '+fmt(data.dyMeters,0)+' m N-S; NO es resolución nativa. Fecha de consulta: '+data.requestedAt.slice(0,10)+'. NoData: '+data.noData+'.',
+  observation:'Fuente: '+DEM_SPEC.source+' · '+(data.origin==='snapshot'?'recorte verificado sin conexión':'consulta nueva desde API')+' · EPSG:4326 WGS84 · altura EGM96 (m). Separación de muestras: '+fmt(data.dxMeters,0)+' m E-O × '+fmt(data.dyMeters,0)+' m N-S; NO es resolución nativa. Fecha de consulta: '+data.requestedAt.slice(0,10)+'. NoData: '+data.noData+'.',
   formula:'∂z/∂E ≈ Δz/(ΔE) · ∂z/∂N ≈ Δz/(ΔN)\nθ ≈ arctan(√[(∂z/∂E)²+(∂z/∂N)²]) = '+(r.slope===null?'NoData':fmt(r.slope,2)+'°')+
    '\nV(z₀) ≈ Σ [z̄_celda − '+fmt(datum,0)+']·ΔE·ΔN\nV₊='+fmt(r.above,0)+' m³  ·  V₋='+fmt(r.below,0)+' m³\nz₀='+fmt(datum,0)+' m · EGM96 (referencia ilustrativa)'
  };
