@@ -1,4 +1,4 @@
-import {geodesyReport,LOCATIONS,utmWGS84,illustrativeGK,RAD} from './geodesy';
+import {geodesyReport} from './geodesy';
 const line=(c:CanvasRenderingContext2D,x:number,y:number,X:number,Y:number,color:string,width=1)=>{
  c.beginPath();c.moveTo(x,y);c.lineTo(X,Y);c.strokeStyle=color;c.lineWidth=width;c.stroke();
 };
