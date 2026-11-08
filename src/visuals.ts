@@ -1,4 +1,5 @@
 import type {SceneId} from './content';
+import {drawTerrainLayer} from './terrain-visual';
 import {applyMatrix,determinant,lorenzPoints,superRadius,surface,familyValue,familyAnchor,derivativeExample,derivativeExampleSlope,integrandExample,solidHeight,gradientExampleValue,gradientExample,limitExample,limitCenter,odeModelExact,odeModelRate,solveEulerModel,type Vec2,type Vec3} from './math';
 
 export type ViewState={angle:number;time:number;pointer?:Vec2;focus?:'lissajous'|'lorenz'|'gielis'};
@@ -218,6 +219,7 @@ export function drawScene(canvas:HTMLCanvasElement,scene:SceneId,pr:Record<strin
  // Glow ambiental discreto. No afecta la relación matemática de los gráficos.
  const glow=c.createRadialGradient(p.cx,p.cy,10,p.cx,p.cy,Math.max(w,h)*.6);
  glow.addColorStop(0,rgba(accent,.10));glow.addColorStop(1,'#00000000');c.fillStyle=glow;c.fillRect(0,0,w,h);
+ if(scene==='terrain'){drawTerrainLayer(c,w,h,pr,view.angle);return}
  if(scene==='atlas'){atlas(p,pr,view);return}
  if(scene==='double'||scene==='gradient'){surface3D(p,scene,pr,view.angle);return}
  const span=scene==='ode'?5.0:scene==='integral'?4.9:4.15;
