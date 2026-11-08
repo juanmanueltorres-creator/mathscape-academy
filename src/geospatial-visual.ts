@@ -1,4 +1,4 @@
-import {projectGeographic,projectionDistortion,projectionNames,rasterInfo,rasterValue,syntheticSpectra,syntheticColor,bandProducts,sensorLabels,clip,DEG,GEO_SIDE_M} from './geospatial';
+import {projectGeographic,projectionDistortion,projectionNames,rasterInfo,rasterValue,syntheticSpectra,syntheticColor,sensorLabels,clip,DEG} from './geospatial';
 import type {SceneId} from './content';
 
 type Ctx=CanvasRenderingContext2D;
