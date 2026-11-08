@@ -1,5 +1,5 @@
 import {functionFamilies,type SceneId} from './content';
-import {terrainReport} from './terrain';
+import {terrainReport,terrainEquation} from './terrain';
 import {determinant,norm2,familyAnchor,familyValue,familyDerivative,derivativeExampleSlope,secantExample,exactIntegralExample,leftRiemannExample,exactSolidVolume,midpointSolidVolume,limitLeftRight,limitCenter,solveEulerModel,odeModelExact,gradientExample} from './math';
 export type Metric={label:string;value:string;detail?:string};
 export type Result={metrics:Metric[];explanation:string;passed:boolean;observation:string;formula:string};
@@ -57,7 +57,7 @@ export function calculate(scene:SceneId,p:Record<string,number>):Result{
    explanation:'El relieve combina lomas, depresiones y ondulaciones SINTÉTICAS. La pendiente se estima con diferencias centrales; los volúmenes se obtienen sumando columnas de celdas. Corte y relleno aquí son ilustrativos respecto de un plano, NO un diseño de obra real.',
    passed:t.samplingDifferencePercent<1,
    observation:`${shapes[t.model]} · ${t.coarse.cells} celdas de ${num(t.coarse.cellSize,1)} m · comparación con grilla de 120×120. Diferencia de muestreo ≠ incertidumbre del DEM. SIN DATOS REALES.`,
-   formula:`z(x,y)=z_base+relieve(x,y)+r·ondulaciones(x,y)\n∇z≈((z(x+Δ,y)−z(x−Δ,y))/(2Δ), (z(x,y+Δ)−z(x,y−Δ))/(2Δ))\nθ=arctan(|∇z|) = ${num(t.slopeDegrees,2)}°\nV₊(z₀)=∬ᴰ max(z−z₀,0)dA ≈ Σᵢⱼ max(zᵢⱼ−${num(t.datum,0)},0)·${num(t.coarse.cellSize**2,0)} m²`
+   formula:`${terrainEquation(t.model,t.irregularity)}\n∇z≈((z(x+Δ,y)−z(x−Δ,y))/(2Δ), (z(x,y+Δ)−z(x,y−Δ))/(2Δ))\nθ=arctan(|∇z|) = ${num(t.slopeDegrees,2)}°\nV₊(z₀)=∬ᴰ max(z−z₀,0)dA ≈ Σᵢⱼ max(zᵢⱼ−${num(t.datum,0)},0)·${num(t.coarse.cellSize**2,0)} m²`
   };
  }
  const m=Math.round(p.gradientModel||0),grad=gradientExample(m,p.ga,p.gb,p.gx,p.gy),mag=norm2(grad);
