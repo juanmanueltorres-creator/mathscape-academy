@@ -106,5 +106,10 @@ export function evaluateContract(id:ContractId,raw:string):ContractResponse{
  if(extra.length)return answer(422,'structure','Campos desconocidos','Este contrato no admite: '+extra.join(', ')+'.',{error:'additional_properties',campos:extra});
  const problem=businessError(id,parsed);
  if(problem)return answer(422,'rule','Regla incumplida',problem,{error:'validation_failed',detalle:problem});
- return answer(contract.successStatus,'accepted',contract.successStatus===201?'Recurso creado':'Solicitud aceptada',contract.successMessage,{...contract.successPayload});
+ const accepted:Record<string,unknown>=contract.id==='social'
+  ?{...contract.successPayload,visibilidad:parsed.visibilidad}
+  :contract.id==='bank'
+   ?{...contract.successPayload,id:parsed.clave_idempotencia}
+   :{...contract.successPayload,crs:parsed.crs,resolucion_m:parsed.resolucion_m};
+ return answer(contract.successStatus,'accepted',contract.successStatus===201?'Recurso creado':'Solicitud aceptada',contract.successMessage,accepted);
 }
