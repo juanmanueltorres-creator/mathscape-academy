@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {PRODUCTS,productByIndex,simulateSoftware,modelDecision} from '../src/software.ts';
+import {calculateSoftware} from '../src/software-measure.ts';
 test('tres relatos con seis etapas y criterio de producto propio',()=>{
  assert.equal(PRODUCTS.length,3);
  for(const item of PRODUCTS){
@@ -55,4 +56,16 @@ test('índices de producto fuera del rango no rompen navegación',()=>{
  assert.equal(productByIndex(-12).id,'maps');
  assert.equal(productByIndex(999).id,'bank');
  assert.throws(()=>productByIndex(NaN),RangeError);
+});
+
+test('el microdesafío exige rechazo sin mutación, no un clic de éxito',()=>{
+ for(let i=0;i<PRODUCTS.length;i++){
+  assert.equal(calculateSoftware('software',{softwareProduct:i,softwareMode:0,softwareStep:0}).passed,false);
+  assert.equal(calculateSoftware('software',{softwareProduct:i,softwareMode:2,softwareStep:0}).passed,false);
+  assert.equal(calculateSoftware('software',{softwareProduct:i,softwareMode:1,softwareStep:0}).passed,true);
+ }
+});
+test('el capítulo de producto no se completa sin recorrer las seis etapas',()=>{
+ assert.equal(calculateSoftware('product',{softwareProduct:0,softwareStep:0}).passed,false);
+ assert.equal(calculateSoftware('product',{softwareProduct:0,softwareStep:5}).passed,true);
 });
