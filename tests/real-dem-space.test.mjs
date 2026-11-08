@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {DEM_SPEC,demCoordinates,demAPIURL,parseDemResponse,demReport,interpolateDem} from '../src/real-dem.ts';
-import {ORBIT_MISSIONS,GEO_HEIGHT_KM,SIDEREAL_DAY_S,orbitPeriodMin,orbitalVelocityKmS,horizonHalfAngleRad,groundPoint,orbitSummary} from '../src/satellites.ts';
+import {ORBIT_MISSIONS,GEO_HEIGHT_KM,SIDEREAL_DAY_S,orbitPeriodMin,orbitalVelocityKmS,horizonHalfAngleRad,groundPoint,orbitSummary,orbitEllipsePoint} from '../src/satellites.ts';
 import {RADAR_KINDS,dbzToLinear,linearToDbz,radialVelocity,radarSummary,syntheticSigma0,sigmaToDb} from '../src/radar-lab.ts';
 const close=(a,b,tol=1e-7)=>assert.ok(Math.abs(a-b)<=tol,'expected '+a+' ≈ '+b);
 const mock=(fn=(i,j)=>2500+i*3+j*5)=>({
@@ -74,4 +74,18 @@ test('Radar SAR usa σ⁰ y no dBZ meteorológicos',()=>{
  const s=syntheticSigma0(.8,35);assert.ok(s>0&&s<1);assert.ok(sigmaToDb(s)<0);
  const v=radarSummary({radarType:2,radarRoughness:.8,radarIncidence:35});
  assert.equal(v.unit,'dB σ⁰');assert.ok(Number.isFinite(v.value));
+});
+
+test('La reflectividad lineal coincide exactamente con los dBZ mostrados',()=>{
+ const result=radarSummary({radarType:0,radarDbz:55});
+ close(result.extra,dbzToLinear(result.value),.0001);
+});
+test('El satélite de la ilustración siempre sigue su órbita dibujada y rotada',()=>{
+ const rx=105,ry=38,rotation=-.48;
+ for(const phase of [0,Math.PI/4,Math.PI/2,Math.PI,5]){
+  const [x,y]=orbitEllipsePoint(phase,rx,ry,rotation);
+  const unrotX=x*Math.cos(rotation)+y*Math.sin(rotation);
+  const unrotY=-x*Math.sin(rotation)+y*Math.cos(rotation);
+  close(unrotX**2/(rx*rx)+unrotY**2/(ry*ry),1,1e-10);
+ }
 });
