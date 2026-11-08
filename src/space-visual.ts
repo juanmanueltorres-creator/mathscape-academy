@@ -1,4 +1,4 @@
-import {ORBIT_MISSIONS,orbitSummary,groundPoint,rad,R_EARTH_KM} from './satellites';
+import {ORBIT_MISSIONS,orbitSummary,groundPoint,rad} from './satellites';
 import {radarSummary,syntheticReflectivity,radialVelocity,syntheticSigma0,sigmaToDb} from './radar-lab';
 const font=(c:CanvasRenderingContext2D,text:string,x:number,y:number,color='#a2bed4',size=11)=>{
  c.fillStyle=color;c.font='600 '+size+'px ui-monospace, monospace';c.fillText(text,x,y);
@@ -42,14 +42,14 @@ export function drawSatelliteLab(c:CanvasRenderingContext2D,w:number,h:number,p:
  for(let lat=-60;lat<=60;lat+=30)line(c,mx,my+(90-lat)/180*mh,mx+mw,my+(90-lat)/180*mh,'#43617a8c',.7);
  for(let lon=-150;lon<=150;lon+=30)line(c,mx+(lon+180)/360*mw,my,mx+(lon+180)/360*mw,my+mh,'#43617a8c',.7);
  c.save();c.beginPath();c.rect(mx,my,mw,mh);c.clip();
- let lastX=-1,lastY=0;
+ let lastX=-1;
  const steps=Math.max(1,Math.min(400,Math.ceil(t/5)));
  c.beginPath();
  for(let i=0;i<=steps;i++){
   const point=groundPoint(idx,t*i/steps);
   const x=mx+(point.lon+180)/360*mw,y=my+(90-point.lat)/180*mh;
   if(lastX<0||Math.abs(x-lastX)>mw*.5)c.moveTo(x,y);else c.lineTo(x,y);
-  lastX=x;lastY=y;
+  lastX=x;
  }
  c.strokeStyle='#84e5dc';c.lineWidth=2.25;c.shadowColor='#7af6e9';c.shadowBlur=6;c.stroke();c.shadowBlur=0;
  const loc=summary.point,xx=mx+(loc.lon+180)/360*mw,yy=my+(90-loc.lat)/180*mh;
