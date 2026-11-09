@@ -1,0 +1,84 @@
+/* G3: un laboratorio narrativo, no un tablero de métricas. */
+.ai-stack{--stack-edge:#3b5273;--stack-muted:#b1c4de;max-width:1420px;margin:0 auto 30px;color:#e7f1ff}
+.ai-stack button,.ai-stack a{font-family:inherit}
+.ai-stack button:focus-visible,.ai-stack a:focus-visible,.ai-stack input:focus-visible{outline:3px solid #d1b2ff;outline-offset:3px}
+.stack-hero{display:grid;grid-template-columns:1fr minmax(225px,.85fr);gap:25px;align-items:end;border:1px solid #344d6a;border-radius:22px;padding:clamp(20px,3vw,36px);background:radial-gradient(circle at 85% 20%,#224057 0,transparent 54%),linear-gradient(130deg,#102037,#0c1628);margin-bottom:15px}
+.stack-eyebrow,.stack-section-title span,.stack-object-label,.stack-footer>span{font-size:10px;font-weight:700;color:#9bdbdf;letter-spacing:1.5px}
+.stack-hero h2{font-size:clamp(27px,3.8vw,49px);line-height:1.06;letter-spacing:-1.25px;font-weight:570;max-width:16ch;margin:12px 0}
+.stack-hero p{font-size:14px;line-height:1.7;color:#b6c8df;max-width:57ch;margin:0}
+.stack-chain{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.stack-chain span{border:1px solid #6285a4;padding:9px 11px;background:#192e45;color:#d3ecf4;border-radius:30px;font-size:11px}
+.stack-chain b{font-size:11px;color:#9aadc7}
+.stack-nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:21px}
+.stack-nav button{text-align:left;display:grid;gap:7px;padding:14px 11px;min-height:73px;background:#13243b;border:1px solid #354c69;border-radius:12px;color:#c3d4ea;cursor:pointer}
+.stack-nav button:hover,.stack-nav button.active{background:#224257;color:#f5ffff;border-color:#94d8df}
+.stack-nav small{font-size:11px;color:#8ed3dd;font-variant-numeric:tabular-nums}
+.stack-nav strong{font-size:12px;font-weight:560;line-height:1.35}
+.stack-section-title{margin:16px 3px 14px}
+.stack-section-title h2{font-size:clamp(25px,3vw,36px);font-weight:570;letter-spacing:-.6px;margin:6px 0}
+.stack-layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(290px,.85fr);gap:16px;align-items:stretch}
+.stack-main,.stack-side{border:1px solid #344a67;background:linear-gradient(150deg,#14243d,#0c1829);border-radius:19px;min-width:0;padding:clamp(17px,2.5vw,26px)}
+.stack-main h3{font-size:clamp(21px,2.4vw,30px);font-weight:560;letter-spacing:-.7px;margin:14px 0 19px}
+.stack-object-label{color:#83b6cc}
+.stack-svg{display:block;width:100%;height:auto;max-height:320px;margin:15px 0 2px}
+.stack-token-grid{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 2px}
+.stack-token{display:grid;gap:5px;min-width:90px;padding:11px;border-radius:10px;border:1px solid #355875;background:#102238}
+.stack-token strong{font-size:14px;font-weight:600;color:#ddf7ff}
+.stack-token span,.stack-token small{color:#b4cbe5;font-family:monospace;font-size:11px}
+.stack-choices,.stack-provider-grid{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.stack-choices button,.stack-provider-grid button{padding:9px 13px;border-radius:9px;border:1px solid #4a6480;background:#192e46;color:#d3e4f6;font-size:12px;line-height:1.45;cursor:pointer}
+.stack-choices button.active,.stack-provider-grid button.active{background:#82d8e1;border-color:#82d8e1;color:#102138;font-weight:650}
+.stack-bars{display:grid;gap:16px;margin:32px 0}
+.stack-bar-row{display:grid;grid-template-columns:105px 1fr 65px;align-items:center;gap:12px}
+.stack-bar-row span{font-size:13px;color:#d8e6f9}
+.stack-bar-row strong{font-size:13px;text-align:right;font-variant-numeric:tabular-nums}
+.stack-meter{height:20px;border-radius:8px;background:#1c314b;overflow:hidden;border:1px solid #37506c}
+.stack-meter i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#6aacc7,#b69bf1);transition:width .2s}
+.stack-readout{font-size:13px;color:#bdcfe5;line-height:1.65;padding-top:14px;border-top:1px solid #304861;margin:22px 0 2px}
+.stack-metrics{display:flex;gap:9px;flex-wrap:wrap}
+.stack-metrics span{border:1px solid #3d5874;background:#12263e;border-radius:9px;padding:10px 12px;color:#a6bdd8;font-size:12px}
+.stack-metrics b{display:block;color:#e1f4ff;font-weight:600;margin-top:3px}
+.stack-result{display:grid;gap:6px;border-radius:15px;padding:22px;background:linear-gradient(120deg,#153e52,#242947);border:1px solid #5e8393}
+.stack-result span,.stack-provider-detail>span{font-size:10px;letter-spacing:1.3px;color:#a0cdd5}
+.stack-result strong{font-size:clamp(27px,3vw,39px);font-weight:550;line-height:1.18}
+.stack-result small{color:#cde1ed;font-size:13px}
+.stack-architecture{border:1px solid #436078;background:#0e2035;border-radius:12px;padding:19px;margin:16px 0 25px}
+.stack-architecture>strong{font-family:monospace;color:#afebf1;font-size:16px}
+.stack-architecture p{font-size:14px;line-height:1.65;color:#d1dff0}
+.stack-architecture small{font-size:12px;color:#9fb6d2}
+.stack-provider-detail{margin-top:18px;border-top:1px solid #3b5572;padding-top:20px}
+.stack-provider-detail h4{font-size:clamp(22px,2.5vw,32px);font-weight:540;margin:8px 0;line-height:1.2}
+.stack-provider-detail h4 i{font-style:normal;color:#90e3df}
+.stack-provider-detail strong{color:#a6e2d9;font-size:12px}
+.stack-provider-detail p{color:#bad0e5;font-size:13px;line-height:1.6}
+.stack-provider-detail a{font-size:12px;color:#b1ebf3;text-decoration:underline}
+.stack-trace{display:grid;gap:9px}
+.stack-trace-step{border:1px solid #3c5573;border-left:3px solid #8bcad6;background:#0e2037;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:7px}
+.stack-trace-step.pending{border-left-color:#e6bc81}.stack-trace-step.blocked{border-left-color:#e5a5a5}
+.stack-trace-step span{font-size:13px;color:#e1edfb;font-weight:600}
+.stack-trace-step strong{font-size:10px;color:#a8dfca;font-weight:500}
+.stack-trace-step.blocked strong{color:#efa8a8}.stack-trace-step.pending strong{color:#e4c28b}
+.stack-trace-step p{grid-column:1/-1;font-size:12px;line-height:1.55;color:#adc1db;margin:0}
+.stack-side h3{font-size:clamp(21px,2.1vw,27px);font-weight:570;letter-spacing:-.6px;margin:0 0 14px}
+.stack-side>p,.stack-side p{font-size:13px;line-height:1.7;color:#bdcde3}
+.stack-equation{font:13px/1.8 ui-monospace,Consolas,monospace;color:#acf0e8;background:#071a2c;padding:14px;border-radius:10px;border:1px solid #395874;margin:18px 0;overflow-wrap:anywhere}
+.stack-slider{display:block;margin:22px 0}
+.stack-slider span{display:flex;justify-content:space-between;gap:9px;color:#c7d7e9;font-size:12px;margin-bottom:12px}
+.stack-slider output{color:#e6fdff}
+.stack-slider input{width:100%;accent-color:#86e0e2}
+.stack-layers{display:grid;gap:6px;margin:18px 0}
+.stack-layers>div{display:grid;grid-template-columns:90px 1fr;gap:13px;align-items:center;padding:10px 0;border-bottom:1px solid #2c435d}
+.stack-layers b{font-size:12px;color:#b6e6ee}
+.stack-layers span{font-size:12px;color:#b8cce1}
+.stack-toggle{display:grid;gap:14px;margin:19px 0}
+.stack-toggle label{display:flex;gap:10px;align-items:center;font-size:13px;color:#d4e7f2}
+.stack-toggle input{accent-color:#8bd9e6;width:18px;height:18px}
+.stack-finish{margin-top:28px;border-top:1px solid #3d546b;padding-top:18px}
+.stack-finish button{border:0;border-radius:10px;background:#82d8e1;color:#08182c;font-size:13px;font-weight:650;cursor:pointer;padding:13px 18px;width:100%}
+.stack-finish button:disabled{background:#244b50;color:#a8e2d7;cursor:default}
+.stack-finish p{font-size:11px!important}
+.stack-footer{padding:20px 3px;color:#afc2d9;font-size:12px;line-height:1.65}
+.stack-footer p{margin:6px 0}.stack-footer small{font-size:11px;color:#8da6c2}
+@media(max-width:1120px){.stack-layout{grid-template-columns:1fr}.stack-hero{grid-template-columns:1fr}.stack-chain{justify-content:flex-start}.stack-nav{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:650px){.stack-hero{padding:19px}.stack-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.stack-bar-row{grid-template-columns:75px 1fr 57px;gap:7px}.stack-bar-row span,.stack-bar-row strong{font-size:11px}.stack-chain{gap:6px}.stack-chain span{font-size:10px;padding:7px 9px}.stack-main,.stack-side{padding:17px}}
+@media(prefers-reduced-motion:reduce){.stack-meter i{transition:none}}
