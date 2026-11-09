@@ -15,7 +15,7 @@ El visitante aprende **tocando un modelo, observando qué cambia, entendiendo po
 
 - **Matemática (00–09):** funciones, cálculo, álgebra, superficies, modelos, gradientes; la abstracción se vuelve visible y luego se aplica al relieve.
 - **Geoespacial (10–16):** Tierra, proyecciones y geodesia, ráster/vector, sensores, DEM real muestreado, órbitas, radar meteorológico y SAR.
-- **Software / Producto (17–20):** de una necesidad humana a una interfaz, solicitud HTTP, contrato JSON, reglas, hardware, sistema operativo, red y respuesta.
+- **Software / Producto (17–20 + G3):** de una necesidad humana a una interfaz, solicitud HTTP, contrato JSON, reglas, hardware, sistema operativo, red y respuesta. G3, puente opcional después de hardware, explica qué agrega un sistema de IA: entrada, cálculo, entrenamiento, inferencia, modelos, proveedores y agente con herramientas. G1 y G2 unen fundamentos matemáticos e historia técnica.
 
 No exigir completar las rutas en orden. Establecer **puentes semánticos**: 05 integrales dobles → 09 volúmenes de relieve; 08 gradiente → 09 pendiente; 09 terreno → 13 muestras SRTM; 10–16 coordenadas/sensores → 17–19 aplicaciones geoespaciales; 18–19 petición → 20 hardware, SO y red.
 

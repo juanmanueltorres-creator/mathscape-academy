@@ -73,6 +73,10 @@
 
 **Estado:** En evaluación. Diseñar **21 · Datos y consultas** con tablas, relaciones, restricciones, índices o filtros y un caso territorial que conecte 19 y 20. No empezar por contenedores o infraestructura. El experimento debe permitir provocar un dato inválido, ver una restricción y contrastar consulta correcta con incorrecta. **Evitar falsa simulación SQL** que enseñe una sintaxis errónea: implementar un subconjunto explícito o un motor local confiable, aclarando limitaciones.
 
+## D-017 · IA como puente verificable entre matemática y software
+
+**Estado:** Aceptada para implementación educativa del puente G3. **Motivo:** los ejercicios aislados de neurona, gradiente y atención no mostraban el recorrido de un sistema de IA ni distinguían modelos, proveedores y agentes. **Decisión:** ampliar la ruta Software después del hardware mediante una guía G3 autocontenida, sin alterar los números 21/22 ni agregar una cuarta plataforma. **Límites:** ejemplos sintéticos puros, sin inferencia remota, sin rankings comerciales ni equiparar open weights a open source. **Pruebas:** `tests/ai-stack.test.mjs`, CI de PR y QA visual pendiente según la versión desplegada. **Fuente:** `docs/AI_STACK_GUIDE.md`.
+
 ## Plantilla para nueva decisión
 
 ```md
