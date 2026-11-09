@@ -1,6 +1,8 @@
 # Mathscape Academy — Matemática · Geoespacial · Software
 
-**Estado documental (2026-11-08):** V1.2, **21 capítulos implementados (00–20)**, React + TypeScript + Vite. La fuente del inventario de escenas es `src/content.ts`.
+**Estado documental (2026-11-08):** V1.2, **21 capítulos implementados (00–20)**, React + TypeScript + Vite.
+
+**En esta rama de revisión:** dos guías interactivas sin numeración curricular adicional: **G1 · Matemática de la IA** (neurona, gradiente, atención) y **G2 · Historia de conceptos del software** (requisitos, interfaces, recuperación, agentes). Ver [fundamentos y límites](docs/AI_MATH_AND_SOFTWARE_HISTORY_GUIDES.md). La rama todavía requiere CI y QA; no implica despliegue. Se conserva la reserva del capítulo 21 para Datos y consultas. La fuente del inventario de escenas es `src/content.ts`.
 
 **Para agentes y colaboradores:** empezar por **[AGENTS.md](AGENTS.md)**. Reúne el orden de lectura y las reglas operativas. Los siguientes documentos rigen las decisiones de continuidad:
 
