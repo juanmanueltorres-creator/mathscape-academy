@@ -26,6 +26,10 @@ Los archivos `docs/PLAN_CURRICULAR.md`, `docs/SOFTWARE_PRODUCT_CURRICULUM_V10.md
 
 **Regla de una escena:** pregunta → interacción causal → consecuencia observable → explicación breve → microdesafío/puente. Los datos observados, modelos sintéticos, ilustraciones y supuestos deben distinguirse.
 
+## 2b. Guías puente en revisión (G1/G2)
+
+La rama de revisión introduce dos guías independientes de los capítulos numéricos: `G1` muestra modelos deterministas de neurona, descenso y atención; `G2` compara historia técnica y vocabulario actual con fuentes. Consultar `docs/AI_MATH_AND_SOFTWARE_HISTORY_GUIDES.md` y preservar sus límites científicos/editoriales. **No cambia** la prioridad del QA de 20 ni la reserva de los capítulos 21 Datos y consultas / 22 Infraestructura. Código: `src/ai-math.ts`, `src/AIMathGuide.tsx`, `src/SoftwareHistoryGuide.tsx`, `src/guide-styles.css`; tests: `tests/ai-math.test.mjs`. Estos son cambios de rama, no necesariamente mergeados ni publicados.
+
 ## 3. Primera inspección obligatoria
 
 Antes de editar: revisar rama, `main`, PRs abiertos y últimas CI; leer código y tests del capítulo objetivo; entender su comportamiento actual. **Preservar lo que funciona.** No refactorizar el proyecto completo como efecto secundario.
