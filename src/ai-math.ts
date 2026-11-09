@@ -8,7 +8,7 @@ export function neuron(x:Vec2,w:Vec2,b:number):NeuronResult{
  return {z,probability:sigmoid(z)};
 }
 /** Regresión lineal y=Mx, tres muestras sintéticas con pendiente verdadera 2. */
-const xs=[0,.5,1] as const;
+const xs:readonly number[]=[0,.5,1];
 export function regressionLoss(w:number){
  if(!Number.isFinite(w))throw new RangeError('Peso no finito');
  return xs.reduce((s,x)=>s+(w*x-2*x)**2,0)/xs.length;
