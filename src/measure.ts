@@ -10,7 +10,7 @@ export type Result={metrics:Metric[];explanation:string;passed:boolean;observati
 const num=(v:number,digits=3)=>Number(v.toFixed(digits)).toLocaleString('es-AR');
 const met=(label:string,v:number,detail?:string):Metric=>({label,value:num(v),detail});
 export function calculate(scene:SceneId,p:Record<string,number>):Result{
- if(scene==='ai-math'||scene==='software-history')return {metrics:[],formula:'Guía interactiva independiente',explanation:'Los resultados se calculan en su propio laboratorio.',observation:'Experiencia didáctica local sin servicios externos.',passed:false};
+ if(scene==='ai-math'||scene==='software-history'||scene==='ai-stack')return {metrics:[],formula:'Guía interactiva independiente',explanation:'Los resultados se calculan en su propio laboratorio.',observation:'Experiencia didáctica local sin servicios externos.',passed:false};
   if(scene==='hardware')return {metrics:[],formula:'CPU → RAM → sistema operativo → red → aplicación',explanation:'La máquina aporta recursos; los programas y el sistema coordinan su uso.',observation:'Esquema didáctico, no mediciones del equipo.',passed:false};
  if(scene==='api')return {metrics:[],formula:'POST → JSON → HTTP',explanation:'La forma y el contenido se validan por separado.',observation:'No se envía información fuera del navegador.',passed:false};
  if(scene==='product'||scene==='software')return calculateSoftware(scene,p);
