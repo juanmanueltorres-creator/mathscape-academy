@@ -52,7 +52,7 @@ test('cambio real compara multiplicativamente salario con precios',()=>{
  assert.ok(Math.abs(purchasingPower(20,30)-(-7.692307692307686))<1e-7);
  assert.equal(purchasingPower(30,30),0);
  assert.equal(purchasingPower(0,0),0);
- assert.throws(()=>purchasingPower(10,-100),/> -100/);
+ assert.throws(()=>purchasingPower(10,-100),/greater than -100%/);
 });
 
 test('fuentes estatales incluyen IPC, ingresos, pobreza y empleo sin cifras inventadas',()=>{
